@@ -2400,7 +2400,7 @@ function TimeLine() {
             if (m_LatestDate != "") {
                 var m_LatestDate_moment = moment(m_LatestDate + "+00:00");
                 // console.log(m_LatestDate_moment);
-                return m_LatestDate_moment.utc().format('YYYYMMDD_HHmm');
+                return m_LatestDate_moment.utc();
             }
             else {
                 return;
