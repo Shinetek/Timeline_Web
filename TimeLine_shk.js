@@ -2185,12 +2185,13 @@ function TimeLine() {
             console.log("数据类型错误！数据类型选择必须为：year，month，day，mintue中的一个");
             return;
         }
-        if (!(m_BeginTime instanceof Date)) {
-            console.log("参数 数据类型错误！开始日期的数据类型选择必须为Date");
+        //判断开始结束时间类型
+        if (!(m_BeginTime instanceof moment)) {
+            console.log("参数 数据类型错误！开始日期的数据类型选择必须为 moment");
             return;
         }
-        if (!(m_EndTime instanceof Date)) {
-            console.log("参数 数据类型错误！结束日期的数据类型选择必须为Date");
+        if (!(m_EndTime instanceof moment)) {
+            console.log("参数 数据类型错误！结束日期的数据类型选择必须为 moment");
             return;
         }
 
@@ -2250,9 +2251,13 @@ function TimeLine() {
 
         }
 
-        var m_BeginMoment = moment.utc(m_BeginTime);
+        /*var m_BeginMoment = moment.utc(m_BeginTime);
 
-        var m_EndMoment = moment.utc(m_EndTime);
+         var m_EndMoment = moment.utc(m_EndTime);*/
+
+        var m_BeginMoment = m_BeginTime;
+
+        var m_EndMoment = m_EndTime;
 
         var m_TimeList = [];
         // 数据不为空
@@ -2395,7 +2400,7 @@ function TimeLine() {
             if (m_LatestDate != "") {
                 var m_LatestDate_moment = moment(m_LatestDate + "+00:00");
                 // console.log(m_LatestDate_moment);
-                return m_LatestDate_moment.utc().format('YYYYMMDD_hhmm');
+                return m_LatestDate_moment.utc().format('YYYYMMDD_HHmm');
             }
             else {
                 return;
