@@ -2174,7 +2174,7 @@ function TimeLine() {
      */
     this.getDataList = function (m_LayerName, m_BeginTime, m_EndTime, m_DateTye, m_ImageUrl) {
         //参数处理
-        console.log(typeof(m_LayerName));
+        //console.log(typeof(m_LayerName));
         if (typeof(m_LayerName) != 'string') {
             console.log("图层名称错误！图层名称类型选择必须为：String。");
             return;
@@ -2195,6 +2195,7 @@ function TimeLine() {
         }
 
 
+        //console.log(m_DataInfoALL);
         var m_Length = m_DataInfoALL.length;
         var m_MacthData = [];
         //根据输入条件获取当前json数据 只有一个
@@ -2257,18 +2258,23 @@ function TimeLine() {
         // 数据不为空
         if (m_MacthData != []) {
             var m_allData = m_MacthData.DataInfo;
-            //对数据进行筛选
-            for (var t = 0; t < m_allData.length; t++) {
-                var m_itemTime = m_allData[t];
-                var m_timeMoment = moment.utc(m_itemTime);
-                if (m_timeMoment.isAfter(m_BeginMoment) && m_timeMoment.isBefore(m_EndMoment)) {
-                    m_TimeList.push(m_timeMoment);
-                }
-                else if (m_timeMoment.isSame(m_BeginMoment) || m_timeMoment.isSame(m_EndMoment)) {
-                    m_TimeList.push(m_timeMoment);
+            //若存在匹配数据
+            if (m_allData.length != undefined) {
+                //对数据进行筛选
+                for (var t = 0; t < m_allData.length; t++) {
+                    var m_itemTime = m_allData[t];
+                    var m_timeMoment = moment.utc(m_itemTime);
+                    if (m_timeMoment.isAfter(m_BeginMoment) && m_timeMoment.isBefore(m_EndMoment)) {
+                        m_TimeList.push(m_timeMoment);
+                    }
+                    else if (m_timeMoment.isSame(m_BeginMoment) || m_timeMoment.isSame(m_EndMoment)) {
+                        m_TimeList.push(m_timeMoment);
+                    }
                 }
             }
         }
+
+        //对URL进行转换
         var m_UrlList = [];
         for (var k = 0; k < m_TimeList.length; k++) {
             var m_returnItem = [];
@@ -2301,6 +2307,103 @@ function TimeLine() {
         m_returnList.UrlList = m_UrlList;
         m_returnList._id = m_LayerName;
         return m_returnList;
+    };
+
+    /**
+     *
+     * @param m_LayerName 图层名称
+     * @param m_DateTye 日期模式 year month day minute
+     */
+    this.getLatestDate = function (m_LayerName, m_DateTye) {
+        // 参数判断
+        if (typeof(m_LayerName) != 'string') {
+            console.log("图层名称错误！图层名称类型选择必须为：String。");
+            return;
+        }
+        var m_Selecttype = m_DateTye.toLowerCase();
+        if (m_Selecttype != "year" && m_Selecttype != "day"
+            && m_Selecttype != "month" && m_Selecttype != "minute") {
+            console.log("数据类型错误！数据类型选择必须为：year，month，day，mintue中的一个");
+            return;
+        }
+
+        try {
+            //遍历选出当前符合条件的data
+            var m_Length = m_DataInfoALL.length;
+            var m_MacthData = [];
+            //根据输入条件获取当前json数据 只有一个
+            if (m_Length != undefined && m_Length > 0) {
+                m_DataInfoALL.forEach(function (m_dataitem) {
+                    //根据名字进行 第一次筛选出符合条件的
+                    if (m_dataitem.DataName == m_LayerName) {
+                        var m_dataType = "";
+                        var m_DateInfo = m_dataitem.DataInfo;
+                        //根据类型进行下一次筛选
+                        if (m_DateInfo.length > 0) {
+                            var Data_length = m_DateInfo[0].length;
+                            //根据 Data_length判断当前数据属于什么类型
+                            switch (Data_length) {
+                                case 3:
+                                case 4:
+                                {
+                                    //年
+                                    m_dataType = "year";
+                                    break;
+                                }
+                                case 6:
+                                case 7:
+                                {//月"2016-12"   "2016-2"
+                                    m_dataType = "month";
+                                    break;
+                                }
+                                case 10:
+                                case 11:
+                                {
+                                    //日 "2017-03-09"
+                                    m_dataType = "day";
+                                    break;
+                                }
+                                case 16:
+                                {
+                                    //分 2017-02-10 06:10
+                                    m_dataType = "minute";
+                                    break;
+                                }
+                                default:
+                                    break;
+                            }
+                            if (m_dataType == m_Selecttype) {
+                                m_MacthData = m_dataitem;
+                                //  break;
+                            }
+                        }
+                    }
+                });
+
+            }
+
+            var m_LatestDate = "";
+            //从 m_MacthData 获取最新的数据
+            if (m_MacthData != []) {
+                var m_allData = m_MacthData.DataInfo;
+                if (m_allData != undefined) {
+                    var m_length = m_allData.length;
+                    m_LatestDate = m_allData[m_length - 1];
+                }
+            }
+            //   console.log(m_LatestDate);
+            if (m_LatestDate != "") {
+                var m_LatestDate_moment = moment(m_LatestDate + "+00:00");
+                // console.log(m_LatestDate_moment);
+                return m_LatestDate_moment.utc().format('YYYYMMDD_hhmm');
+            }
+            else {
+                return;
+            }
+        } catch (err) {
+            return;
+        }
+
     }
 }
 
