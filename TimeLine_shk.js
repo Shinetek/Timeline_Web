@@ -1443,11 +1443,12 @@ function TimeLine() {
         }
         YearTotal = YearTotal
             + '</g>'
-                // + '<line x1="0" x2="1500" y1="65" y2="65" class="tick_Line"></line>'
+                // '<line x1="0" x2="1500" y1="65" y2="65" class="tick_Line"></line>'
             + '</g>';
         //IE处理
         if (self.browserType != "MSIE") {
             m_ShowSVG_Year.innerHTML = YearTotal;
+            $("#SVG_Year_Total").html(YearTotal);
         }
         else {
             $("#SVG_Year_Total").html(YearTotal);
@@ -2020,7 +2021,6 @@ function TimeLine() {
      */
     var ResetLayerData = function () {
 
-
         //对于每一个添加的变量
         for (var i = 0; i < m_LayerDataList.length; i++) {
             m_OrderItem = m_LayerDataList[i];
@@ -2154,10 +2154,154 @@ function TimeLine() {
     };
 
 
+    /**
+     * 获取图层列表
+     * @returns {Array}
+     * @constructor
+     */
     this.GetLayerList = function () {
         return m_LayerDataList;
-    }
+    };
 
+
+    /**
+     * 根据所选参数返回当前图层名称相符的模式的可被动画函数调用的json列表
+     * @param m_LayerName 图层名称
+     * @param m_BeginTime 开始时间
+     * @param m_EndTime 结束时间
+     * @param m_DateTye 日期模式 year month day minute
+     * @param m_ImageUrl 日当前图层URL
+     */
+    this.getDataList = function (m_LayerName, m_BeginTime, m_EndTime, m_DateTye, m_ImageUrl) {
+        //参数处理
+        console.log(typeof(m_LayerName));
+        if (typeof(m_LayerName) != 'string') {
+            console.log("图层名称错误！图层名称类型选择必须为：String。");
+            return;
+        }
+        var m_Selecttype = m_DateTye.toLowerCase();
+        if (m_Selecttype != "year" && m_Selecttype != "day"
+            && m_Selecttype != "month" && m_Selecttype != "minute") {
+            console.log("数据类型错误！数据类型选择必须为：year，month，day，mintue中的一个");
+            return;
+        }
+        if (!(m_BeginTime instanceof Date)) {
+            console.log("参数 数据类型错误！开始日期的数据类型选择必须为Date");
+            return;
+        }
+        if (!(m_EndTime instanceof Date)) {
+            console.log("参数 数据类型错误！结束日期的数据类型选择必须为Date");
+            return;
+        }
+
+
+        var m_Length = m_DataInfoALL.length;
+        var m_MacthData = [];
+        //根据输入条件获取当前json数据 只有一个
+        if (m_Length != undefined && m_Length > 0) {
+            m_DataInfoALL.forEach(function (m_dataitem) {
+                //根据名字进行 第一次筛选出符合条件的
+                if (m_dataitem.DataName == m_LayerName) {
+                    var m_dataType = "";
+                    var m_DateInfo = m_dataitem.DataInfo;
+                    //根据类型进行下一次筛选
+                    if (m_DateInfo.length > 0) {
+                        var Data_length = m_DateInfo[0].length;
+                        //根据 Data_length判断当前数据属于什么类型
+
+                        switch (Data_length) {
+                            case 3:
+                            case 4:
+                            {
+                                //年
+                                m_dataType = "year";
+                                break;
+                            }
+                            case 6:
+                            case 7:
+                            {//月"2016-12"   "2016-2"
+                                m_dataType = "month";
+                                break;
+                            }
+                            case 10:
+                            case 11:
+                            {
+                                //日 "2017-03-09"
+                                m_dataType = "day";
+                                break;
+                            }
+                            case 16:
+                            {
+                                //分 2017-02-10 06:10
+                                m_dataType = "minute";
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                        if (m_dataType == m_Selecttype) {
+                            m_MacthData = m_dataitem;
+                            //  break;
+                        }
+                    }
+                }
+            });
+
+        }
+
+        var m_BeginMoment = moment.utc(m_BeginTime);
+
+        var m_EndMoment = moment.utc(m_EndTime);
+
+        var m_TimeList = [];
+        // 数据不为空
+        if (m_MacthData != []) {
+            var m_allData = m_MacthData.DataInfo;
+            //对数据进行筛选
+            for (var t = 0; t < m_allData.length; t++) {
+                var m_itemTime = m_allData[t];
+                var m_timeMoment = moment.utc(m_itemTime);
+                if (m_timeMoment.isAfter(m_BeginMoment) && m_timeMoment.isBefore(m_EndMoment)) {
+                    m_TimeList.push(m_timeMoment);
+                }
+                else if (m_timeMoment.isSame(m_BeginMoment) || m_timeMoment.isSame(m_EndMoment)) {
+                    m_TimeList.push(m_timeMoment);
+                }
+            }
+        }
+        var m_UrlList = [];
+        for (var k = 0; k < m_TimeList.length; k++) {
+            var m_returnItem = [];
+            var m_Time = m_TimeList[k];
+            var projectUrl = m_ImageUrl;
+            if (projectUrl.indexOf('yyyy') > 0) {
+                projectUrl = projectUrl.replace('yyyy', m_Time.utc().format("YYYY"));
+            }
+            if (projectUrl.indexOf('MM') > 0) {
+                projectUrl = projectUrl.replace('MM', m_Time.utc().format("MM"));
+            }
+            if (projectUrl.indexOf('dd') > 0) {
+                projectUrl = projectUrl.replace('dd', m_Time.utc().format("DD"));
+            }
+            if (projectUrl.indexOf('hh') > 0) {
+                projectUrl = projectUrl.replace('hh', m_Time.utc().format("HH"));
+            }
+            if (projectUrl.indexOf('mm') > 0) {
+                projectUrl = projectUrl.replace('mm', m_Time.utc().format("mm"));
+            }
+            /*   m_returnItem.LayerTimeUrl = projectUrl;
+             m_returnItem.LayerTimeIndexZ = 550 + k;
+             m_returnItem.LayerTimeName = m_LayerName + "_" + k;
+             m_returnItem.LayerTime = m_Time;*/
+            m_UrlList.push(projectUrl);
+        }
+
+
+        var m_returnList = [];
+        m_returnList.UrlList = m_UrlList;
+        m_returnList._id = m_LayerName;
+        return m_returnList;
+    }
 }
 
 
