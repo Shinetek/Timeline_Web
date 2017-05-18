@@ -10,10 +10,11 @@ var mincss = require('gulp-mini-css');
 
 
 var src_css = './css',
-
     src_js = './js',
+    src_image = './img',
     dist_js = './dist/js',
-    dist_css = './dist/css';
+    dist_css = './dist/css',
+    dist_image = './dist/img';
 
 gulp.task('mincss', function () {
     gulp.src(src_css + '/**/*.css')
@@ -29,6 +30,11 @@ gulp.task('minjs', function () {
         .pipe(gulp.dest(dist_js));
 });
 
+gulp.task('image', function () {
+    gulp.src(src_image + '/*.png')
+        .pipe(gulp.dest(dist_image));
+});
+
 gulp.task('watch', function () {
     gulp.watch(src_css + '/**/*.css', ['mincss']);
     gulp.watch(src_js + '/**/*.js', ['minjs']);
@@ -36,6 +42,6 @@ gulp.task('watch', function () {
 
 //总体函数
 gulp.task('default', function () {
-    gulp.run('minjs', 'mincss');
-    gulp.run('watch');
+    gulp.run('minjs', 'mincss', 'image');
+    //gulp.run('watch');
 });
