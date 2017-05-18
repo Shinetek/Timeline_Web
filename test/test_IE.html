@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--TimeLine 样式-->
+    <link rel="stylesheet" type="text/css" href="../css/TimeLine_shk.css"/>
+    <!--TimeLine 依赖js  jquery -->
+    <script type="text/javascript" src="../lib/jquery-1.8.3.min.js"></script>
+    <!--TimeLine 依赖js  moment -->
+    <script type="text/javascript" src="../lib/moment.min.js"></script>
+    <!--TimeLine js-->
+    <script type="text/javascript" src="../js/TimeLine_shk.js"></script>
+    <title>IE 兼容性 测试</title>
+</head>
+<body>
+
+<!--操作控制部分-->
+<div id="tl-controller">
+
+</div>
+<!--时间显示部分-->
+<div id="tl-display">
+    <div id="TestADD">
+    </div>
+</div>
+</body>
+<script>
+
+    var IE_TimeLine = {};
+    IE_TimeLine.timeline = _InitTimeLine();
+    function _InitTimeLine() {
+        var m_TimeLine = new TimeLine();
+        //初始化
+        //m_TimeLine.Init("TestADD", "MINUTE");
+        //m_TimeLine.Init("TestADD", "YEAR");
+        //m_TimeLine.Init("TestADD", "MONTH");
+        m_TimeLine.Init("TestADD", "DAY");
+
+        console.log(m_TimeLine.DateShow);
+        return m_TimeLine;
+    }
+
+
+</script>
+</html>
