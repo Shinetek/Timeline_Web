@@ -560,6 +560,10 @@ function TimeLine() {
      */
     var setModeIE = function () {
         var explorer = window.navigator.userAgent;
+
+        if (navigator.userAgent.indexOf("Trident") > 0 || navigator.userAgent.indexOf("Edge") > 0) {
+            return "Edge";
+        }
         if (navigator.userAgent.indexOf("MSIE") > 0) {
             return "MSIE";
         }
@@ -590,109 +594,147 @@ function TimeLine() {
      * @constructor
      */
     var GetFullModeWidth = function () {
-        var m_browserType = self.browserType;
-        var m_DIVID = self.IDName;
-        if (m_DIVID == '') {
-            return;
-        }
-
-        var m_ClassADD = document.getElementById(m_DIVID);
-        var TimeLineTotalDIV = document.getElementById("ShowTimeLine");
-        var TimeLineList = document.getElementsByClassName("svg_ALL");
-        var Total_Witdh = 0;
-        //chrome 浏览器
-        if (m_browserType == "Chrome") {
-            // 总宽度
-            var TotalWidth = (document.documentElement.scrollWidth > document.documentElement.clientWidth) ? document.documentElement.scrollWidth : document.documentElement.scrollWidth;
-            Total_Witdh = TotalWidth;
-            //设置整体控件宽度
-            if (TotalWidth > 380) {
-                document.getElementById(m_DIVID).style.width = TotalWidth;
-            } else {
-                document.getElementById(m_DIVID).style.width = 380;
+            var m_browserType = self.browserType;
+            var m_DIVID = self.IDName;
+            if (m_DIVID == '') {
+                return;
             }
 
-            //右侧SVGTimeLine高度
-            var SVGWitdh;
-            SVGWitdh = TotalWidth - 490;
-            //设置TimeLine宽度
-            TimeLineTotalDIV.style.width = TotalWidth - 360;
+            var m_ClassADD = document.getElementById(m_DIVID);
+            var TimeLineTotalDIV = document.getElementById("ShowTimeLine");
+            var TimeLineList = document.getElementsByClassName("svg_ALL");
+            var Total_Witdh = 0;
 
-            //SVG列表 设置宽度
-            for (var j = 0; j < TimeLineList.length; j++) {
-                TimeLineList[j].style.width = SVGWitdh;
-            }
-        }
-        //火狐样式
-        if (m_browserType == "Firefox") {
-            // 总宽度
-            var TotalWidth_fireFox = document.documentElement.clientWidth - 20;
-            Total_Witdh = TotalWidth_fireFox;
-            //设置TimeLine DIV宽度
-            if (TotalWidth_fireFox > 360) {
-                m_ClassADD.style.width = TotalWidth_fireFox + "px";
-            } else {
-                m_ClassADD.style.width = 360 + "px";
-            }
-            //SVG列表 设置宽度
-            var SVGWitdh_fireFox = TotalWidth_fireFox - 490;
-            for (var k = 0; k < TimeLineList.length; k++) {
-                TimeLineList[k].style.width = SVGWitdh_fireFox + "px";
-            }
-            //右侧SVGTimeLine宽度
-            TimeLineTotalDIV.style.width = (TotalWidth_fireFox - 360) + "px";
-        }
 
-        //IE样式
-        if (m_browserType == "MSIE") {
-            // 总宽度
-            var TotalWidth_MSIE = document.documentElement.clientWidth - 20;
-            Total_Witdh = TotalWidth_MSIE;
-            //设置TimeLine DIV宽度
-            if (TotalWidth_MSIE > 360) {
-                m_ClassADD.style.width = TotalWidth_MSIE + "px";
-            } else {
-                m_ClassADD.style.width = 360 + "px";
-            }
-            //SVG列表 设置宽度
-            var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
-            for (var t = 0; t < TimeLineList.length; t++) {
-                TimeLineList[t].style.width = SVGWitdh_MSIE + "px";
-            }
-            //右侧SVGTimeLine宽度
-            TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
-        }
+            switch (m_browserType) {
 
-        //495
-        var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
-        if (Total_Witdh < 495) {
-            for (var i = 0; i < ShowTimeLine.length; i++) {
-                ShowTimeLine[i].style.display = "none";
+                case 'Chrome':
+                {
+                    // 总宽度
+                    var TotalWidth = (document.documentElement.scrollWidth > document.documentElement.clientWidth)
+                        ? document.documentElement.scrollWidth : document.documentElement.scrollWidth;
+                    Total_Witdh = TotalWidth;
+                    //设置整体控件宽度
+                    if (TotalWidth > 380) {
+                        document.getElementById(m_DIVID).style.width = TotalWidth;
+                    } else {
+                        document.getElementById(m_DIVID).style.width = 380;
+                    }
+
+                    //右侧SVGTimeLine高度
+                    var SVGWitdh;
+                    SVGWitdh = TotalWidth - 490;
+                    //设置TimeLine宽度
+                    TimeLineTotalDIV.style.width = TotalWidth - 360;
+
+                    //SVG列表 设置宽度
+                    for (var j = 0; j < TimeLineList.length; j++) {
+                        TimeLineList[j].style.width = SVGWitdh;
+                    }
+                    break;
+                }
+                //chrome 浏览器
+                case 'Firefox':
+                {
+                    // 总宽度
+                    var TotalWidth_fireFox = document.documentElement.clientWidth - 20;
+                    Total_Witdh = TotalWidth_fireFox;
+                    //设置TimeLine DIV宽度
+                    if (TotalWidth_fireFox > 360) {
+                        m_ClassADD.style.width = TotalWidth_fireFox + "px";
+                    } else {
+                        m_ClassADD.style.width = 360 + "px";
+                    }
+                    //SVG列表 设置宽度
+                    var SVGWitdh_fireFox = TotalWidth_fireFox - 490;
+                    for (var k = 0; k < TimeLineList.length; k++) {
+                        TimeLineList[k].style.width = SVGWitdh_fireFox + "px";
+                    }
+                    //右侧SVGTimeLine宽度
+                    TimeLineTotalDIV.style.width = (TotalWidth_fireFox - 360) + "px";
+                    break;
+                }
+                case "MSIE":
+                {
+                    // 总宽度
+                    var TotalWidth_MSIE = document.documentElement.clientWidth - 20;
+                    Total_Witdh = TotalWidth_MSIE;
+                    //设置TimeLine DIV宽度
+                    if (TotalWidth_MSIE > 360) {
+                        m_ClassADD.style.width = TotalWidth_MSIE + "px";
+                    } else {
+                        m_ClassADD.style.width = 360 + "px";
+                    }
+                    //SVG列表 设置宽度
+                    var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
+                    for (var t = 0; t < TimeLineList.length; t++) {
+                        TimeLineList[t].style.width = SVGWitdh_MSIE + "px";
+                    }
+                    //右侧SVGTimeLine宽度
+                    TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
+                    break;
+                }
+                case 'Edge':
+                {
+                    var curW = document.documentElement.clientWidth || document.body.clientWidth;
+                    //var curH = document.documentElement.clientHeight || document.body.clientHeight;
+                    //  console.log('Edge:' + curW);
+
+                    // 总宽度
+                    var TotalWidth_MSIE = curW - 20;
+                    Total_Witdh = TotalWidth_MSIE;
+                    //设置TimeLine DIV宽度
+                    if (TotalWidth_MSIE > 360) {
+                        m_ClassADD.style.width = TotalWidth_MSIE + "px";
+                    } else {
+                        m_ClassADD.style.width = 360 + "px";
+                    }
+                    //SVG列表 设置宽度
+                    var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
+                    for (var t = 0; t < TimeLineList.length; t++) {
+                        TimeLineList[t].style.width = SVGWitdh_MSIE + "px";
+                    }
+                    //右侧SVGTimeLine宽度
+                    TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
             }
-            self.Is_ShowSVGLine = false;
-        }
-        else {
-            //var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
-            for (var t1 = 0; t1 < ShowTimeLine.length; t1++) {
-                ShowTimeLine[t1].style.display = "block";
+
+            //495
+            var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
+            if (Total_Witdh < 495) {
+                for (var i = 0; i < ShowTimeLine.length; i++) {
+                    ShowTimeLine[i].style.display = "none";
+                }
+                self.Is_ShowSVGLine = false;
             }
-            self.Is_ShowSVGLine = true;
+            else {
+                //var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
+                for (var t1 = 0; t1 < ShowTimeLine.length; t1++) {
+                    ShowTimeLine[t1].style.display = "block";
+                }
+                self.Is_ShowSVGLine = true;
+            }
+            //根据新长度计算当前显示宽度值
+            if (Total_Witdh != 0 && Total_Witdh > 0) {
+                // console.log("屏幕总宽度：" + Total_Witdh);
+                var CountWidth = Total_Witdh - 300 - 150;
+                //年的 10年 一年25
+                YearShowCount = Math.ceil(CountWidth / 10 / 25) + 1;
+                //月 一年 12个月 一个月12.5
+                MonthShowCount = Math.ceil(CountWidth / 12.5 / 12) + 2;
+                //day 一个月 29天
+                DayShowCount = Math.ceil(CountWidth / 29 / 12.5) + 1;
+                //分钟 一小时  12个 5分钟 1个12.5
+                MinutesShowCount = Math.ceil(CountWidth / 12 / 12.5) + 1;
+                //console.log(YearShowCount + ":" + MonthShowCount + ":" + DayShowCount + ":" + MinutesShowCount);
+            }
         }
-        //根据新长度计算当前显示宽度值
-        if (Total_Witdh != 0 && Total_Witdh > 0) {
-            // console.log("屏幕总宽度：" + Total_Witdh);
-            var CountWidth = Total_Witdh - 300 - 150;
-            //年的 10年 一年25
-            YearShowCount = Math.ceil(CountWidth / 10 / 25) + 1;
-            //月 一年 12个月 一个月12.5
-            MonthShowCount = Math.ceil(CountWidth / 12.5 / 12) + 2;
-            //day 一个月 29天
-            DayShowCount = Math.ceil(CountWidth / 29 / 12.5) + 1;
-            //分钟 一小时  12个 5分钟 1个12.5
-            MinutesShowCount = Math.ceil(CountWidth / 12 / 12.5) + 1;
-            //console.log(YearShowCount + ":" + MonthShowCount + ":" + DayShowCount + ":" + MinutesShowCount);
-        }
-    };
+        ;
 
     /**
      * 初始化 显示TimeLine div
@@ -797,7 +839,7 @@ function TimeLine() {
      */
     var GetMouseOut_Minute = function () {
         //若非火狐 则移动
-        if (self.browserType != "Firefox") {
+        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
             isMove_Minute = false;
         }
     };
@@ -1108,7 +1150,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Day = function () {
-        if (self.browserType != "Firefox") {
+        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
             isMove_Day = false;
         }
     };
@@ -1397,7 +1439,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Year = function () {
-        if (self.browserType != "Firefox") {
+        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
             isMove_Year = false;
         }
     };
@@ -1665,7 +1707,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Month = function (event) {
-        if (self.browserType != "Firefox") {
+        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
             isMove_Month = false;
         }
     };
