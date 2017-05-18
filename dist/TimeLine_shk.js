@@ -1,7 +1,7 @@
 /**
  * Created by liuyp on 2016/10/24.
  */
-function TimeLine() {
+var TimeLine = function () {
 
     var self = this;
 
@@ -370,10 +370,10 @@ function TimeLine() {
             + '<!--模式选择部分-->'
             + '<div class="TimeMode_Inner" id=" TimeModeDiv YearMode_Div">'
             + '<div class="SmallFillDiv "></div>'
-            + '<div class="BigShowDiv    btn_ShowYear">Years</div>'
-            + '<div class="MedShowDiv    btn_ShowMonth">Months</div>'
+            + '<div class="BigShowDiv    btn_ShowYear" style="display:none">Years</div>'
+            + '<div class="MedShowDiv    btn_ShowMonth" style="display:none">Months</div>'
             + '<div class="SmallShowDiv  btn_ShowDay">Days</div>'
-            + '<div class="SmallShowDiv  btn_ShowMinute">Minutes</div>'
+            + '<div class="SmallShowDiv  btn_ShowMinute" style="display:none">Minutes</div>'
             + '<div class="SmallFillDiv "></div>'
             + '</div>'
             + '</div>'
@@ -2158,6 +2158,6 @@ function TimeLine() {
         return m_LayerDataList;
     }
 
-}
+};
 
 

@@ -413,6 +413,35 @@
     fill: #cccccc;
 }
 
+/*显示当前选择日期的svg 样式  动画日期*/
+/*日期指示块 鼠标悬浮样式*/
+.SVG_Anime_guitarpick {
+    clip-path: url(#guitarpick-boundary);
+    fill: #4682B4;
+    border: 0.5px;
+    border-color: #4682B4;
+    border-style: solid;
+}
+
+/*日期指示块 鼠标悬浮样式*/
+.SVG_Anime_guitarpick:hover {
+    clip-path: url(#guitarpick-boundary);
+    fill: #515151;
+    border: 0.5px;
+    border-color: #cccccc;
+    border-style: solid;
+}
+
+/*日期指示块 rect*/
+.SVG_Anime_guitarpick > rect {
+    fill: #cccccc;
+}
+
+/*日期指示块 鼠标悬浮时rect样式*/
+.SVG_Anime_guitarpick:hover > rect {
+    fill: #cccccc;
+}
+
 /*var DataColor = ["4e5e87", "555555"];*/
 /*TImeLine中数据显示条*/
 /*蓝色显示部分*/

@@ -31,6 +31,12 @@
 
         <button style="width: 150px;height: 50px;" onclick="AddData_Minute()">添加图层数据_分钟模式</button>
     </div>
+    <br/>
+    <div>
+        <button style="width: 150px;height: 50px;" onclick="SetAnimeDateArea()">设置动画范围</button>
+        <button style="width: 150px;height: 50px;" onclick="SetAnimeDate()">点击设置动画当前时间</button>
+        <button style="width: 150px;height: 50px;" onclick="CancelAnimeDate()">取消动画模式</button>
+    </div>
 
 
 </div>
@@ -250,10 +256,38 @@
 
     }
 
-    var date = new Date(2011, 11, 11);
+    var date = new Date(2017, 3, 11);
     var newdate = new Date(moment(date).add(1, 'day'));
     console.log("new Date(newdate)");
     console.log(new Date(newdate));
 
+    var minute_add = 12;
+    function SetAnimeDate() {
+        var date_moment = moment().add(minute_add, 'minutes');
+        console.log(date_moment.utc().format("YYYY-MM-DD hh:mm"));
+        m_TimeLine.SetAmineDate(date_moment);
+        minute_add = minute_add + 12;
+    }
+
+    function CancelAnimeDate() {
+        var m_Set = m_TimeLine.SetAmineMode_End();
+        if (m_Set) {
+            alert("取消成功！");
+        }
+    }
+
+
+    /**
+     * 设置动画函数
+     * @constructor
+     */
+    function SetAnimeDateArea() {
+        var date_moment_begin = moment().add(0, 'minutes');
+        console.log(date_moment_begin.utc().format("YYYY-MM-DD hh:mm"));
+        var date_moment_end = moment().add(minute_add, 'minutes');
+        console.log(date_moment_end.utc().format("YYYY-MM-DD hh:mm"));
+        m_TimeLine.SetAmineMode(date_moment_begin, date_moment_end);
+        minute_add = minute_add + 60;
+    }
 </script>
 </html>
