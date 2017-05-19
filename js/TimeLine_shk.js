@@ -337,25 +337,53 @@ function TimeLine() {
         var ShowAll =
             ' <div class="TimeInputDiv">'
             + '<div id="YearInputDiv">'
-            + '<input type="button" class="UpButton" id="btn_AddYear"></input>'
-            + '<input class="TimeInput" id="txt_Year" type="text" readOnly="true"> </input>'
-            + '<input type="button" class="DownButton" id="btn_MinusYear"></input>'
+            + '<div class="UpButton" id="btn_AddYear">'
+            + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+            + '<path d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>'
+            + '</svg>'
+            + '</div>'
+            + '<input class="TimeInput" id="txt_Year" type="text" readOnly="true">  '
+            + '<div class="DownButton" id="btn_MinusYear">'
+            + '<svg>'
+            + '<path transform="rotate(-180 50,14.5) " d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>'
+            + '</svg>'
+            + '</div>'
             + '</div>'
             + '<div id="MonthInputDiv">'
-            + '<button class="UpButton" id="btn_AddMonth"></button>'
-            + '<input class="MonthInput" id="txt_Month" type="text" readOnly="true">  </input>'
-            + '<button class="DownButton" id="btn_MinusMonth"></button>'
+            + '<div class="UpButton" id="btn_AddMonth">'
+            + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+            + '<path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+            + '</svg>'
+            + '</div>'
+            + '<input class="MonthInput" id="txt_Month" type="text" readOnly="true">  '
+            + '<div class="DownButton" id="btn_MinusMonth">'
+            + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+            + '<path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+            + '</svg>'
+            + '</div>'
             + '</div>'
             + '<div id="DayInputDiv">'
-            + '<button class="UpButton" id="btn_AddDay"></button>'
-            + '<input class="MonthInput" id="txt_Day" type="text"  readOnly="true"> </input>'
-            + '<button class="DownButton" id="btn_MinusDay"></button>'
+            + '<div class="UpButton" id="btn_AddDay">'
+            + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+            + '<path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+            + '</svg>'
             + '</div>'
-            + '<div id="BeforeDiv">'
-            + '<button class="BeforeButton" id="btn_BeforeTime"></button>'
+            + '<input class="MonthInput" id="txt_Day" type="text"  readOnly="true"> '
+            + '<div class="DownButton" id="btn_MinusDay">'
+            + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+            + '<path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+            + '</svg>'
+            + '</div> '
             + '</div>'
-            + '<div id="AfterDiv">'
-            + '<button class="AfterButton" id="btn_AfterTime"></button>'
+            + '<div class="AfterDiv" id="btn_BeforeTime">'
+            + '<svg style="width: 24px;height: 44px;margin-top: 26px; transform:scaleX(-1);">'
+            + '<path style="fill: #fff ;" d="M 10.240764,0 24,22 10.240764,44 0,44 13.759236,22 0,0 10.240764,0 z"></path>'
+            + '</svg>'
+            + '</div>'
+            + '<div class="AfterDiv" id="btn_AfterTime">'
+            + '<svg style="width: 24px;height: 44px;margin-top: 26px; ">'
+            + '<path style="fill: #fff;" d="M 10.240764,0 24,22 10.240764,44 0,44 13.759236,22 0,0 10.240764,0 z"></path>'
+            + '</svg>'
             + '</div>'
             + '</div>'
             + '<div class="TimeLineTotalDiv" id="ShowTimeLine">'
@@ -428,6 +456,13 @@ function TimeLine() {
             + '</div>'
             + '</div>'
             + '<div class="ShowHidebtnDiv" id="ShowHidebtn">'
+            + '<svg width="25" height="100" xmlns="http://www.w3.org/2000/svg">'
+            + '<g>'
+            + '<title>展开/隐藏</title>'
+            + '<path id="svg_1" d="m3,55.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>'
+            + '<path id="svg_2" d="m3,47.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>'
+            + '<path id="svg_3" d="m3,39.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>'
+            + '</svg>'
             + '</div>';
 
         var m_ShowDiv = document.getElementById(m_ID);
@@ -973,7 +1008,7 @@ function TimeLine() {
                 }
 
                 //根据时间 初始化 基础svg
-                var SVG_Day = '   <g class="tick_Year_One" transform="translate(' + Minute_Trans + ')" >'
+                var SVG_Day = '<g class="tick_Year_One" transform="translate(' + Minute_Trans + ')" >'
                     + '<rect class="DayRect Btn_MinuteRect" x="0.2" y="0" width="12.5" height="55" value="' + DayTimeStr + '">'
                     + '<title>' + DayTimeStr + '</title>'
                     + '</rect>'
@@ -992,7 +1027,6 @@ function TimeLine() {
                 }
                 // 加5min
                 HourNow.setMinutes(HourNow.getMinutes() + 5);
-
             }
             Month_Trans = 12 * 12.5 + Month_Trans;
             var Width = 12 * 12.5;
@@ -1023,12 +1057,14 @@ function TimeLine() {
         //时间相加
         var ShowTimeLine = document.getElementById("ShowSVG_Minute");
 
+        //IE显示处理
         if (self.browserType != "MSIE") {
             ShowTimeLine.innerHTML = SVG_Show;
         } else {
             $("#ShowSVG_Day").append(SVG_Show);
         }
         //ShowTimeLine.innerHTML = SVG_Show;
+        //重新设置分钟点击
         Minute_ClickFucn();
     };
 

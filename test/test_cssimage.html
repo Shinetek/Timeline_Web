@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试 css svg 转化image</title>
+</head>
+<style>
+    .triangle-up {
+        background: transparent;
+        width: 0;
+        height: 0;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-top: 0px solid transparent;
+        border-bottom: 12px solid #ffffff;
+        margin-top: 5px;
+        margin-bottom: 4px;
+        padding: 0px;
+        vertical-align: middle;
+
+    }
+
+    .triangle-dwon {
+        vertical-align: middle;
+        background: transparent;
+        width: 0;
+        height: 0;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-top: 12px solid #ffffff;
+        border-bottom: 0px solid transparent;
+        margin-top: 15px;
+        margin-bottom: 14px;
+        padding: 0px;
+
+    }
+
+    /*年DIV*/
+    #YearInputDiv {
+        width: 100px;
+        height: 100px;
+        float: left;
+        margin-left: 5px;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .arrow_box {
+        position: relative;
+        background: #88b7d5;
+        border: 4px solid #c2e1f5;
+    }
+
+    .arrow_box:after, .arrow_box:before {
+        left: 100%;
+        top: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .arrow_box:after {
+        border-color: rgba(136, 183, 213, 0);
+        border-left-color: #88b7d5;
+        border-width: 30px;
+        margin-top: -30px;
+    }
+
+    .arrow_box:before {
+        border-color: rgba(194, 225, 245, 0);
+        border-left-color: #c2e1f5;
+        border-width: 36px;
+        margin-top: -36px;
+    }
+</style>
+
+<style>
+
+</style>
+
+<body style="background-color: black;">
+<img src="../img/up.png"/>
+<img src="../img/down.png"/>
+<div class="triangle-up">
+
+</div>
+<br>
+<div id="YearInputDiv" style="display: none;">
+    <input type="button" class="triangle-up" id="btn_AddYear" readOnly="true">
+    <input class="TimeInput" id="txt_Year" type="text" readOnly="true">
+    <input type="button" class="triangle-dwon" id="btn_MinusYear" readOnly="true">
+    <div>
+        <svg width="24" height="84" xmlns="http://www.w3.org/2000/svg">
+            <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+
+            <g>
+                <title>Layer 1</title>
+                <path stroke="#000" id="svg_1"
+                      d="m14.07314,43.51249l-15.07314,-42.00002l9.92685,0l15.07315,42.00002l-15.07315,41.99998l-9.92685,0l15.07314,-41.99998z"
+                      stroke-opacity="null" stroke-dasharray="2,2" stroke-width="0" fill="#ffffff"/>
+            </g>
+        </svg>
+    </div>
+</div>
+
+
+<div>
+    <a id="click">
+        <svg>
+            <path style="fill: #fff" d="M 10.240764,0 24,22 10.240764,44 0,44 13.759236,22 0,0 10.240764,0 z"
+                  class="arrow"></path>
+        </svg>
+    </a>
+</div>
+
+</body>
+
+
+</html>

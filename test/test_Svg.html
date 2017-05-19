@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/TimeLine_shk.css"/>
+    <title>Title</title>
+</head>
+<body>
+
+<div class="TimeInputDiv">
+    <div id="YearInputDiv">
+        <div class="UpButton" id="btn_AddYear">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>
+            </svg>
+        </div>
+        <input class="TimeInput" id="txt_Year" type="text" readOnly="true">
+        <div class="DownButton" id="btn_MinusYear">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path transform="rotate(-180 50,14.5) " d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="MonthInputDiv">
+        <div class="UpButton" id="btn_AddMonth">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>
+            </svg>
+        </div>
+        <input class="MonthInput" id="txt_Month" type="text" readOnly="true">
+        <div class="DownButton" id="btn_MinusMonth">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="DayInputDiv">
+        <div class="UpButton" id="btn_AddDay">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>
+            </svg>
+        </div>
+        <input class="MonthInput" id="txt_Day" type="text" readOnly="true">
+        <div class="DownButton" id="btn_MinusDay">
+            <svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">
+                <path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>
+            </svg>
+        </div>
+    </div>
+
+
+    <div class="AfterDiv" id="btn_BeforeTime">
+        <svg style="width: 24px;height: 30px;margin-top: 30px; transform:scaleX(-1);">
+            <path style="fill: #fff ; " d="M 10.240764,0 24,15 10.240764,30 0,30 13.759236,15 0,0 10.240764,0 z"></path>
+        </svg>
+    </div>
+    <div class="AfterDiv" id="btn_AfterTime">
+        <svg width="24" height="30" style=" margin-top: 30px; " xmlns="http://www.w3.org/2000/svg">
+        </svg>
+    </div>
+
+
+</div>
+
+<div class="TimeLineTotalDiv" id="ShowTimeLine">
+    <div class="TimeLineDiv" id="Show_YearDiv">
+        <!--时间轴部分-->
+        <div class="TimeLineDiv_Inside" id="ShowTimeLineDiv_Year">
+            <div class="SVGDiv_Inside">
+                <svg class="svg_ALL" height="99" id="SVG_Year_Total" xmlns="http://www.w3.org/2000/svg">
+                </svg>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="ShowHidebtnDiv" id="ShowHidebtn">
+    <svg width="25" height="100" xmlns="http://www.w3.org/2000/svg">
+        <g>
+            <title>展开/隐藏</title>
+            <path id="svg_1" d="m3,55.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>
+            <path id="svg_2" d="m3,47.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>
+            <path id="svg_3" d="m3,39.94447l19,0l0,4l-19,0l0,-4z" stroke-width="0" stroke="#000" fill="#fff"/>
+        </g>
+    </svg>
+</div>
+</body>
+</html>

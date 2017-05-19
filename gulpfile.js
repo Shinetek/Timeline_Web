@@ -42,6 +42,6 @@ gulp.task('watch', function () {
 
 //总体函数
 gulp.task('default', function () {
-    gulp.run('minjs', 'mincss', 'image');
+    gulp.run('minjs', 'mincss');
     //gulp.run('watch');
 });
