@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试IF RETURN</title>
+</head>
+<body>
+<div>
+    <button onclick="testClick()"> 测试ifretun函数</button>
+</div>
+</body>
+<script>
+    var m_testbool = true;
+    function testClick() {
+        console.log("testClick");
+        if (m_testbool) {
+            console.log("m_testbool");
+            return "111";
+        }
+        console.log("if end");
+        m_elseFunc();
+        console.log("if end1111");
+
+
+        return "2222";
+
+    }
+    function m_elseFunc() {
+        console.log("m_elseFunc");
+    }
+</script>
+</html>
