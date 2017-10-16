@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../js/TimeLine_shk.js"></script>
     <title>TimeLine test</title>
 </head>
-<body>
+<body style="background-color: black;">
 <div>
     <div id="TestADD">
     </div>
@@ -45,10 +45,10 @@
 
     var m_TimeLine = new TimeLine();
     //初始化
-    // m_TimeLine.Init("TestADD", "MINUTE");
+    m_TimeLine.Init("TestADD", "MINUTE");
     //  m_TimeLine.Init("TestADD", "YEAR");
     // m_TimeLine.Init("TestADD", "MONTH");
-    m_TimeLine.Init("TestADD", "DAY");
+    // m_TimeLine.Init("TestADD", "DAY");
 
     console.log(m_TimeLine.DateShow);
 
@@ -163,6 +163,7 @@
             "Layeris_Show": false,
             "DataRefreshTime": "2016-11-09 12:11:34"
         }];
+
     function AddData_Day() {
         m_TimeLine.AddDayData(DataLoadDay);
     }

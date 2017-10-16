@@ -33,7 +33,7 @@ function TimeLine() {
      * Year_Mode Month_Mode Day_Mode Minute_Mode
      * @type {string}
      */
-    this.ShowMode = "Month_Mode";
+    this.ShowMode = "Minute_Mode";
 
     /**
      * 当前显示模式 是都显示TimeLineSVG
@@ -49,7 +49,7 @@ function TimeLine() {
     var X_Before_Minute = 0;
     var m_Trans_Minute = -150;
     //分钟模式下 初始化显示日期
-    var MinuteBegin_Date = new Date(moment.utc().add(-6, "hours").format("YYYY-MM-DD HH").toString() + ":00:00");
+    var MinuteBegin_Date = new Date(moment.utc().add(0.0, "hours").format("YYYY-MM-DD HH").toString() + ":00:00");
 
 
     /* 日模式 鼠标 操作 变量*/
@@ -244,8 +244,8 @@ function TimeLine() {
 
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5;
-        //分钟位移位置
-        m_Trans_Minute = m_Trans_Minute - 3600;
+        //分钟位移位置 修改为1分钟模式
+        m_Trans_Minute = m_Trans_Minute - 12.5 * 60 * 24;
         RefreshTimeShow();
     };
 
@@ -257,7 +257,7 @@ function TimeLine() {
         var momentStr = (  moment(self.DateShow).add(1, 'month') - moment(self.DateShow)) / 1000 / 3600 / 24;
         self.DateShow = new Date(moment(self.DateShow).add(1, 'month'));
         self.m_Trans = ( self.m_TransYear - moment(self.DateShow).year() + 5 ) * 150;
-        m_Trans_Minute = m_Trans_Minute - 3600 * momentStr;
+        m_Trans_Minute = m_Trans_Minute - momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5 * momentStr;
         RefreshTimeShow();
@@ -271,7 +271,7 @@ function TimeLine() {
         var momentStr = (moment(self.DateShow).add(1, 'year') - moment(self.DateShow)) / 1000 / 3600 / 24;
 
         //分钟模式 位移
-        m_Trans_Minute = m_Trans_Minute - momentStr * 3600;
+        m_Trans_Minute = m_Trans_Minute - momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5 * momentStr;
         //月位移 todo
@@ -289,7 +289,7 @@ function TimeLine() {
     var MinusDay = function () {
         self.DateShow = new Date(moment(self.DateShow).add(-1, 'day'));
         //分钟模式
-        m_Trans_Minute = m_Trans_Minute + 3600;
+        m_Trans_Minute = m_Trans_Minute + 12.5 * 60 * 24;
         //天模式
         m_Trans_Day = m_Trans_Day + 12.5;
         RefreshTimeShow();
@@ -302,7 +302,9 @@ function TimeLine() {
     var MinusMonth = function () {
         var momentStr = (moment(self.DateShow) - moment(self.DateShow).add(-1, 'month')) / 1000 / 3600 / 24;
         self.DateShow = new Date(moment(self.DateShow).add(-1, 'month'));
-        m_Trans_Minute = m_Trans_Minute + 3600 * momentStr;
+        m_Trans_Minute = m_Trans_Minute + 12.5 * 24 * 60 * momentStr;
+
+
         //天模式
         m_Trans_Day = m_Trans_Day + 12.5 * momentStr;
         RefreshTimeShow();
@@ -317,9 +319,8 @@ function TimeLine() {
         var momentStr = (moment(self.DateShow) - moment(self.DateShow).add(-1, 'year')) / 1000 / 3600 / 24;
 
         self.DateShow = new Date(moment.utc(self.DateShow).add(-1, 'year'));
-
         //分钟模式
-        m_Trans_Minute = m_Trans_Minute + momentStr * 3600;
+        m_Trans_Minute = m_Trans_Minute + momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day + 12.5 * momentStr;
         RefreshTimeShow();
@@ -640,7 +641,6 @@ function TimeLine() {
             var TimeLineList = document.getElementsByClassName("svg_ALL");
             var Total_Witdh = 0;
 
-
             switch (m_browserType) {
 
                 case 'Chrome':
@@ -926,13 +926,13 @@ function TimeLine() {
 
         //向后拖动
         while (m_Trans_Minute > 0) {
-            m_Trans_Minute = m_Trans_Minute - 12 * 12.5;
+            m_Trans_Minute = m_Trans_Minute - 12 * 12.5 * 5;
             //减一个小时
             MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() - 1);
         }
         //向前拖动
-        while (m_Trans_Minute < -150) {
-            m_Trans_Minute = m_Trans_Minute + 12 * 12.5;
+        while (m_Trans_Minute < -60 * 12.5) {
+            m_Trans_Minute = m_Trans_Minute + 12 * 12.5 * 5;
             //加1小时
             MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() + 1);
         }
@@ -953,8 +953,8 @@ function TimeLine() {
             var SVG_Hour = '<g class="tick_Total_Year" transform="translate(' + Month_Trans + ')">' +
                 '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
             var HourNow = new Date(moment(CountDate).format("YYYY-MM-DD HH:mm"));
-            //每一个小时 中 5min循环    一小时12
-            for (var j = 0; j < 12; j++) {
+            //每一个小时 中 1 min循环    一小时12
+            for (var j = 0; j < 60; j++) {
                 //每一个小时中 每5min的位移
                 var Minute_Trans = (j * 12.5).toString();
                 //根据时间计算当前块显示 DATE YYYY-MM-dd
@@ -971,6 +971,7 @@ function TimeLine() {
                     var item = HourNow - self.DateShow;
                     //若指针时间在范围内 显示指针
                     if (300000 > item && item >= 0 && TimeGar == '') {
+                        console.log("DateShowNowStr:" + DateShowNowStr);
                         is_GutiarFlag = true;
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick" '
                             + ' transform="translate(' + (Minute_Trans - 8) + ',-10)">'
@@ -1020,16 +1021,24 @@ function TimeLine() {
                 if (self.AnimeMode) {
                     SVG_Hour = SVG_Hour + Trans_SVG;
                 }
-                if (Minute_Trans == "75" || Minute_Trans == "215") {
-                    SVG_Hour = SVG_Hour
-                        + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
-                        + ' ></line>';
+                if (Minute_Trans % (12.5 * 5) == 0) {
+                    if (Minute_Trans % (12.5 * 5 * 2) == 0) {
+                        SVG_Hour = SVG_Hour
+                            + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="20" y2="55" class="tick_10DayLine"'
+                            + ' ></line>';
+                    }
+                    else {
+                        SVG_Hour = SVG_Hour
+                            + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
+                            + ' ></line>';
+                    }
                 }
+
                 // 加5min
-                HourNow.setMinutes(HourNow.getMinutes() + 5);
+                HourNow.setMinutes(HourNow.getMinutes() + 1);
             }
-            Month_Trans = 12 * 12.5 + Month_Trans;
-            var Width = 12 * 12.5;
+            Month_Trans = 60 * 12.5 + Month_Trans;
+            var Width = 60 * 12.5;
             var TimeHourShow = moment(CountDate).utc().format("YYYY-MM-DD HH:mm");
             if ((CountDate).getUTCHours() == 0) {
                 TimeHourShow = moment(CountDate).utc().format("YYYY-MM-DD");
@@ -2088,8 +2097,8 @@ function TimeLine() {
         //设置显示模式
         self.ShowMode = "Minute_Mode";
         //计算偏移量
-        var ItemTime = self.DateShow - MinuteBegin_Date - 21600000;
-        var m_Trans = ItemTime / 1000 / 60 / 5 * 12.5;
+        var ItemTime = self.DateShow - MinuteBegin_Date - 1000 * 60 * 60 * 2;
+        var m_Trans = ItemTime / 1000 / 60 * 12.5;
         //拖拽 分钟
         Minute_SVGMove(m_Trans);
     };
