@@ -45,7 +45,7 @@ function TimeLine() {
 
     /* 分钟模式  鼠标 操作 变量*/
     var isMove_Minute = false;
-    var x_Minute;
+    var x_Minute = 0;
     var X_Before_Minute = 0;
     var m_Trans_Minute = -150;
     //分钟模式下 初始化显示日期
@@ -54,7 +54,7 @@ function TimeLine() {
 
     /* 日模式 鼠标 操作 变量*/
     var isMove_Day = false;
-    var x_Day;
+    var x_Day = 0;
     var X_Before_Day = 0;
     var m_Trans_Day = -387.5;
     //日模式下显示初始化左侧显示日期
@@ -475,6 +475,7 @@ function TimeLine() {
             m_ShowDiv.style.bottom = 0;
             m_ShowDiv.style.left = 0;
         } catch (err) {
+            console.log(err);
         }
         //根据窗口设置宽度
         GetFullModeWidth(m_ID);
@@ -603,19 +604,19 @@ function TimeLine() {
         if (navigator.userAgent.indexOf("MSIE") > 0) {
             return "MSIE";
         }
-        if (isFirefox = navigator.userAgent.indexOf("Firefox") > 0) {
+        if (navigator.userAgent.indexOf("Firefox") > 0) {
             return "Firefox";
         }
         if (explorer.indexOf("Chrome") >= 0) {
             return "Chrome";
         }
-        if (isSafari = navigator.userAgent.indexOf("Safari") > 0) {
+        if (navigator.userAgent.indexOf("Safari") > 0) {
             return "Safari";
         }
-        if (isCamino = navigator.userAgent.indexOf("Camino") > 0) {
+        if (navigator.userAgent.indexOf("Camino") > 0) {
             return "Camino";
         }
-        if (isMozilla = navigator.userAgent.indexOf("Gecko/") > 0) {
+        if (navigator.userAgent.indexOf("Gecko/") > 0) {
             return "Gecko";
         }
         if (explorer.indexOf("Opera") >= 0) {
@@ -626,13 +627,12 @@ function TimeLine() {
 
     /**
      * 根据界面设置宽度
-     * @param DIVid
      * @constructor
      */
     var GetFullModeWidth = function () {
             var m_browserType = self.browserType;
             var m_DIVID = self.IDName;
-            if (m_DIVID == '') {
+            if (m_DIVID === '') {
                 return;
             }
 
@@ -657,7 +657,7 @@ function TimeLine() {
                     }
 
                     //右侧SVGTimeLine高度
-                    var SVGWitdh;
+                    var SVGWitdh = 0;
                     SVGWitdh = TotalWidth - 490;
                     //设置TimeLine宽度
                     TimeLineTotalDIV.style.width = TotalWidth - 360;
@@ -702,8 +702,8 @@ function TimeLine() {
                     }
                     //SVG列表 设置宽度
                     var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
-                    for (var t = 0; t < TimeLineList.length; t++) {
-                        TimeLineList[t].style.width = SVGWitdh_MSIE + "px";
+                    for (var ti = 0; ti < TimeLineList.length; ti++) {
+                        TimeLineList[ti].style.width = SVGWitdh_MSIE + "px";
                     }
                     //右侧SVGTimeLine宽度
                     TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
@@ -716,21 +716,21 @@ function TimeLine() {
                     //  console.log('Edge:' + curW);
 
                     // 总宽度
-                    var TotalWidth_MSIE = curW - 20;
-                    Total_Witdh = TotalWidth_MSIE;
+                    var TotalWidth_Edge = curW - 20;
+                    Total_Witdh = TotalWidth_Edge;
                     //设置TimeLine DIV宽度
-                    if (TotalWidth_MSIE > 360) {
-                        m_ClassADD.style.width = TotalWidth_MSIE + "px";
+                    if (TotalWidth_Edge > 360) {
+                        m_ClassADD.style.width = TotalWidth_Edge + "px";
                     } else {
                         m_ClassADD.style.width = 360 + "px";
                     }
                     //SVG列表 设置宽度
-                    var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
-                    for (var t = 0; t < TimeLineList.length; t++) {
-                        TimeLineList[t].style.width = SVGWitdh_MSIE + "px";
+                    var SVGWitdh_Edge = TotalWidth_Edge - 490;
+                    for (var tj = 0; tj < TimeLineList.length; tj++) {
+                        TimeLineList[tj].style.width = SVGWitdh_Edge + "px";
                     }
                     //右侧SVGTimeLine宽度
-                    TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
+                    TimeLineTotalDIV.style.width = (TotalWidth_Edge - 360) + "px";
                     break;
                 }
                 default:
@@ -746,8 +746,7 @@ function TimeLine() {
                     ShowTimeLine[i].style.display = "none";
                 }
                 self.Is_ShowSVGLine = false;
-            }
-            else {
+            } else {
                 //var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
                 for (var t1 = 0; t1 < ShowTimeLine.length; t1++) {
                     ShowTimeLine[t1].style.display = "block";
@@ -755,7 +754,7 @@ function TimeLine() {
                 self.Is_ShowSVGLine = true;
             }
             //根据新长度计算当前显示宽度值
-            if (Total_Witdh != 0 && Total_Witdh > 0) {
+            if (Total_Witdh !== 0 && Total_Witdh > 0) {
                 // console.log("屏幕总宽度：" + Total_Witdh);
                 var CountWidth = Total_Witdh - 300 - 150;
                 //年的 10年 一年25
@@ -768,8 +767,8 @@ function TimeLine() {
                 MinutesShowCount = Math.ceil(CountWidth / 12 / 12.5) + 1;
                 //console.log(YearShowCount + ":" + MonthShowCount + ":" + DayShowCount + ":" + MinutesShowCount);
             }
-        }
-        ;
+        };
+
 
     /**
      * 初始化 显示TimeLine div
@@ -816,7 +815,7 @@ function TimeLine() {
      * @constructor
      */
     var SetShowYear = function (Year) {
-        if (parseInt(Year) != NaN) {
+        if (isNaN(parseInt(Year))) {
             Year_Show = parseInt(Year).toString();
             self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
             RefreshTimeShow();
@@ -836,7 +835,7 @@ function TimeLine() {
         var TimeStr = enevt.getAttribute("value");
         var new_Year = TimeStr.split("-")[0];
         var new_Month = TimeStr.split("-")[1];
-        if (parseInt(new_Year) != NaN) {
+        if (isNaN(parseInt(new_Year))) {
             Year_Show = parseInt(new_Year).toString();
             Month_Show = parseInt(new_Month).toString();
             //设置年月日
@@ -874,7 +873,7 @@ function TimeLine() {
      */
     var GetMouseOut_Minute = function () {
         //若非火狐 则移动
-        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
+        if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
             isMove_Minute = false;
         }
     };
@@ -970,7 +969,7 @@ function TimeLine() {
                     // 是否为当前显示 时分秒
                     var item = HourNow - self.DateShow;
                     //若指针时间在范围内 显示指针
-                    if (300000 > item && item >= 0 && TimeGar == '') {
+                    if (300000 > item && item >= 0 && TimeGar === '') {
                         console.log("DateShowNowStr:" + DateShowNowStr);
                         is_GutiarFlag = true;
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick" '
@@ -988,10 +987,10 @@ function TimeLine() {
 
 
                 //若为动画模式 对 TimeGar 重新赋值
-                if (self.AnimeMode == true && (!is_GutiarFlag)) {
+                if (self.AnimeMode === true && (!is_GutiarFlag)) {
                     TimeGar = "";
                     var Amineitem = moment(HourNow) - self.AnimeDate;
-                    if (300000 > Amineitem && Amineitem >= 0 && TimeGar == "") {
+                    if (300000 > Amineitem && Amineitem >= 0 && TimeGar === "") {
                         console.log("get!");
                         is_GutiarFlag = true;
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick" '
@@ -1021,13 +1020,12 @@ function TimeLine() {
                 if (self.AnimeMode) {
                     SVG_Hour = SVG_Hour + Trans_SVG;
                 }
-                if (Minute_Trans % (12.5 * 5) == 0) {
-                    if (Minute_Trans % (12.5 * 5 * 2) == 0) {
+                if (Minute_Trans % (12.5 * 5) === 0) {
+                    if (Minute_Trans % (12.5 * 5 * 2) === 0) {
                         SVG_Hour = SVG_Hour
                             + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="20" y2="55" class="tick_10DayLine"'
                             + ' ></line>';
-                    }
-                    else {
+                    } else {
                         SVG_Hour = SVG_Hour
                             + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
                             + ' ></line>';
@@ -1040,10 +1038,9 @@ function TimeLine() {
             Month_Trans = 60 * 12.5 + Month_Trans;
             var Width = 60 * 12.5;
             var TimeHourShow = moment(CountDate).utc().format("YYYY-MM-DD HH:mm");
-            if ((CountDate).getUTCHours() == 0) {
+            if ((CountDate).getUTCHours() === 0) {
                 TimeHourShow = moment(CountDate).utc().format("YYYY-MM-DD");
-            }
-            else {
+            } else {
                 TimeHourShow = moment(CountDate).utc().format("HH:mm");
             }
             var Month_End = '<g transform="translate(0)">'
@@ -1067,7 +1064,7 @@ function TimeLine() {
         var ShowTimeLine = document.getElementById("ShowSVG_Minute");
 
         //IE显示处理
-        if (self.browserType != "MSIE") {
+        if (self.browserType !== "MSIE") {
             ShowTimeLine.innerHTML = SVG_Show;
         } else {
             $("#ShowSVG_Day").append(SVG_Show);
@@ -1096,10 +1093,10 @@ function TimeLine() {
      * @returns {*}
      * @constructor
      */
-    var GetMinuteMode_DataShowList = function (Show_DayDate, ShowTransLate) {
+    var GetMinuteMode_DataShowList_bak = function (Show_DayDate, ShowTransLate) {
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
-        if (m_MinuteModeData.length == 0 || !m_MinuteModeData.length) {
+        if (m_MinuteModeData.length === 0 || !m_MinuteModeData.length) {
             return '';
         }
         //数据整体svg
@@ -1116,7 +1113,7 @@ function TimeLine() {
             var m_DataInfo_i = m_MinuteModeData[k];
 
             var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum != -1) {
+            if (IndexNum !== -1) {
                 is_ShowTag = true;
             }
             //根据数据存在情况加入列表
@@ -1133,7 +1130,7 @@ function TimeLine() {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
-            if (IsDataShowList[i] == true) {
+            if (IsDataShowList[i] === true) {
                 //获取当前图层是否显示信息
                 var Ishow = m_LayerShowTypeList[i];
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
@@ -1151,8 +1148,7 @@ function TimeLine() {
                         + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
                         + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
                 }
-            }
-            else {
+            } else {
                 //若没有数据 则为空
                 DateRect = '';
             }
@@ -1160,12 +1156,85 @@ function TimeLine() {
             ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
         }
         ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag == false) {
-            ShowLayer_DataSVG == '';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
         }
         return ShowLayer_DataSVG;
     };
 
+
+    var GetMinuteMode_DataShowList = function (Show_DayDate, ShowTransLate) {
+
+        Show_DayDate = Show_DayDate.toString();
+        //若数据长度为0 则返回空
+        if (m_MinuteModeData.length === 0 || !m_MinuteModeData.length) {
+            return '';
+        }
+        //数据整体svg
+        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
+            + ' transform="translate(' + ShowTransLate + ')">';
+
+        //日期格式赋值
+        var Date_Rect = Show_DayDate;
+        //是否显示列表
+        var IsDataShowList = [];
+        var DataMomentBegin = moment.utc(Show_DayDate);
+        var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'minute');
+        //查找是否存在数据
+        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        for (var k = 0; k < DataList.length; k++) {
+            var is_ShowTag = false;
+            var m_DataInfo_i = DataList[k];
+
+            if (m_DataInfo_i.isExist) {
+                is_ShowTag = true;
+            }
+            //根据数据存在情况加入列表
+            IsDataShowList.push(m_DataInfo_i);
+        }
+        //判定是否有数据条填充 若无填充 则返回空值
+        var IS_ShowTag = false;
+        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
+        var rect_Height = Math.round(40 / m_MinuteModeData.length, 2);
+        if (rect_Height > 10) {
+            rect_Height = 10;
+        }
+        for (var i = 0; i < m_MinuteModeData.length; i++) {
+            var DateRect = '';
+            var Rect_Y = i * rect_Height;
+            //生成RECT 样式
+            if (IsDataShowList[i].isExist === true) {
+                //获取当前图层是否显示信息
+                console.log(IsDataShowList[i]);
+                var Ishow = IsDataShowList[i].isShow;
+                var RectLineEnd = Rect_Y + rect_Height - 0.4;
+                //根据显示情况
+                if (Ishow) {
+                    IS_ShowTag = true;
+                    //若该图层显示 则为蓝色
+                    DateRect = '<rect class="Rect_Data_Show" x="-0.2" y="' + Rect_Y + '" width="12.7" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                } else {
+                    IS_ShowTag = true;
+                    //不显示则为灰色
+                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                }
+            } else {
+                //若没有数据 则为空
+                DateRect = '';
+            }
+            //组成矩阵
+            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
+        }
+        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
+        }
+        return ShowLayer_DataSVG;
+    };
     /*分钟模式 时间轴部分 end*/
 
 
@@ -1195,7 +1264,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Day = function () {
-        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
+        if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
             isMove_Day = false;
         }
     };
@@ -1208,7 +1277,7 @@ function TimeLine() {
     var MouseMove_Day = function (event) {
         //计算拖动位移
         if (isMove_Day) {
-            x_Day = event.clientX;
+            var x_Day = event.clientX;
             var DrgNum = X_Before_Day - x_Day;
             if (DrgNum >= 1 || DrgNum <= -1) {
                 X_Before_Day = x_Day;
@@ -1258,7 +1327,7 @@ function TimeLine() {
                 //计算长度
                 MonthLength = -(new Date(DayBegin_Date.getFullYear(), (DayBegin_Date.getMonth() + 1), 0).getDate()) * 12.5;
             }
-            Month_Trans = m_Trans_Day;
+            //     var Day_Trans = m_Trans_Day;
             //初始时间为2016年1月 当前月
             var CountDate = new Date(DayBegin_Date.getFullYear(), DayBegin_Date.getMonth() - 1, DayBegin_Date.getDate());
 
@@ -1273,7 +1342,7 @@ function TimeLine() {
                 var ShowYear = CountDate.getFullYear();
                 var ShowMonth = CountDate.getMonth();
                 //月开始 绘制
-                var SVG_Month = '  <g class="tick_Total_Year" transform="translate(' + Month_Trans + ')">' +
+                var SVG_Month = '  <g class="tick_Total_Year" transform="translate(' + m_Trans_Day + ')">' +
                     '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
                 //每一天循环
                 for (var j = 0; j < TimeDateCount; j++) {
@@ -1286,7 +1355,7 @@ function TimeLine() {
 
                     //若当前日期为显示日期
                     if (!self.AnimeMode) {
-                        if (DayTimeStr == DateShowNowStr) {
+                        if (DayTimeStr === DateShowNowStr) {
                             TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
                                 + ' transform="translate(' + (Day_Trans - 8) + ',-10)">'
                                 + '<title>' + DateShowNowStr + '</title>'
@@ -1299,7 +1368,7 @@ function TimeLine() {
                                 + '</g>';
                         }
                     } else {
-                        if (DayTimeStr == self.AnimeDate.utc().format('YYYY-MM-DD')) {
+                        if (DayTimeStr === self.AnimeDate.utc().format('YYYY-MM-DD')) {
                             TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
                                 + ' transform="translate(' + (Day_Trans - 8) + ',-10)">'
                                 + '<title>' + DateShowNowStr + '</title>'
@@ -1321,13 +1390,13 @@ function TimeLine() {
                         + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
                         + '</g>';
                     SVG_Month = SVG_Month + Data_SVG + SVG_Day;
-                    if (Day_Trans == "62.5" || Day_Trans == "125" || Day_Trans == "187.5" || Day_Trans == "250" || Day_Trans == "312.5" || Day_Trans == "375") {
+                    if (Day_Trans === "62.5" || Day_Trans === "125" || Day_Trans === "187.5" || Day_Trans === "250" || Day_Trans === "312.5" || Day_Trans === "375") {
                         SVG_Month = SVG_Month
                             + '<line x1="' + Day_Trans + '" x2="' + Day_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
                             + ' ></line>';
                     }
                 }
-                Month_Trans = ( TimeDateCount * 12.5) + Month_Trans;
+                m_Trans_Day = ( TimeDateCount * 12.5) + m_Trans_Day;
                 var Width = ( TimeDateCount * 12.5);
                 var Time = CountDate.getFullYear() + "-" + (CountDate.getMonth() + 1);
                 var Month_End = '<g transform="translate(0)">'
@@ -1349,10 +1418,9 @@ function TimeLine() {
             //时间相加
             var ShowTimeLine = document.getElementById("ShowSVG_Day");
             //IE处理
-            if (self.browserType != "MSIE") {
+            if (self.browserType !== "MSIE") {
                 ShowTimeLine.innerHTML = SVG_Show;
-            }
-            else {
+            } else {
                 $("#ShowSVG_Day").html(SVG_Show);
             }
             Day_ClickFucn();
@@ -1382,10 +1450,10 @@ function TimeLine() {
      * @returns {*}
      * @constructor
      */
-    var GetDayMode_DataShowList = function (Show_DayDate, ShowTransLate) {
+    var GetDayMode_DataShowList_bak = function (Show_DayDate, ShowTransLate) {
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
-        if (!m_DayModeData.length || m_DayModeData.lemgth == 0) {
+        if (!m_DayModeData.length || m_DayModeData.lemgth === 0) {
             return '';
         }
         //数据整体svg
@@ -1402,7 +1470,7 @@ function TimeLine() {
             var is_ShowTag = false;
             var m_DataInfo_i = m_DayModeData[k];
             var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum != -1) {
+            if (IndexNum !== -1) {
                 is_ShowTag = true;
             }
             //根据数据存在情况加入列表
@@ -1410,7 +1478,7 @@ function TimeLine() {
         }
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
-        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
+        //生成基于 数据的是否显示Ture False 列表 使用列表初始化显示
         var rect_Height = Math.round(40 / m_DayModeData.length, 2);
         if (rect_Height > 10) {
             rect_Height = 10;
@@ -1419,7 +1487,7 @@ function TimeLine() {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
-            if (IsDataShowList[i] == true) {
+            if (IsDataShowList[i] === true) {
                 //获取当前图层是否显示信息
                 var Ishow = m_LayerShowTypeList[i];
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
@@ -1437,8 +1505,7 @@ function TimeLine() {
                         + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
                         + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
                 }
-            }
-            else {
+            } else {
                 //若没有数据 则为空
                 DateRect = '';
             }
@@ -1446,12 +1513,81 @@ function TimeLine() {
             ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
         }
         ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag == false) {
-            ShowLayer_DataSVG == '';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
         }
         return ShowLayer_DataSVG;
     };
 
+    var GetDayMode_DataShowList = function (Show_DayDate, ShowTransLate) {
+        Show_DayDate = Show_DayDate.toString();
+        //若数据长度为0 则返回空
+        if (!m_DayModeData.length || m_DayModeData.length === 0) {
+            return '';
+        }
+        //数据整体svg
+        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
+            + ' transform="translate(' + ShowTransLate + ')">';
+
+        //日期格式赋值
+        var Date_Rect = Show_DayDate;
+
+        //是否显示列表
+        var IsDataShowList = [];
+        var DataMomentBegin = moment.utc(Show_DayDate);
+        var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'day');
+        //查找是否存在数据
+        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        //查找是否存在数据
+        for (var k = 0; k < DataList.length; k++) {
+
+            var m_DataInfo_i = DataList[k];
+
+            //根据数据存在情况加入列表
+            IsDataShowList.push(m_DataInfo_i);
+        }
+        //判定是否有数据条填充 若无填充 则返回空值
+        var IS_ShowTag = false;
+        //生成基于 数据的是否显示Ture False 列表 使用列表初始化显示
+        var rect_Height = Math.round(40 / m_DayModeData.length, 2);
+        if (rect_Height > 10) {
+            rect_Height = 10;
+        }
+        for (var i = 0; i < m_DayModeData.length; i++) {
+            var DateRect = '';
+            var Rect_Y = i * rect_Height;
+            //生成RECT 样式
+            if (IsDataShowList[i].isExist === true) {
+                //获取当前图层是否显示信息
+                var Ishow = IsDataShowList[i].isShow;
+                var RectLineEnd = Rect_Y + rect_Height - 0.4;
+                //根据显示情况
+                if (Ishow) {
+                    IS_ShowTag = true;
+                    //若该图层显示 则为蓝色
+                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                } else {
+                    IS_ShowTag = true;
+                    //不显示则为灰色
+                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                }
+            } else {
+                //若没有数据 则为空
+                DateRect = '';
+            }
+            //组成矩阵
+            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
+        }
+        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
+        }
+        return ShowLayer_DataSVG;
+    };
     /*日时间轴部分 end*/
 
     /*年时间轴部分 begin*/
@@ -1484,7 +1620,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Year = function () {
-        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
+        if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
             isMove_Year = false;
         }
     };
@@ -1537,7 +1673,7 @@ function TimeLine() {
                 var Trans = (i * 25).toString();
                 //若当前年时间为选择时间 则加入guitarpick指示当前时间
                 if (!self.AnimeMode) {
-                    if (DateShowYearStr == YearClick) {
+                    if (DateShowYearStr === YearClick) {
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
                             + ' transform="translate(' + (Trans - 3) + ',-10)">'
                             + '<title>' + YearClick + '</title>'
@@ -1550,7 +1686,7 @@ function TimeLine() {
                             + '</g>';
                     }
                 } else {
-                    if (YearClick == self.AnimeDate.utc().format('YYYY')) {
+                    if (YearClick === self.AnimeDate.utc().format('YYYY')) {
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
                             + ' transform="translate(' + (Trans - 3) + ',-10)">'
                             + '<title>' + YearClick + '</title>'
@@ -1568,7 +1704,7 @@ function TimeLine() {
 
                 var IsTitle = "";
                 //IE状态下对年Title进行缩放
-                if (self.browserType != "MSIE") {
+                if (self.browserType !== "MSIE") {
                     IsTitle = '<title>' + YearClick + '</title>';
                 }
                 //绘制基础的年模块部分
@@ -1600,11 +1736,10 @@ function TimeLine() {
                 // '<line x1="0" x2="1500" y1="65" y2="65" class="tick_Line"></line>'
             + '</g>';
         //IE处理
-        if (self.browserType != "MSIE") {
+        if (self.browserType !== "MSIE") {
             m_ShowSVG_Year.innerHTML = YearTotal;
             $("#SVG_Year_Total").html(YearTotal);
-        }
-        else {
+        } else {
             $("#SVG_Year_Total").html(YearTotal);
         }
 
@@ -1638,7 +1773,7 @@ function TimeLine() {
     var GetYearMode_DataShowList = function (Show_YearDate, ShowTransLate) {
         Show_YearDate = Show_YearDate.toString();
         //若数据长度为0 则返回空
-        if (m_YearModeData.length == 0 || !m_YearModeData.length) {
+        if (m_YearModeData.length === 0 || !m_YearModeData.length) {
             return '';
         }
 
@@ -1656,7 +1791,7 @@ function TimeLine() {
             var is_ShowTag = false;
             var m_DataInfo_i = m_YearModeData[k];
             var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum != -1) {
+            if (IndexNum !== -1) {
                 is_ShowTag = true;
             }
             //根据数据存在情况加入列表
@@ -1665,7 +1800,7 @@ function TimeLine() {
 
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
-        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
+
         var rect_Height = Math.round(40 / m_YearModeData.length, 2);
         if (rect_Height > 10) {
             rect_Height = 10;
@@ -1674,7 +1809,7 @@ function TimeLine() {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
-            if (IsDataShowList[i] == true) {
+            if (IsDataShowList[i] === true) {
                 //获取当前图层是否显示信息
                 var Ishow = m_LayerShowTypeList[i];
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
@@ -1692,8 +1827,7 @@ function TimeLine() {
                         + '<line x1="0" x2="25" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
                         + '<line x1="0" x2="25" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
                 }
-            }
-            else {
+            } else {
                 //若没有数据 则为空
                 DateRect = '';
             }
@@ -1701,8 +1835,8 @@ function TimeLine() {
             ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
         }
         ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag == false) {
-            ShowLayer_DataSVG == '';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
         }
         return ShowLayer_DataSVG;
     };
@@ -1752,7 +1886,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseOut_Month = function (event) {
-        if (self.browserType != "Firefox" && self.browserType != 'Edge') {
+        if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
             isMove_Month = false;
         }
     };
@@ -1780,7 +1914,7 @@ function TimeLine() {
         //循环添加
         var InnerSvgTotal = "";
         m_Trans_Month = m_Trans_Month - tarnsform;
-        while (m_Trans_Month > 150) {
+        while (m_Trans_Month > 0) {
             MonthBegin_Date = new Date(moment(MonthBegin_Date).add(-1.0, 'year'));
             m_Trans_Month = m_Trans_Month - 150;
         }
@@ -1815,7 +1949,7 @@ function TimeLine() {
                     + '</g>';
                 //若显示月为当前月
                 if (self.AnimeMode) {
-                    if (ShowDateStr == self.AnimeDate.utc().format("YYYY-M")) {
+                    if (ShowDateStr === self.AnimeDate.utc().format("YYYY-M")) {
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
                             + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
                             + '<title>' + ShowDateStr + '</title>'
@@ -1829,7 +1963,7 @@ function TimeLine() {
                         // MonthSVG = MonthSVG + TimeGar;
                     }
                 } else {
-                    if (TimeShowStr_Month == ShowDateStr) {
+                    if (TimeShowStr_Month === ShowDateStr) {
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick"'
                             + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
                             + '<title>' + ShowDateStr + '</title>'
@@ -1862,12 +1996,11 @@ function TimeLine() {
 
         m_ShowSVG.innerHTML = InnerSvgTotal;
         //IE处理
-        if (self.browserType != "MSIE") {
+        if (self.browserType !== "MSIE") {
             m_ShowSVG.innerHTML = InnerSvgTotal;
-        }
-        else {
+        } else {
             // console.log("IE innerHTML");
-            $("#ShowSVG").html(YearTotal);
+            $("#ShowSVG").html(InnerSvgTotal);
         }
         //绑定点击事件
         MonthClickFunc();
@@ -1910,7 +2043,7 @@ function TimeLine() {
             var is_ShowTag = false;
             var m_DataInfo_i = m_MonthModeData[k];
             var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum != -1) {
+            if (IndexNum !== -1) {
                 is_ShowTag = true;
             }
             //根据数据存在情况加入列表
@@ -1928,7 +2061,7 @@ function TimeLine() {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
-            if (IsDataShowList[i] == true) {
+            if (IsDataShowList[i] === true) {
                 //获取当前图层是否显示信息
                 var IsData_show = m_LayerShowTypeList[i];
                 var RectLineEnd = Rect_Y + rect_Height - 0.2;
@@ -1938,15 +2071,13 @@ function TimeLine() {
                     DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
                         + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
                         + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                }
-                else {
+                } else {
                     //有数据 但是当前列 不显示 则为灰色
                     DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
                         + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
                         + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
                 }
-            }
-            else {
+            } else {
                 //若没有数据 则为
                 DateRect = '';
             }
@@ -1972,8 +2103,7 @@ function TimeLine() {
                 ShowTimeLine[i].style.display = "none";
             }
             self.Is_ShowSVGLine = false;
-        }
-        else {
+        } else {
             //如果当前为压缩模式 修改为伸缩模式
             for (var j = 0; j < ShowTimeLine.length; j++) {
                 ShowTimeLine[j].style.display = "block";
@@ -1989,10 +2119,10 @@ function TimeLine() {
      * @constructor
      */
     var ShowYearMode = function () {
-        m_Show_YearDiv = document.getElementById("Show_YearDiv");
-        m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
-        m_Show_DayDiv = document.getElementById("Show_DayDiv");
-        m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
+        var m_Show_YearDiv = document.getElementById("Show_YearDiv");
+        var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
+        var m_Show_DayDiv = document.getElementById("Show_DayDiv");
+        var m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
 
         m_Show_YearDiv.style.display = "block";
         m_Show_MonthDiv.style.display = "none";
@@ -2018,10 +2148,10 @@ function TimeLine() {
      */
     var ShowMonthMode = function () {
 
-        m_Show_YearDiv = document.getElementById("Show_YearDiv");
-        m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
-        m_Show_DayDiv = document.getElementById("Show_DayDiv");
-        m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
+        var m_Show_YearDiv = document.getElementById("Show_YearDiv");
+        var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
+        var m_Show_DayDiv = document.getElementById("Show_DayDiv");
+        var m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
 
         m_Show_YearDiv.style.display = "none";
         m_Show_MonthDiv.style.display = "block";
@@ -2048,10 +2178,10 @@ function TimeLine() {
      */
     var ShowDayMode = function () {
 
-        m_Show_YearDiv = document.getElementById("Show_YearDiv");
-        m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
-        m_Show_DayDiv = document.getElementById("Show_DayDiv");
-        m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
+        var m_Show_YearDiv = document.getElementById("Show_YearDiv");
+        var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
+        var m_Show_DayDiv = document.getElementById("Show_DayDiv");
+        var m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
         m_Show_YearDiv.style.display = "none";
         m_Show_MonthDiv.style.display = "none";
         m_Show_DayDiv.style.display = "block";
@@ -2077,10 +2207,10 @@ function TimeLine() {
      * @constructor
      */
     var ShowMinuteMode = function () {
-        m_Show_YearDiv = document.getElementById("Show_YearDiv");
-        m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
-        m_Show_DayDiv = document.getElementById("Show_DayDiv");
-        m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
+        var m_Show_YearDiv = document.getElementById("Show_YearDiv");
+        var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
+        var m_Show_DayDiv = document.getElementById("Show_DayDiv");
+        var m_Show_MinuteDiv = document.getElementById("Show_MinuteDiv");
 
         m_Show_YearDiv.style.display = "none";
         m_Show_MonthDiv.style.display = "none";
@@ -2120,7 +2250,7 @@ function TimeLine() {
                 var m_Layeris_Show = m_ADDItem.Layeris_Show;
                 var IndexNum = m_LayerDataList.indexOf(m_LayerName);
                 //若当前不存在 则加入列表及列表-表现层 并为各组数据添加新数据
-                if (IndexNum == -1) {
+                if (IndexNum === -1) {
                     m_LayerDataList.push(m_LayerName);
                     m_LayerShowTypeList.push(m_Layeris_Show);
                     m_YearModeData.push([]);
@@ -2163,8 +2293,7 @@ function TimeLine() {
                             break;
                         }
                     }
-                }
-                catch (err) {
+                } catch (err) {
 
                 }
                 // console.log("end One");
@@ -2193,8 +2322,8 @@ function TimeLine() {
 
         //对于每一个添加的变量
         for (var i = 0; i < m_LayerDataList.length; i++) {
-            m_OrderItem = m_LayerDataList[i];
-            m_showType = m_LayerShowTypeList[i];
+            var m_OrderItem = m_LayerDataList[i];
+            //  var m_showType = m_LayerShowTypeList[i];
             m_DataInfoALL.forEach(function (m_infoData) {
                 if (m_infoData.DataName === m_OrderItem) {
                     var m_LayerDataInfo = m_infoData.DataInfo;
@@ -2230,8 +2359,7 @@ function TimeLine() {
                                 break;
                             }
                         }
-                    }
-                    catch (err) {
+                    } catch (err) {
 
                     }
                 } else {
@@ -2256,7 +2384,7 @@ function TimeLine() {
      */
     this.RemoveLayerDataByName = function (RemoveDataLayerName) {
         var IndexNum = m_LayerDataList.indexOf(RemoveDataLayerName);
-        if (IndexNum != -1) {
+        if (IndexNum !== -1) {
             m_LayerDataList.splice(IndexNum, 1);
             m_LayerShowTypeList.splice(IndexNum, 1);
             m_YearModeData.splice(IndexNum, 1);
@@ -2267,7 +2395,7 @@ function TimeLine() {
         //删除名称匹配的总数据项目
         var m_NewDat = [];
         for (var i = 0; i < m_DataInfoALL.length; i++) {
-            if (m_DataInfoALL[i].DataName != RemoveDataLayerName) {
+            if (m_DataInfoALL[i].DataName !== RemoveDataLayerName) {
                 m_NewDat.push(m_DataInfoALL[i]);
             }
         }
@@ -2344,13 +2472,13 @@ function TimeLine() {
      */
     this.getDataList = function (m_LayerName, m_BeginTime, m_EndTime, m_DateTye, m_ImageUrl) {
         //参数处理
-        if (typeof(m_LayerName) != 'string') {
+        if (typeof(m_LayerName) !== 'string') {
             console.log("图层名称错误！图层名称类型选择必须为：String。");
             return;
         }
         var m_Selecttype = m_DateTye.toLowerCase();
-        if (m_Selecttype != "year" && m_Selecttype != "day"
-            && m_Selecttype != "month" && m_Selecttype != "minute") {
+        if (m_Selecttype !== "year" && m_Selecttype !== "day"
+            && m_Selecttype !== "month" && m_Selecttype !== "minute") {
             console.log("数据类型错误！数据类型选择必须为：year，month，day，mintue中的一个");
             return;
         }
@@ -2366,10 +2494,10 @@ function TimeLine() {
         var m_Length = m_DataInfoALL.length;
         var m_MacthData = [];
         //根据输入条件获取当前json数据 只有一个
-        if (m_Length != undefined && m_Length > 0) {
+        if (m_Length !== undefined && m_Length > 0) {
             m_DataInfoALL.forEach(function (m_dataitem) {
                 //根据名字进行 第一次筛选出符合条件的
-                if (m_dataitem.DataName == m_LayerName) {
+                if (m_dataitem.DataName === m_LayerName) {
                     var m_dataType = "";
                     var m_DateInfo = m_dataitem.DataInfo;
                     //根据类型进行下一次筛选
@@ -2387,7 +2515,7 @@ function TimeLine() {
                             }
                             case 6:
                             case 7:
-                            {//月"2016-12"   "2016-2"
+                            { //月"2016-12"   "2016-2"
                                 m_dataType = "month";
                                 break;
                             }
@@ -2407,7 +2535,7 @@ function TimeLine() {
                             default:
                                 break;
                         }
-                        if (m_dataType == m_Selecttype) {
+                        if (m_dataType === m_Selecttype) {
                             m_MacthData = m_dataitem;
                             //  break;
                         }
@@ -2427,18 +2555,17 @@ function TimeLine() {
 
         var m_TimeList = [];
         // 数据不为空
-        if (m_MacthData != []) {
+        if (m_MacthData !== []) {
             var m_allData = m_MacthData.DataInfo;
             //若存在匹配数据
-            if (m_allData.length != undefined) {
+            if (m_allData.length !== undefined) {
                 //对数据进行筛选
                 for (var t = 0; t < m_allData.length; t++) {
                     var m_itemTime = m_allData[t];
                     var m_timeMoment = moment.utc(m_itemTime);
                     if (m_timeMoment.isAfter(m_BeginMoment) && m_timeMoment.isBefore(m_EndMoment)) {
                         m_TimeList.push(m_timeMoment);
-                    }
-                    else if (m_timeMoment.isSame(m_BeginMoment) || m_timeMoment.isSame(m_EndMoment)) {
+                    } else if (m_timeMoment.isSame(m_BeginMoment) || m_timeMoment.isSame(m_EndMoment)) {
                         m_TimeList.push(m_timeMoment);
                     }
                 }
@@ -2448,7 +2575,7 @@ function TimeLine() {
         //对URL进行转换
         var m_UrlList = [];
         for (var k = 0; k < m_TimeList.length; k++) {
-            var m_returnItem = [];
+            // var m_returnItem = [];
             var m_Time = m_TimeList[k];
             var projectUrl = m_ImageUrl;
             if (projectUrl.indexOf('yyyy') > 0) {
@@ -2487,13 +2614,13 @@ function TimeLine() {
      */
     this.getLatestDate = function (m_LayerName, m_DateTye) {
         // 参数判断
-        if (typeof(m_LayerName) != 'string') {
+        if (typeof(m_LayerName) !== 'string') {
             console.log("图层名称错误！图层名称类型选择必须为：String。");
             return;
         }
         var m_Selecttype = m_DateTye.toLowerCase();
-        if (m_Selecttype != "year" && m_Selecttype != "day"
-            && m_Selecttype != "month" && m_Selecttype != "minute") {
+        if (m_Selecttype !== "year" && m_Selecttype !== "day"
+            && m_Selecttype !== "month" && m_Selecttype !== "minute") {
             console.log("数据类型错误！数据类型选择必须为：year，month，day，mintue中的一个");
             return;
         }
@@ -2503,10 +2630,10 @@ function TimeLine() {
             var m_Length = m_DataInfoALL.length;
             var m_MacthData = [];
             //根据输入条件获取当前json数据 只有一个
-            if (m_Length != undefined && m_Length > 0) {
+            if (m_Length !== undefined && m_Length > 0) {
                 m_DataInfoALL.forEach(function (m_dataitem) {
                     //根据名字进行 第一次筛选出符合条件的
-                    if (m_dataitem.DataName == m_LayerName) {
+                    if (m_dataitem.DataName === m_LayerName) {
                         var m_dataType = "";
                         var m_DateInfo = m_dataitem.DataInfo;
                         //根据类型进行下一次筛选
@@ -2523,7 +2650,7 @@ function TimeLine() {
                                 }
                                 case 6:
                                 case 7:
-                                {//月"2016-12"   "2016-2"
+                                { //月"2016-12"   "2016-2"
                                     m_dataType = "month";
                                     break;
                                 }
@@ -2543,7 +2670,7 @@ function TimeLine() {
                                 default:
                                     break;
                             }
-                            if (m_dataType == m_Selecttype) {
+                            if (m_dataType === m_Selecttype) {
                                 m_MacthData = m_dataitem;
                                 //  break;
                             }
@@ -2555,20 +2682,19 @@ function TimeLine() {
 
             var m_LatestDate = "";
             //从 m_MacthData 获取最新的数据
-            if (m_MacthData != []) {
+            if (m_MacthData !== []) {
                 var m_allData = m_MacthData.DataInfo;
-                if (m_allData != undefined) {
+                if (m_allData !== undefined) {
                     var m_length = m_allData.length;
                     m_LatestDate = m_allData[m_length - 1];
                 }
             }
             //   console.log(m_LatestDate);
-            if (m_LatestDate != "") {
+            if (m_LatestDate !== "") {
                 var m_LatestDate_moment = moment(m_LatestDate + "+00:00");
                 // console.log(m_LatestDate_moment);
                 return m_LatestDate_moment.utc();
-            }
-            else {
+            } else {
                 return;
             }
         } catch (err) {
@@ -2634,8 +2760,7 @@ function TimeLine() {
         if (!(m_AnimeDate instanceof moment)) {
             console.log("参数类型错误，m_AnimeDate需要为moment类型。");
             return false;
-        }
-        else {
+        } else {
             //todo 传入参数是否需要进行５ｍｉｎ的整数化处理 目前默认为5min模式
             self.AnimeDate = m_AnimeDate;
             self.AnimeMode = true;
@@ -2682,11 +2807,11 @@ function TimeLine() {
             return "";
         }
         //判断模式 只有动画模式才对SVG进行显示
-        if (self.AnimeMode == false) {
+        if (self.AnimeMode === false) {
             return "";
         }
 
-        if (self.Anime_BeginTime == null || self.Anime_EndTime == null || self.AnimeDate == null) {
+        if (self.Anime_BeginTime === null || self.Anime_EndTime === null || self.AnimeDate === null) {
             return "";
         }
 
@@ -2721,8 +2846,7 @@ function TimeLine() {
                     + ' transform="translate(' + ShowTransLate + ')">'
                     + '<rect class="DayRect1 Btn_MinuteRect1"  style="fill:#102f8c;opacity: 0.5;" x="0.2" y="0" width="12.5" height="55"></rect> '
                     + '</g>';
-            }
-            else {
+            } else {
                 ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#8eb9cc" class="tick_Data_Show1"'
                     + 'transform="translate(' + ShowTransLate + ')"> '
                     + '<rect class="DayRect1 Btn_MinuteRect1"  style="fill:#8eb9cc;opacity: 0.5;" x="0.2" y="0" width="12.5" height="55"></rect> '
@@ -2732,11 +2856,116 @@ function TimeLine() {
 
         return ShowLayer_DataSVG;
 
+    };
+
+    //使用不区分模式 的 选择
+    //每一种 产品作为一个 json 项目，不再区分 模式。
+
+    var DemoJson = [
+        {
+            "DataName": "测试数据1",
+            "DataMode": "Day_Mode",
+            "DataInfo": [{"BeginTime": "2017-10-17 06:11:12", "EndTime": "2017-10-17 06:14:12"}
+            ],
+            "Layeris_Show": true,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        },
+        {
+            "DataName": "测试数据2",
+            "DataMode": "Day_Mode",
+            "DataInfo": [{"BeginTime": "2017-10-17 06:17:12", "EndTime": "2017-10-17 06:22:12"}
+            ],
+            "Layeris_Show": false,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        }
+    ];
+
+
+    var CheckDataTimeExistStatus = function (BeginTime_moment, EndTimeStr_moment, MinuteTimeBase) {
+        //
+        // MinuteTimeBase = 1000 * 60;
+        //MinuteTimeBase = MinuteTimeBase;
+        var TimeCompare_begin = BeginTime_moment;
+
+        var TimeCompare_end = EndTimeStr_moment;
+        //根据不用模式对 当前开始结束时间 进行比较、
+
+        //根据当前的 timeStr 对是否存在数据进行返回
+        var ShowModeWidth = 12.5;
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+        //处理JSON
+        DemoJson.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "isExist": false,
+                "isShow": false,
+                "Width": 0,
+                "isAll": false,
+                "isBofore": false,
+                "isEnd": false
+            };
+            var DataInfo = DataJsonItem.DataInfo;
+            if (DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    var BeginTime = moment.utc(DataTimeItem.BeginTime);
+                    var EndTime = moment.utc(DataTimeItem.EndTime);
+
+                    //存在数据时间 完全包含 数据存在字段 |11|
+                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                        ExistReturnItem.Width = BeginTime - EndTime / MinuteTimeBase * 12.5;
+                        ExistReturnItem.isExist = true;
+                        ExistReturnItem.Width = ShowModeWidth;
+                        ExistReturnItem.isAll = true;
+                    }
+
+                    //当前时间 在范围内 1||1
+                    if (TimeCompare_begin - BeginTime > 0 && EndTime - TimeCompare_end > 0) {
+                        ExistReturnItem.isExist = true;
+                        ExistReturnItem.Width = ShowModeWidth;
+                        ExistReturnItem.isAll = true;
+                    }
+                    //时间段 前半段 1|1|
+                    if (EndTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                        ExistReturnItem.isExist = true;
+                        var WitdhBefore = (EndTime - TimeCompare_begin) / MinuteTimeBase * 12.5;
+                        ExistReturnItem.Width = WitdhBefore;
+                        ExistReturnItem.isAll = false;
+                        ExistReturnItem.isBofore = true;
+                    }
+                    //时间段  后半段 |1|1
+                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - BeginTime > 0) {
+                        ExistReturnItem.isExist = true;
+                        var WitdhAfter = (BeginTime - TimeCompare_end) / MinuteTimeBase * 12.5;
+                        ExistReturnItem.Width = WitdhAfter;
+                        ExistReturnItem.isAll = false;
+                        ExistReturnItem.isEnd = true;
+                    }
+
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+        return ExistReturn;
     }
-
-
 }
 
+var YearModeClass = function () {
+    return {"initDIV": _initDIV};
 
+    //初始化绘制
+    function _initDIV() {
+
+    }
+};
 
 
