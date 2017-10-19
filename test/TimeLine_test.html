@@ -46,9 +46,10 @@
     var m_TimeLine = new TimeLine();
     //初始化
     m_TimeLine.Init("TestADD", "MINUTE");
-    //  m_TimeLine.Init("TestADD", "YEAR");
-    // m_TimeLine.Init("TestADD", "MONTH");
-    // m_TimeLine.Init("TestADD", "DAY");
+    //m_TimeLine.Init("TestADD", "YEAR");
+
+    //m_TimeLine.Init("TestADD", "MONTH");
+    //m_TimeLine.Init("TestADD", "DAY");
 
     console.log(m_TimeLine.DateShow);
 
@@ -75,7 +76,26 @@
     //测试用数据
 
     /*测试用数据*/
-
+    var DemoJson = [
+        {
+            "DataName": "测试数据1",
+            "DataMode": "Day_Mode",
+            "DataInfo": [{"BeginTime": "2017-10-17 06:11:12", "EndTime": "2017-10-17 06:14:12"}
+            ],
+            "Layeris_Show": true,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        },
+        {
+            "DataName": "测试数据2",
+            "DataMode": "Day_Mode",
+            "DataInfo": [{"BeginTime": "2017-10-18 10:17:12", "EndTime": "2017-10-18 10:22:12"}
+                , {"BeginTime": "2017-10-18 06:17:12", "EndTime": "2017-10-18 06:22:12"},
+                {"BeginTime": "2017-10-18 11:17:12", "EndTime": "2017-10-18 12:22:12"}
+            ],
+            "Layeris_Show": false,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        }
+    ];
 
     //月模式　已测试
     var DataLoadMonth = [
@@ -107,7 +127,7 @@
         }];
     //添加数据函数 月模式
     function AddData_Month() {
-        m_TimeLine.AddMonthData(DataLoadMonth);
+        m_TimeLine.AddMonthData(DemoJson);
     }
     //日模式
     //日模式数据

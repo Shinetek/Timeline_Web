@@ -43,7 +43,7 @@ var TimeLine = function () {
     _self.Is_ShowSVGLine = true;
 
     var _yearModeClass = new YearModeClass();
-    var _monthModeClass = new YearModeClass();
+    var _monthModeClass = new MonthModeClass();
     var _dayModeClass = new YearModeClass();
     var _minuteModeClass = new YearModeClass();
 
@@ -99,7 +99,7 @@ var TimeLine = function () {
      * @constructor
      */
     _self.DateTimeChange = function () {
-        $("#" + _self.IDName).trigger("DateTimeChange", [self.DateShow]);
+        $("#" + _self.IDName).trigger("DateTimeChange", [_self.TimeLineDate]);
     };
 
 
@@ -523,8 +523,8 @@ var TimeLine = function () {
             }
             case "Month_Mode":
             {
-                InitMonthTimeLineShow(2009);
-                ShowMonthMode();
+                // InitMonthTimeLineShow(2009);
+                _showMonthMode();
                 break;
             }
             case "Day_Mode":
@@ -647,13 +647,13 @@ var TimeLine = function () {
      */
     var _minusOneYear = function () {
         //年份 的天
-        var momentStr = (moment(self.TimeLineDate) - moment(self.TimeLineDate).add(-1, 'year')) / 1000 / 3600 / 24;
+        // var momentStr = (moment(self.TimeLineDate) - moment(self.TimeLineDate).add(-1, 'year')) / 1000 / 3600 / 24;
 
         _self.TimeLineDate = new Date(moment.utc(self.TimeLineDate).add(-1, 'year'));
-        //分钟模式
-        m_Trans_Minute = m_Trans_Minute + momentStr * 12.5 * 24 * 60;
-        //天模式
-        m_Trans_Day = m_Trans_Day + 12.5 * momentStr;
+        /*   //分钟模式
+         m_Trans_Minute = m_Trans_Minute + momentStr * 12.5 * 24 * 60;
+         //天模式
+         m_Trans_Day = m_Trans_Day + 12.5 * momentStr;*/
         _refreshTimeShow();
     };
 
@@ -709,7 +709,7 @@ var TimeLine = function () {
         //  _yearModeClass.mouseMoveFunc(0);
         _self.ShowMode = "Year_Mode";
         _self.ShowModeClass = _yearModeClass;
-        _self.ShowModeClass.init(_self.TimeLineDate, _self.LayerDataInfo);
+        _self.ShowModeClass.init(_self.TimeLineDate, _self.LayerDataInfo, _onDataChangeFunc);
     };
 
 
@@ -739,16 +739,48 @@ var TimeLine = function () {
         document.getElementById("btn_MinusDay").disabled = true;
         _self.ShowMode = "Month_Mode";
         //计算 差值 每一年 差值150
-
         _self.ShowModeClass = _monthModeClass;
-        _self.ShowModeClass.init(self.TimeLineDate);
+        _self.ShowModeClass.init(_self.TimeLineDate, _self.LayerDataInfo);
     };
 
 
+    /**
+     *
+     * @param newDate
+     * @private
+     */
+    var _onDataChangeFunc = function (newDate) {
+        console.log('_onDataChangeFunc');
+        _self.TimeLineDate = newDate;
+        _refreshTimeShow();
+    };
+
+
+    /**
+     *
+     * @type {TimeLine.AddMinuteData}
+     */
+    _self.AddYearData = _self.AddMonthData = _self.AddDayData = _self.AddMinuteData = function (m_InsertData) {
+        //调用最新的重构函数
+        _addLayerInfoData(m_InsertData);
+    };
+
+
+    var _addLayerInfoData = function (insertData) {
+
+        var LengthAddCount = insertData.length;
+        //对于每一个添加的变量
+        if (LengthAddCount) {
+            for (var i = 0; i < LengthAddCount; i++) {
+                var m_ADDItem = insertData[i];
+                _self.LayerDataInfo.push(m_ADDItem);
+            }
+        }
+        _self.ShowModeClass.reSetDataInfo(_self.LayerDataInfo);
+    }
 };
 var YearModeClass = function () {
     //绘制年 的计数
-
     var _self = this;
     _self.ClassDate = new Date();
 
@@ -766,13 +798,14 @@ var YearModeClass = function () {
      * @param dateSt
      * @private
      */
-    var _init = function (dateStr, DataIndfo) {
+    var _init = function (dateStr, DataIndfo, onChangeFunc) {
         console.log("year init");
         _self.ClassDate = dateStr;
         YearDataInfo = DataIndfo;
 
         _mouseMove_Year_Func(0);
         _initMouseMove();
+        _self.onchange = onChangeFunc;
         //  _mouseMove_Year(0);
     };
 
@@ -853,7 +886,7 @@ var YearModeClass = function () {
         //获取年时间轴的DIV
         var m_ShowSVG_Year = document.getElementById("SVG_Year_Total");
         //初始化比较字符串
-        var TimeLineDate_YearStr = moment(self.TimeLineDate).format('YYYY');
+        var TimeLineDate_YearStr = moment(_self.ClassDate).format('YYYY');
         //总SVG Label
         var YearTotal = '<g id="ShowSVG_Year" transform="translate(' + Trans_now + ',10)" class="x aixs">';
         //初始化年份 1980
@@ -869,8 +902,9 @@ var YearModeClass = function () {
                 var YearClick = YearInit + i;
                 var Trans = (i * 25).toString();
                 //若当前年时间为选择时间 则加入guitarpick指示当前时间
-
-                if (TimeLineDate_YearStr === YearClick) {
+                //
+                if (TimeLineDate_YearStr.toString() === YearClick.toString()) {
+                    console.log(TimeLineDate_YearStr + ':' + YearClick);
                     TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
                         + ' transform="translate(' + (Trans - 3) + ',-10)">'
                         + '<title>' + YearClick + '</title>'
@@ -882,7 +916,7 @@ var YearModeClass = function () {
                         + '<rect width="3" height="20" x="19" y="11" ></rect>'
                         + '</g>';
                 }
-
+                YearShow = YearShow + TimeGar;
 
                 //通过当前时间 绘制背景的数据svg
                 var SVG_Data = _getYearMode_DataShowList(YearClick, Trans);
@@ -953,6 +987,8 @@ var YearModeClass = function () {
             var Minute_Show = _self.ClassDate.getUTCMinutes();
             _self.ClassDate = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
             console.log('new Data ' + _self.ClassDate);
+            _mouseMove_Year_Func(0);
+            _self.onchange(_self.ClassDate);
             return _self.ClassDate;
         } else {
             return _self.ClassDate;
@@ -977,24 +1013,13 @@ var YearModeClass = function () {
         var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
             + ' transform="translate(' + ShowTransLate + ')">';
         //日期格式赋值
-        var Date_Rect = Show_YearDate;
+
         //是否显示列表
         var IsDataShowList = [];
         var DataMomentBegin = moment.utc(Show_YearDate);
         var DataMomentEnd = moment.utc(Show_YearDate).add(1.0, 'year');
         var TimeSpace = DataMomentEnd - DataMomentBegin;
         IsDataShowList = _checkDataTimeExistStatus(DataMomentBegin, DataMomentEnd, TimeSpace);
-        //查找是否存在数据
-        /*       for (var k = 0; k < YearDataInfo.length; k++) {
-         var is_ShowTag = false;
-         var m_DataInfo_i = YearDataInfo[k];
-         var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-         if (IndexNum !== -1) {
-         is_ShowTag = true;
-         }
-         //根据数据存在情况加入列表
-         IsDataShowList.push(is_ShowTag);
-         }*/
 
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
@@ -1139,12 +1164,408 @@ var YearModeClass = function () {
 
     var _reSetDataInfo = function (newDataInfo) {
         YearDataInfo = newDataInfo;
-        _mouseMove_Year_Func();
+        _mouseMove_Year_Func(0);
     };
 
 
     _self.init = _init;
+    // _self.onchange = onchangeFunc;
     _self.reSetDate = _reSetDate;
     _self.mouseMoveFunc = _mouseMove_Year;
+    _self.reSetDataInfo = _reSetDataInfo;
     return _self
 };
+
+var MonthModeClass = function () {
+    var _self = this;
+    _self.ClassDate = new Date();
+    /* 月模式 鼠标 操作 变量*/
+    var isMove_Month = false;
+    var x_Month = 0;
+    var x_Before_Month = 0;
+    var m_Trans_Month = -150;
+
+
+    /**
+     * 根据 年月日 和 数据项初始化
+     * @param dateStr
+     * @param DataInfo
+     * @private
+     */
+    var _init = function (dateStr, DataInfo) {
+        _self.ClassDate = dateStr;
+        _getMouseMove_MonthFunc(0);
+        _initMouseMove();
+    };
+
+
+    /**
+     * 设置DIV移动事件
+     * @private
+     */
+    var _initMouseMove = function () {
+        console.log('_initMouseMove');
+        var m_ShowTimeLineDiv_Year = document.getElementById("ShowTimeLineDiv_Year");
+        m_ShowTimeLineDiv_Year.onmousedown = _getMouseDown_Month;
+        m_ShowTimeLineDiv_Year.onmouseup = _getMouseUP_Month;
+        m_ShowTimeLineDiv_Year.onmouseout = _getMouseOut_Month;
+        m_ShowTimeLineDiv_Year.onmousemove = _getMouseMove_Month;
+    };
+
+    /**
+     * 月模式 -- 鼠标down事件
+     * @param event
+     * @private
+     */
+    var _getMouseDown_Month = function (event) {
+        event = event || window.event;
+        x_Month = event.clientX;
+        x_Before_Month = x_Month;
+        isMove_Month = true;
+    };
+
+    /**
+     * 月模式 -- 鼠标抬起事件
+     * @param event
+     * @private
+     */
+    var _getMouseUP_Month = function (event) {
+        isMove_Month = false;
+    };
+
+
+    /**
+     * 月模式 -- 鼠标移出事件
+     * @param event
+     * @private
+     */
+    var _getMouseOut_Month = function (event) {
+        if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
+            isMove_Month = false;
+        }
+    };
+    /**
+     * 月模式 -- 鼠标移动事件
+     * @param event
+     * @private
+     */
+    var _getMouseMove_Month = function (event) {
+        event = event || window.event;
+        if (isMove_Month) {
+            x_Month = event.clientX;
+            var DrgNum = x_Before_Month - x_Month;
+            if (DrgNum >= 1 || DrgNum <= -1) {
+                x_Before_Month = x_Month;
+                _getMouseMove_MonthFunc(DrgNum);
+            }
+        }
+    };
+
+
+    /**
+     *
+     * @param tarnsform
+     * @private
+     */
+    var _getMouseMove_MonthFunc = function (tarnsform) {
+        console.log('_getMouseMove_MonthFunc');
+        var MonthBegin_Date = moment.utc(_self.ClassDate).add(-3.0, "years");
+        //获取 月模式下 SVG的DIV
+        var m_ShowSVG = document.getElementById("ShowSVG");
+        //循环添加
+        var InnerSvgTotal = "";
+        m_Trans_Month = m_Trans_Month - tarnsform;
+        while (m_Trans_Month > 0) {
+            MonthBegin_Date = new Date(moment(MonthBegin_Date).add(-1.0, 'year'));
+            m_Trans_Month = m_Trans_Month - 12.5 * 12;
+        }
+        while (m_Trans_Month < -150) {
+            MonthBegin_Date = new Date(moment(MonthBegin_Date).add(1.0, 'year'));
+            m_Trans_Month = m_Trans_Month + 12.5 * 12;
+        }
+        var m_BeginYear = moment(MonthBegin_Date).year();
+        //获取当前选择时间的月份 STR 用于Title显示
+        var TimeShowStr_Month = moment(self.DateShow).format("YYYY-M");
+        // 月循环 MonthShowCount
+        for (var i = 0; i < MonthShowCount; i++) {
+            var TimeGar = "";
+            var TimeStr = (m_BeginYear + i).toString();
+            var Trans = i * 150 + m_Trans_Month - 150;
+            var InnerSvg = '<g class="tick_Total_Year" Tag="' + TimeStr + '" transform="translate(' + Trans + ')">'
+                + '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
+            //月份循环
+            for (var Month = 0; Month < 12; Month++) {
+                var TransMonth = Month * 12.5;
+                var ShowDateStr = TimeStr + "-" + ( Month + 1);
+                var MonthData_Svg = "";
+
+                //调用函数 返回当前单位是否需要显示数据
+                MonthData_Svg = _getMothMode_DataShowList(ShowDateStr, TransMonth);
+
+                var MonthSVG = '<g class="tick_Year_One" transform="translate(' + TransMonth + ')">'
+                    + '<rect x="0.2" y="0" width="12.5" height="55" class="DayRect Btn_MonthRect" value="' + ShowDateStr + '">'
+                    + '<title>' + ShowDateStr + '</title>'
+                    + '</rect>'
+                    + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
+                    + '</g>';
+
+                if (TimeShowStr_Month === ShowDateStr) {
+                    TimeGar = '<g id="guitarpick" class="SVG_guitarpick"'
+                        + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
+                        + '<title>' + ShowDateStr + '</title>'
+                        + '<path d="'
+                        + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
+                        + '"></path>'
+                        + '<rect width="3" height="20" x="9" y="11" ></rect>'
+                        + '<rect width="3" height="20" x="14" y="11" ></rect>'
+                        + '<rect width="3" height="20" x="19" y="11" ></rect>'
+                        + '</g>';
+                    // MonthSVG = MonthSVG + TimeGar;
+                }
+
+                InnerSvg = InnerSvg + MonthData_Svg + MonthSVG;
+            }
+
+            InnerSvg = InnerSvg + '<g transform="translate(0)">'
+                + '<rect x="0" y="55" width="150" height="25"  class="Rect_White"/>'
+                + '<text x="12" y="73" class="Month_Text_Show" >' + TimeStr + '年</text>'
+                + '</g>'
+                + '<g>'
+                + '<circle cx="0" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                + '<circle cx="150" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                + '</g>'
+                + '<line x1="150" x2="150" y1="0" y2="80" class="tick_Line"></line>'
+                + '</g>'
+                + '</g>';
+            InnerSvgTotal = InnerSvgTotal + InnerSvg + TimeGar;
+        }
+
+        m_ShowSVG.innerHTML = InnerSvgTotal;
+        //IE处理
+        if (self.browserType !== "MSIE") {
+            m_ShowSVG.innerHTML = InnerSvgTotal;
+        } else {
+            // console.log("IE innerHTML");
+            $("#ShowSVG").html(InnerSvgTotal);
+        }
+        //绑定点击事件
+        var m_MonthRectList = document.getElementsByClassName("Btn_MonthRect");
+        for (var i = 0; i < m_MonthRectList.length; i++) {
+            m_MonthRectList[i].onclick = function () {
+                _btnClickMonth(this);
+            }
+        }
+    };
+
+
+    /**
+     * 设置年月  函数
+     * @param enevt
+     * @returns {Date|*}
+     * @private
+     */
+    var _btnClickMonth = function (enevt) {
+        var TimeStr = enevt.getAttribute("value");
+        var new_Year = TimeStr.split("-")[0];
+        var new_Month = TimeStr.split("-")[1];
+
+        if (new_Year && new_Month) {
+            var Day_Show = _self.ClassDate.getUTCDate();
+            var Hour_Show = _self.ClassDate.getUTCHours();
+            var Minute_Show = _self.ClassDate.getUTCMinutes();
+
+            var Year_Show = parseInt(new_Year).toString();
+            var Month_Show = parseInt(new_Month).toString();
+            //设置年月日
+            _self.ClassDate = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
+            // RefreshTimeShow();
+            console.log('new DateMonth :' + _self.ClassDate);
+            _getMouseMove_MonthFunc(0);
+            return _self.ClassDate;
+        } else {
+            return _self.ClassDate;
+        }
+    };
+
+    /**
+     * 月模式 -- 获取月模式的数据显示SVG 内容函数
+     * @param Show_MonthDate
+     * @param ShowTransLate 位移数据
+     * @returns {*}
+     * @constructor
+     */
+    var _getMothMode_DataShowList = function (Show_MonthDate, ShowTransLate) {
+
+        if (!_self.DataInfo || !_self.DataInfo.length) {
+            return "";
+        }
+        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
+            + ' transform="translate(' + ShowTransLate + ')">';
+
+        //日期格式赋值
+        var Date_Rect = Show_MonthDate;
+        //是否显示列表
+        var IsDataShowList = [];
+        var DataMomentBegin = moment.utc(Show_MonthDate);
+        var DataMomentEnd = moment.utc(Show_MonthDate).add(1.0, 'month');
+        var TimeSpace = DataMomentEnd - DataMomentBegin;
+        IsDataShowList = _checkDataTimeExistStatus(DataMomentBegin, DataMomentEnd, TimeSpace);
+
+        //查找是否存在数据
+        /*  for (var k = 0; k < IsDataShowList.length; k++) {
+         var is_ShowTag = false;
+         var m_DataInfo_i = IsDataShowList[k];
+         IsDataShowList.push(m_DataInfo_i);
+         }*/
+
+        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
+        var rect_Height = Math.round(40 / m_MonthModeData.length, 2);
+
+        if (rect_Height > 10) {
+            rect_Height = 10;
+        }
+        var Rect_ShowHeight = rect_Height - 0.8;
+        //遍历获取
+        for (var i = 0; i < IsDataShowList.length; i++) {
+            var DateRect = '';
+            var Rect_Y = i * rect_Height;
+            //生成RECT 样式
+            if (IsDataShowList[i].isExist === true) {
+                //获取当前图层是否显示信息
+                var IsData_show = IsDataShowList[i].isShow;
+                var RectLineEnd = Rect_Y + rect_Height - 0.2;
+                //根据显示情况
+                if (IsData_show) {
+                    //若该图层显示 则为蓝色
+                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                } else {
+                    //有数据 但是当前列 不显示 则为灰色
+                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                }
+            } else {
+                //若没有数据 则为
+                DateRect = '';
+            }
+            //组成矩阵
+            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
+        }
+        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
+
+        return ShowLayer_DataSVG;
+    };
+
+
+    /**
+     * 根据当前数据 获取存在状态
+     * @param BeginTime_moment
+     * @param EndTimeStr_moment
+     * @param MinuteTimeBase
+     * @returns {*[]}
+     * @private
+     */
+    var _checkDataTimeExistStatus = function (BeginTime_moment, EndTimeStr_moment, MinuteTimeBase) {
+        //
+        // MinuteTimeBase = 1000 * 60;
+        //MinuteTimeBase = MinuteTimeBase;
+        var TimeCompare_begin = BeginTime_moment;
+
+        var TimeCompare_end = EndTimeStr_moment;
+        //根据不用模式对 当前开始结束时间 进行比较、
+
+        //根据当前的 timeStr 对是否存在数据进行返回
+        var ShowModeWidth = 12.5;
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+        //处理JSON
+        YearDataInfo.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "isExist": false,
+                "isShow": false,
+                "Width": 0,
+                "isAll": false,
+                "isBofore": false,
+                "isEnd": false
+            };
+            var DataInfo = DataJsonItem.DataInfo;
+            if (DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    var BeginTime = moment.utc(DataTimeItem.BeginTime);
+                    var EndTime = moment.utc(DataTimeItem.EndTime);
+
+                    //存在数据时间 完全包含 数据存在字段 |11|
+                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                        ExistReturnItem.Width = BeginTime - EndTime / MinuteTimeBase * ShowModeWidth;
+                        ExistReturnItem.isExist = true;
+                        ExistReturnItem.Width = ShowModeWidth;
+                        ExistReturnItem.isAll = true;
+                    }
+
+                    //当前时间 在范围内 1||1
+                    if (TimeCompare_begin - BeginTime > 0 && EndTime - TimeCompare_end > 0) {
+                        ExistReturnItem.isExist = true;
+                        ExistReturnItem.Width = ShowModeWidth;
+                        ExistReturnItem.isAll = true;
+                    }
+                    //时间段 前半段 |1|1
+                    if (EndTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                        ExistReturnItem.isExist = true;
+                        var WitdhBefore = (EndTime - TimeCompare_begin) / MinuteTimeBase * ShowModeWidth;
+                        ExistReturnItem.Width = WitdhBefore;
+                        ExistReturnItem.isAll = false;
+                        ExistReturnItem.isBofore = true;
+                    }
+                    //时间段  后半段 1|1|
+                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - BeginTime > 0) {
+                        ExistReturnItem.isExist = true;
+                        var WitdhAfter = (BeginTime - TimeCompare_end) / MinuteTimeBase * ShowModeWidth;
+                        ExistReturnItem.Width = WitdhAfter;
+                        ExistReturnItem.isAll = false;
+                        ExistReturnItem.isEnd = true;
+                    }
+
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+        return ExistReturn;
+    };
+
+    /**
+     *  设置为新时间
+     * @param newDate
+     * @private
+     */
+    var _reSetDate = function (newDate) {
+        _self.ClassDate = newDate;
+        var trans = parseInt(moment.utc(newDate).format("YYYY")) - parseInt(moment.utc(newDate).format("YYYY"));
+        var transPix = trans * 12.5;
+        _mouseMove_Year(transPix);
+    };
+
+    var _reSetDataInfo = function (newDataInfo) {
+        YearDataInfo = newDataInfo;
+        _getMouseMove_MonthFunc(0);
+    };
+
+    _self.init = _init;
+    _self.reSetDate = _reSetDate;
+    _self.mouseMoveFunc = _getMouseMove_Month;
+    _self.mouseMoveFunc = _reSetDataInfo;
+
+    return _self
+};
+
