@@ -88,6 +88,8 @@ function TimeLine() {
     //基本数据
     var m_LayerDataList = [];
     var m_LayerShowTypeList = [];
+
+    var m_LayerAllModeData = [];
     //分级数据
     var m_YearModeData = [];
     var m_MonthModeData = [];
@@ -630,144 +632,144 @@ function TimeLine() {
      * @constructor
      */
     var GetFullModeWidth = function () {
-            var m_browserType = self.browserType;
-            var m_DIVID = self.IDName;
-            if (m_DIVID === '') {
-                return;
+        var m_browserType = self.browserType;
+        var m_DIVID = self.IDName;
+        if (m_DIVID === '') {
+            return;
+        }
+
+        var m_ClassADD = document.getElementById(m_DIVID);
+        var TimeLineTotalDIV = document.getElementById("ShowTimeLine");
+        var TimeLineList = document.getElementsByClassName("svg_ALL");
+        var Total_Witdh = 0;
+
+        switch (m_browserType) {
+
+            case 'Chrome':
+            {
+                // 总宽度
+                var TotalWidth = (document.documentElement.scrollWidth > document.documentElement.clientWidth)
+                    ? document.documentElement.scrollWidth : document.documentElement.scrollWidth;
+                Total_Witdh = TotalWidth;
+                //设置整体控件宽度
+                if (TotalWidth > 380) {
+                    document.getElementById(m_DIVID).style.width = TotalWidth;
+                } else {
+                    document.getElementById(m_DIVID).style.width = 380;
+                }
+
+                //右侧SVGTimeLine高度
+                var SVGWitdh = 0;
+                SVGWitdh = TotalWidth - 490;
+                //设置TimeLine宽度
+                TimeLineTotalDIV.style.width = TotalWidth - 360;
+
+                //SVG列表 设置宽度
+                for (var j = 0; j < TimeLineList.length; j++) {
+                    TimeLineList[j].style.width = SVGWitdh;
+                }
+                break;
             }
-
-            var m_ClassADD = document.getElementById(m_DIVID);
-            var TimeLineTotalDIV = document.getElementById("ShowTimeLine");
-            var TimeLineList = document.getElementsByClassName("svg_ALL");
-            var Total_Witdh = 0;
-
-            switch (m_browserType) {
-
-                case 'Chrome':
-                {
-                    // 总宽度
-                    var TotalWidth = (document.documentElement.scrollWidth > document.documentElement.clientWidth)
-                        ? document.documentElement.scrollWidth : document.documentElement.scrollWidth;
-                    Total_Witdh = TotalWidth;
-                    //设置整体控件宽度
-                    if (TotalWidth > 380) {
-                        document.getElementById(m_DIVID).style.width = TotalWidth;
-                    } else {
-                        document.getElementById(m_DIVID).style.width = 380;
-                    }
-
-                    //右侧SVGTimeLine高度
-                    var SVGWitdh = 0;
-                    SVGWitdh = TotalWidth - 490;
-                    //设置TimeLine宽度
-                    TimeLineTotalDIV.style.width = TotalWidth - 360;
-
-                    //SVG列表 设置宽度
-                    for (var j = 0; j < TimeLineList.length; j++) {
-                        TimeLineList[j].style.width = SVGWitdh;
-                    }
-                    break;
+            //chrome 浏览器
+            case 'Firefox':
+            {
+                // 总宽度
+                var TotalWidth_fireFox = document.documentElement.clientWidth - 20;
+                Total_Witdh = TotalWidth_fireFox;
+                //设置TimeLine DIV宽度
+                if (TotalWidth_fireFox > 360) {
+                    m_ClassADD.style.width = TotalWidth_fireFox + "px";
+                } else {
+                    m_ClassADD.style.width = 360 + "px";
                 }
-                //chrome 浏览器
-                case 'Firefox':
-                {
-                    // 总宽度
-                    var TotalWidth_fireFox = document.documentElement.clientWidth - 20;
-                    Total_Witdh = TotalWidth_fireFox;
-                    //设置TimeLine DIV宽度
-                    if (TotalWidth_fireFox > 360) {
-                        m_ClassADD.style.width = TotalWidth_fireFox + "px";
-                    } else {
-                        m_ClassADD.style.width = 360 + "px";
-                    }
-                    //SVG列表 设置宽度
-                    var SVGWitdh_fireFox = TotalWidth_fireFox - 490;
-                    for (var k = 0; k < TimeLineList.length; k++) {
-                        TimeLineList[k].style.width = SVGWitdh_fireFox + "px";
-                    }
-                    //右侧SVGTimeLine宽度
-                    TimeLineTotalDIV.style.width = (TotalWidth_fireFox - 360) + "px";
-                    break;
+                //SVG列表 设置宽度
+                var SVGWitdh_fireFox = TotalWidth_fireFox - 490;
+                for (var k = 0; k < TimeLineList.length; k++) {
+                    TimeLineList[k].style.width = SVGWitdh_fireFox + "px";
                 }
-                case "MSIE":
-                {
-                    // 总宽度
-                    var TotalWidth_MSIE = document.documentElement.clientWidth - 20;
-                    Total_Witdh = TotalWidth_MSIE;
-                    //设置TimeLine DIV宽度
-                    if (TotalWidth_MSIE > 360) {
-                        m_ClassADD.style.width = TotalWidth_MSIE + "px";
-                    } else {
-                        m_ClassADD.style.width = 360 + "px";
-                    }
-                    //SVG列表 设置宽度
-                    var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
-                    for (var ti = 0; ti < TimeLineList.length; ti++) {
-                        TimeLineList[ti].style.width = SVGWitdh_MSIE + "px";
-                    }
-                    //右侧SVGTimeLine宽度
-                    TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
-                    break;
-                }
-                case 'Edge':
-                {
-                    var curW = document.documentElement.clientWidth || document.body.clientWidth;
-                    //var curH = document.documentElement.clientHeight || document.body.clientHeight;
-                    //  console.log('Edge:' + curW);
-
-                    // 总宽度
-                    var TotalWidth_Edge = curW - 20;
-                    Total_Witdh = TotalWidth_Edge;
-                    //设置TimeLine DIV宽度
-                    if (TotalWidth_Edge > 360) {
-                        m_ClassADD.style.width = TotalWidth_Edge + "px";
-                    } else {
-                        m_ClassADD.style.width = 360 + "px";
-                    }
-                    //SVG列表 设置宽度
-                    var SVGWitdh_Edge = TotalWidth_Edge - 490;
-                    for (var tj = 0; tj < TimeLineList.length; tj++) {
-                        TimeLineList[tj].style.width = SVGWitdh_Edge + "px";
-                    }
-                    //右侧SVGTimeLine宽度
-                    TimeLineTotalDIV.style.width = (TotalWidth_Edge - 360) + "px";
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
+                //右侧SVGTimeLine宽度
+                TimeLineTotalDIV.style.width = (TotalWidth_fireFox - 360) + "px";
+                break;
             }
+            case "MSIE":
+            {
+                // 总宽度
+                var TotalWidth_MSIE = document.documentElement.clientWidth - 20;
+                Total_Witdh = TotalWidth_MSIE;
+                //设置TimeLine DIV宽度
+                if (TotalWidth_MSIE > 360) {
+                    m_ClassADD.style.width = TotalWidth_MSIE + "px";
+                } else {
+                    m_ClassADD.style.width = 360 + "px";
+                }
+                //SVG列表 设置宽度
+                var SVGWitdh_MSIE = TotalWidth_MSIE - 490;
+                for (var ti = 0; ti < TimeLineList.length; ti++) {
+                    TimeLineList[ti].style.width = SVGWitdh_MSIE + "px";
+                }
+                //右侧SVGTimeLine宽度
+                TimeLineTotalDIV.style.width = (TotalWidth_MSIE - 360) + "px";
+                break;
+            }
+            case 'Edge':
+            {
+                var curW = document.documentElement.clientWidth || document.body.clientWidth;
+                //var curH = document.documentElement.clientHeight || document.body.clientHeight;
+                //  console.log('Edge:' + curW);
 
-            //495
-            var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
-            if (Total_Witdh < 495) {
-                for (var i = 0; i < ShowTimeLine.length; i++) {
-                    ShowTimeLine[i].style.display = "none";
+                // 总宽度
+                var TotalWidth_Edge = curW - 20;
+                Total_Witdh = TotalWidth_Edge;
+                //设置TimeLine DIV宽度
+                if (TotalWidth_Edge > 360) {
+                    m_ClassADD.style.width = TotalWidth_Edge + "px";
+                } else {
+                    m_ClassADD.style.width = 360 + "px";
                 }
-                self.Is_ShowSVGLine = false;
-            } else {
-                //var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
-                for (var t1 = 0; t1 < ShowTimeLine.length; t1++) {
-                    ShowTimeLine[t1].style.display = "block";
+                //SVG列表 设置宽度
+                var SVGWitdh_Edge = TotalWidth_Edge - 490;
+                for (var tj = 0; tj < TimeLineList.length; tj++) {
+                    TimeLineList[tj].style.width = SVGWitdh_Edge + "px";
                 }
-                self.Is_ShowSVGLine = true;
+                //右侧SVGTimeLine宽度
+                TimeLineTotalDIV.style.width = (TotalWidth_Edge - 360) + "px";
+                break;
             }
-            //根据新长度计算当前显示宽度值
-            if (Total_Witdh !== 0 && Total_Witdh > 0) {
-                // console.log("屏幕总宽度：" + Total_Witdh);
-                var CountWidth = Total_Witdh - 300 - 150;
-                //年的 10年 一年25
-                YearShowCount = Math.ceil(CountWidth / 10 / 25) + 1;
-                //月 一年 12个月 一个月12.5
-                MonthShowCount = Math.ceil(CountWidth / 12.5 / 12) + 2;
-                //day 一个月 29天
-                DayShowCount = Math.ceil(CountWidth / 29 / 12.5) + 1;
-                //分钟 一小时  12个 5分钟 1个12.5
-                MinutesShowCount = Math.ceil(CountWidth / 12 / 12.5) + 1;
-                //console.log(YearShowCount + ":" + MonthShowCount + ":" + DayShowCount + ":" + MinutesShowCount);
+            default:
+            {
+                break;
             }
-        };
+        }
+
+        //495
+        var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
+        if (Total_Witdh < 495) {
+            for (var i = 0; i < ShowTimeLine.length; i++) {
+                ShowTimeLine[i].style.display = "none";
+            }
+            self.Is_ShowSVGLine = false;
+        } else {
+            //var ShowTimeLine = document.getElementsByClassName("TimeLineTotalDiv");
+            for (var t1 = 0; t1 < ShowTimeLine.length; t1++) {
+                ShowTimeLine[t1].style.display = "block";
+            }
+            self.Is_ShowSVGLine = true;
+        }
+        //根据新长度计算当前显示宽度值
+        if (Total_Witdh !== 0 && Total_Witdh > 0) {
+            // console.log("屏幕总宽度：" + Total_Witdh);
+            var CountWidth = Total_Witdh - 300 - 150;
+            //年的 10年 一年25
+            YearShowCount = Math.ceil(CountWidth / 10 / 25) + 1;
+            //月 一年 12个月 一个月12.5
+            MonthShowCount = Math.ceil(CountWidth / 12.5 / 12) + 2;
+            //day 一个月 29天
+            DayShowCount = Math.ceil(CountWidth / 29 / 12.5) + 1;
+            //分钟 一小时  12个 5分钟 1个12.5
+            MinutesShowCount = Math.ceil(CountWidth / 12 / 12.5) + 1;
+            //console.log(YearShowCount + ":" + MonthShowCount + ":" + DayShowCount + ":" + MinutesShowCount);
+        }
+    };
 
 
     /**
@@ -815,7 +817,7 @@ function TimeLine() {
      * @constructor
      */
     var SetShowYear = function (Year) {
-        if (isNaN(parseInt(Year))) {
+        if (Year) {
             Year_Show = parseInt(Year).toString();
             self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
             RefreshTimeShow();
@@ -832,14 +834,17 @@ function TimeLine() {
      * @constructor
      */
     var SetShowMonth = function (enevt) {
+        console.log('SetShowMonth');
         var TimeStr = enevt.getAttribute("value");
         var new_Year = TimeStr.split("-")[0];
         var new_Month = TimeStr.split("-")[1];
-        if (isNaN(parseInt(new_Year))) {
+        if (new_Year && new_Month) {
             Year_Show = parseInt(new_Year).toString();
             Month_Show = parseInt(new_Month).toString();
             //设置年月日
             self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
+            console.log('DateShow:' + self.DateShow);
+
             RefreshTimeShow();
             return true;
         } else {
@@ -1096,7 +1101,7 @@ function TimeLine() {
     var GetMinuteMode_DataShowList_bak = function (Show_DayDate, ShowTransLate) {
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
-        if (m_MinuteModeData.length === 0 || !m_MinuteModeData.length) {
+        if (!m_MinuteModeData.length || m_MinuteModeData.length === 0) {
             return '';
         }
         //数据整体svg
@@ -1157,7 +1162,7 @@ function TimeLine() {
         }
         ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
         if (IS_ShowTag === false) {
-            ShowLayer_DataSVG === '';
+            ShowLayer_DataSVG = '';
         }
         return ShowLayer_DataSVG;
     };
@@ -1311,6 +1316,7 @@ function TimeLine() {
             var SVG_Show = '';
             //每个月的位移 初始化位0
             m_Trans_Day = m_Trans_Day - trans;
+
             //向后拖动
             while (m_Trans_Day > 0) {
                 //计算长度
@@ -1327,7 +1333,7 @@ function TimeLine() {
                 //计算长度
                 MonthLength = -(new Date(DayBegin_Date.getFullYear(), (DayBegin_Date.getMonth() + 1), 0).getDate()) * 12.5;
             }
-            //     var Day_Trans = m_Trans_Day;
+            var Day_Trans = m_Trans_Day;
             //初始时间为2016年1月 当前月
             var CountDate = new Date(DayBegin_Date.getFullYear(), DayBegin_Date.getMonth() - 1, DayBegin_Date.getDate());
 
@@ -1342,61 +1348,50 @@ function TimeLine() {
                 var ShowYear = CountDate.getFullYear();
                 var ShowMonth = CountDate.getMonth();
                 //月开始 绘制
-                var SVG_Month = '  <g class="tick_Total_Year" transform="translate(' + m_Trans_Day + ')">' +
+                var SVG_Month = '  <g class="tick_Total_Year" transform="translate(' + Day_Trans + ')">' +
                     '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
                 //每一天循环
                 for (var j = 0; j < TimeDateCount; j++) {
                     //计算每一天的位移
-                    var Day_Trans = (j * 12.5).toString();
+                    var Day_Trans_min = (j * 12.5).toString();
                     //根据时间计算当前块显示 DATE YYYY-MM-dd
                     var DayTimeStr = moment(new Date(ShowYear, parseInt(ShowMonth), parseInt(j + 1))).format('YYYY-MM-DD');
                     //根据时间加载数据 svg
-                    var Data_SVG = GetDayMode_DataShowList(DayTimeStr, Day_Trans);
+                    var Data_SVG = GetDayMode_DataShowList(DayTimeStr, Day_Trans_min);
 
                     //若当前日期为显示日期
-                    if (!self.AnimeMode) {
-                        if (DayTimeStr === DateShowNowStr) {
-                            TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
-                                + ' transform="translate(' + (Day_Trans - 8) + ',-10)">'
-                                + '<title>' + DateShowNowStr + '</title>'
-                                + '<path d="'
-                                + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
-                                + '"></path>'
-                                + '<rect width="3" height="20" x="9" y="11" ></rect>'
-                                + '<rect width="3" height="20" x="14" y="11" ></rect>'
-                                + '<rect width="3" height="20" x="19" y="11" ></rect>'
-                                + '</g>';
-                        }
-                    } else {
-                        if (DayTimeStr === self.AnimeDate.utc().format('YYYY-MM-DD')) {
-                            TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
-                                + ' transform="translate(' + (Day_Trans - 8) + ',-10)">'
-                                + '<title>' + DateShowNowStr + '</title>'
-                                + '<path d="'
-                                + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
-                                + '"></path>'
-                                + '<rect width="3" height="20" x="9" y="11" ></rect>'
-                                + '<rect width="3" height="20" x="14" y="11" ></rect>'
-                                + '<rect width="3" height="20" x="19" y="11" ></rect>'
-                                + '</g>';
-                        }
+
+                    if (DayTimeStr.toString() === DateShowNowStr.toString()) {
+
+                        TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
+                            + ' transform="translate(' + (Day_Trans_min - 8) + ',-10)">'
+                            + '<title>' + DateShowNowStr + '</title>'
+                            + '<path d="'
+                            + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
+                            + '"></path>'
+                            + '<rect width="3" height="20" x="9" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="14" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="19" y="11" ></rect>'
+                            + '</g>';
                     }
+
                     //根据时间 初始化 基础svg
                     /*      + ' onclick="javascript:' + self.DayRectOnClick(evt, ' + ShowYear + ', ' + ShowMonth + ', ' + j + ') + '"   >'*/
-                    var SVG_Day = '   <g class="tick_Year_One" transform="translate(' + Day_Trans + ')" >'
+                    var SVG_Day = '   <g class="tick_Year_One" transform="translate(' + Day_Trans_min + ')" >'
                         + '<rect class="DayRect Btn_DayRect" x="0.2" y="0" width="12.5" height="55" value="' + ShowYear + '-' + (parseInt(ShowMonth) + 1) + '-' + parseInt(j + 1) + '">'
                         + '<title>' + ShowYear + '-' + (parseInt(ShowMonth) + 1) + '-' + parseInt(j + 1) + '</title>'
                         + '</rect>'
                         + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
                         + '</g>';
                     SVG_Month = SVG_Month + Data_SVG + SVG_Day;
-                    if (Day_Trans === "62.5" || Day_Trans === "125" || Day_Trans === "187.5" || Day_Trans === "250" || Day_Trans === "312.5" || Day_Trans === "375") {
+                    if (Day_Trans_min === "62.5" || Day_Trans_min === "125" || Day_Trans_min === "187.5"
+                        || Day_Trans_min === "250" || Day_Trans_min === "312.5" || Day_Trans_min === "375") {
                         SVG_Month = SVG_Month
-                            + '<line x1="' + Day_Trans + '" x2="' + Day_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
+                            + '<line x1="' + Day_Trans_min + '" x2="' + Day_Trans_min + '" y1="40" y2="55" class="tick_10DayLine"'
                             + ' ></line>';
                     }
                 }
-                m_Trans_Day = ( TimeDateCount * 12.5) + m_Trans_Day;
+                Day_Trans = ( TimeDateCount * 12.5) + Day_Trans;
                 var Width = ( TimeDateCount * 12.5);
                 var Time = CountDate.getFullYear() + "-" + (CountDate.getMonth() + 1);
                 var Month_End = '<g transform="translate(0)">'
@@ -1520,6 +1515,7 @@ function TimeLine() {
     };
 
     var GetDayMode_DataShowList = function (Show_DayDate, ShowTransLate) {
+
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
         if (!m_DayModeData.length || m_DayModeData.length === 0) {
@@ -1536,13 +1532,14 @@ function TimeLine() {
         var IsDataShowList = [];
         var DataMomentBegin = moment.utc(Show_DayDate);
         var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'day');
+        var MinusCount = DataMomentEnd - DataMomentBegin;
         //查找是否存在数据
-        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, MinusCount);
+
         //查找是否存在数据
         for (var k = 0; k < DataList.length; k++) {
 
             var m_DataInfo_i = DataList[k];
-
             //根据数据存在情况加入列表
             IsDataShowList.push(m_DataInfo_i);
         }
@@ -1673,7 +1670,7 @@ function TimeLine() {
                 var Trans = (i * 25).toString();
                 //若当前年时间为选择时间 则加入guitarpick指示当前时间
                 if (!self.AnimeMode) {
-                    if (DateShowYearStr === YearClick) {
+                    if (DateShowYearStr.toString() === YearClick.toString()) {
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
                             + ' transform="translate(' + (Trans - 3) + ',-10)">'
                             + '<title>' + YearClick + '</title>'
@@ -1686,7 +1683,7 @@ function TimeLine() {
                             + '</g>';
                     }
                 } else {
-                    if (YearClick === self.AnimeDate.utc().format('YYYY')) {
+                    if (YearClick.toString() === self.AnimeDate.utc().format('YYYY')) {
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
                             + ' transform="translate(' + (Trans - 3) + ',-10)">'
                             + '<title>' + YearClick + '</title>'
@@ -1756,6 +1753,7 @@ function TimeLine() {
      * @param event
      */
     var btnClickGetYear = function (event) {
+
         //调用设置年函数
         var Tag = event.getAttribute("value");
         var ClickDate = new Date(Tag);
@@ -1770,7 +1768,7 @@ function TimeLine() {
      * @returns {*}
      * @constructor
      */
-    var GetYearMode_DataShowList = function (Show_YearDate, ShowTransLate) {
+    var GetYearMode_DataShowList_bak = function (Show_YearDate, ShowTransLate) {
         Show_YearDate = Show_YearDate.toString();
         //若数据长度为0 则返回空
         if (m_YearModeData.length === 0 || !m_YearModeData.length) {
@@ -1812,6 +1810,84 @@ function TimeLine() {
             if (IsDataShowList[i] === true) {
                 //获取当前图层是否显示信息
                 var Ishow = m_LayerShowTypeList[i];
+                var RectLineEnd = Rect_Y + rect_Height - 0.4;
+                //根据显示情况
+                if (Ishow) {
+                    IS_ShowTag = true;
+                    //若该图层显示 则为蓝色
+                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="25" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="25" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="25" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                } else {
+                    IS_ShowTag = true;
+                    //不显示则为灰色
+                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="25" height="' + rect_Height + '" ></rect>'
+                        + '<line x1="0" x2="25" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="25" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                }
+            } else {
+                //若没有数据 则为空
+                DateRect = '';
+            }
+            //组成矩阵
+            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
+        }
+        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
+        if (IS_ShowTag === false) {
+            ShowLayer_DataSVG === '';
+        }
+        return ShowLayer_DataSVG;
+    };
+
+
+    var GetYearMode_DataShowList = function (Show_YearDate, ShowTransLate) {
+        Show_YearDate = Show_YearDate.toString();
+        //若数据长度为0 则返回空
+        if (m_YearModeData.length === 0 || !m_YearModeData.length) {
+            return '';
+        }
+
+        //数据整体svg
+        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
+            + ' transform="translate(' + ShowTransLate + ')">';
+
+        //日期格式赋值
+        //   var Date_Rect = Show_YearDate;
+
+        //是否显示列表
+        var IsDataShowList = [];
+
+        var DataMomentBegin = moment.utc(Show_YearDate);
+        var DataMomentEnd = moment.utc(Show_YearDate).add(1.0, 'year');
+
+        //查找是否存在数据
+        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        //查找是否存在数据
+        for (var k = 0; k < DataList.length; k++) {
+            var is_ShowTag = false;
+            var m_DataInfo_i = DataList[k];
+            //  var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
+            /*   if (IndexNum !== -1) {
+             is_ShowTag = true;
+             }*/
+            //根据数据存在情况加入列表
+            IsDataShowList.push(m_DataInfo_i);
+        }
+
+        //判定是否有数据条填充 若无填充 则返回空值
+        var IS_ShowTag = false;
+
+        var rect_Height = Math.round(40 / m_YearModeData.length, 2);
+        if (rect_Height > 10) {
+            rect_Height = 10;
+        }
+        for (var i = 0; i < DataList.length; i++) {
+            var DateRect = '';
+            var Rect_Y = i * rect_Height;
+            //生成RECT 样式
+            if (IsDataShowList[i].isExist === true) {
+                //获取当前图层是否显示信息
+                var Ishow = IsDataShowList[i].isShow;
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
                 //根据显示情况
                 if (Ishow) {
@@ -1949,7 +2025,7 @@ function TimeLine() {
                     + '</g>';
                 //若显示月为当前月
                 if (self.AnimeMode) {
-                    if (ShowDateStr === self.AnimeDate.utc().format("YYYY-M")) {
+                    if (ShowDateStr.toString() === self.AnimeDate.utc().format("YYYY-M")) {
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick"'
                             + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
                             + '<title>' + ShowDateStr + '</title>'
@@ -1963,7 +2039,7 @@ function TimeLine() {
                         // MonthSVG = MonthSVG + TimeGar;
                     }
                 } else {
-                    if (TimeShowStr_Month === ShowDateStr) {
+                    if (TimeShowStr_Month.toString() === ShowDateStr.toString()) {
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick"'
                             + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
                             + '<title>' + ShowDateStr + '</title>'
@@ -1999,7 +2075,7 @@ function TimeLine() {
         if (self.browserType !== "MSIE") {
             m_ShowSVG.innerHTML = InnerSvgTotal;
         } else {
-            // console.log("IE innerHTML");
+
             $("#ShowSVG").html(InnerSvgTotal);
         }
         //绑定点击事件
@@ -2011,6 +2087,7 @@ function TimeLine() {
      * @constructor
      */
     var MonthClickFunc = function () {
+
         var m_MonthRectList = document.getElementsByClassName("Btn_MonthRect");
         for (var i = 0; i < m_MonthRectList.length; i++) {
             m_MonthRectList[i].onclick = function () {
@@ -2027,6 +2104,72 @@ function TimeLine() {
      * @constructor
      */
     var GetMothMode_DataShowList = function (Show_MonthDate, ShowTransLate) {
+
+        if (!m_DataInfoALL.length && m_DataInfoALL.length === 0) {
+            return "";
+        }
+        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
+            + ' transform="translate(' + ShowTransLate + ')">';
+
+        //日期格式赋值
+        var Date_Rect = Show_MonthDate;
+        //是否显示列表
+        var IsDataShowList = [];
+
+        var DataMomentBegin = moment.utc(Show_MonthDate);
+        var DataMomentEnd = moment.utc(Show_MonthDate).add(1.0, 'month');
+
+        //查找是否存在数据
+        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        //查找是否存在数据
+        for (var k = 0; k < DataList.length; k++) {
+
+            var m_DataInfo_i = DataList[k];
+
+            //根据数据存在情况加入列表
+            IsDataShowList.push(m_DataInfo_i);
+        }
+        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
+        var rect_Height = Math.round(40 / m_MonthModeData.length, 2);
+
+        if (rect_Height > 10) {
+            rect_Height = 10;
+        }
+        var Rect_ShowHeight = rect_Height - 0.8;
+        //遍历获取
+        for (var i = 0; i < IsDataShowList.length; i++) {
+            var DateRect = '';
+            var Rect_Y = i * rect_Height;
+            //生成RECT 样式
+            if (IsDataShowList[i].isExist === true) {
+                //获取当前图层是否显示信息
+                var IsData_show = IsDataShowList[i].isShow;
+                var RectLineEnd = Rect_Y + rect_Height - 0.2;
+                //根据显示情况
+                if (IsData_show) {
+                    //若该图层显示 则为蓝色
+                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                } else {
+                    //有数据 但是当前列 不显示 则为灰色
+                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
+                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
+                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
+                }
+            } else {
+                //若没有数据 则为
+                DateRect = '';
+            }
+            //组成矩阵
+            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
+        }
+        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
+
+        return ShowLayer_DataSVG;
+    };
+
+    var GetMothMode_DataShowList_bak = function (Show_MonthDate, ShowTransLate) {
 
         if (!m_MonthModeData.length) {
             return "";
@@ -2088,8 +2231,6 @@ function TimeLine() {
 
         return ShowLayer_DataSVG;
     };
-
-
     /**
      * 整体显示 --  点击按钮 伸缩界面 事件
      * @constructor
@@ -2289,7 +2430,7 @@ function TimeLine() {
                         }
                         default:
                         {
-                            console.log(m_FirstItem);
+                            //     console.log(m_FirstItem);
                             break;
                         }
                     }
@@ -2689,10 +2830,8 @@ function TimeLine() {
                     m_LatestDate = m_allData[m_length - 1];
                 }
             }
-            //   console.log(m_LatestDate);
             if (m_LatestDate !== "") {
                 var m_LatestDate_moment = moment(m_LatestDate + "+00:00");
-                // console.log(m_LatestDate_moment);
                 return m_LatestDate_moment.utc();
             } else {
                 return;
@@ -2758,7 +2897,7 @@ function TimeLine() {
      */
     this.SetAmineDate = function (m_AnimeDate) {
         if (!(m_AnimeDate instanceof moment)) {
-            console.log("参数类型错误，m_AnimeDate需要为moment类型。");
+            //    console.log("参数类型错误，m_AnimeDate需要为moment类型。");
             return false;
         } else {
             //todo 传入参数是否需要进行５ｍｉｎ的整数化处理 目前默认为5min模式
@@ -2838,7 +2977,7 @@ function TimeLine() {
         //1.等于开始时次 等于结束时次 在这个时间范围内
         //当前进行时间
         if (self.Anime_BeginTime.isBefore(m_momentTime) && self.Anime_EndTime.isAfter(m_momentTime)) {
-            console.log("isin!");
+
             //在时间范围内
             //判断是否已经进行 运行时间 大于当前时间 则已经进行
             if (self.AnimeDate.isBefore(m_momentTime)) {
@@ -2902,7 +3041,7 @@ function TimeLine() {
         }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
         ExistReturn = [];
         //处理JSON
-        DemoJson.forEach(function (DataJsonItem) {
+        m_DataInfoALL.forEach(function (DataJsonItem) {
             var ExistReturnItem = {
                 "isExist": false,
                 "isShow": false,
@@ -2951,6 +3090,9 @@ function TimeLine() {
 
                 });
             }
+            if (ExistReturnItem.isExist === true) {
+                console.log(ExistReturnItem);
+            }
             //设置查找
             ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
             ExistReturn.push(ExistReturnItem);
@@ -2959,13 +3101,5 @@ function TimeLine() {
     }
 }
 
-var YearModeClass = function () {
-    return {"initDIV": _initDIV};
-
-    //初始化绘制
-    function _initDIV() {
-
-    }
-};
 
 
