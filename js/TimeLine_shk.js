@@ -16,6 +16,9 @@ function TimeLine() {
     var Hour_Show = 0;
     var Minute_Show = 0;
 
+    //返回当前选择年月日， 所在的 数据列表 及开始时间
+    this.DataShowBegin = [];
+
     /**
      * 整体显示 -- 当前浏览器类型
      * @type {string}
@@ -84,17 +87,13 @@ function TimeLine() {
      * @type {Array}
      */
 
-    var m_DataInfoALL = [];
+
     //基本数据
     var m_LayerDataList = [];
     var m_LayerShowTypeList = [];
 
     var m_LayerAllModeData = [];
-    //分级数据
-    var m_YearModeData = [];
-    var m_MonthModeData = [];
-    var m_DayModeData = [];
-    var m_MinuteModeData = [];
+    var m_LayerExistLayer = [];
 
     /** 对外接口 */
 
@@ -104,7 +103,7 @@ function TimeLine() {
      * @param m_InitMode
      * @constructor
      */
-    this.Init = function (DIVid, m_InitMode) {
+    this.init = function (DIVid, m_InitMode) {
         //获取当前浏览器类型
         self.browserType = setModeIE();
         //用DIVid 赋值
@@ -242,7 +241,7 @@ function TimeLine() {
         //DateShow 添加一天
         self.DateShow = new Date(moment(self.DateShow).add(1, 'day'));
         //重设位移值 年位移位置
-        self.m_Trans = ( self.m_TransYear - moment(self.DateShow).year() + 5 ) * 150;
+        self.m_Trans = (Year_Show - moment(self.DateShow).year() + 5 ) * 150;
 
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5;
@@ -834,7 +833,7 @@ function TimeLine() {
      * @constructor
      */
     var SetShowMonth = function (enevt) {
-        console.log('SetShowMonth');
+        //  console.log('SetShowMonth');
         var TimeStr = enevt.getAttribute("value");
         var new_Year = TimeStr.split("-")[0];
         var new_Month = TimeStr.split("-")[1];
@@ -843,8 +842,6 @@ function TimeLine() {
             Month_Show = parseInt(new_Month).toString();
             //设置年月日
             self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
-            console.log('DateShow:' + self.DateShow);
-
             RefreshTimeShow();
             return true;
         } else {
@@ -975,7 +972,6 @@ function TimeLine() {
                     var item = HourNow - self.DateShow;
                     //若指针时间在范围内 显示指针
                     if (300000 > item && item >= 0 && TimeGar === '') {
-                        console.log("DateShowNowStr:" + DateShowNowStr);
                         is_GutiarFlag = true;
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick" '
                             + ' transform="translate(' + (Minute_Trans - 8) + ',-10)">'
@@ -996,7 +992,6 @@ function TimeLine() {
                     TimeGar = "";
                     var Amineitem = moment(HourNow) - self.AnimeDate;
                     if (300000 > Amineitem && Amineitem >= 0 && TimeGar === "") {
-                        console.log("get!");
                         is_GutiarFlag = true;
                         TimeGar = '<g id="guitarpick" class="SVG_Anime_guitarpick" '
                             + ' transform="translate(' + (Minute_Trans - 8) + ',-10)">'
@@ -1093,86 +1088,16 @@ function TimeLine() {
 
     /**
      * 分钟模式 -- 获取月模式的数据显示SVG 内容函数
-     * @param Show_DayDate 输入传入的分钟时间
-     * @param ShowTransLate 和当前分钟时间的位移
+     * @param Show_DayDate
+     * @param ShowTransLate
      * @returns {*}
      * @constructor
      */
-    var GetMinuteMode_DataShowList_bak = function (Show_DayDate, ShowTransLate) {
-        Show_DayDate = Show_DayDate.toString();
-        //若数据长度为0 则返回空
-        if (!m_MinuteModeData.length || m_MinuteModeData.length === 0) {
-            return '';
-        }
-        //数据整体svg
-        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
-            + ' transform="translate(' + ShowTransLate + ')">';
-
-        //日期格式赋值
-        var Date_Rect = Show_DayDate;
-        //是否显示列表
-        var IsDataShowList = [];
-        //查找是否存在数据
-        for (var k = 0; k < m_MinuteModeData.length; k++) {
-            var is_ShowTag = false;
-            var m_DataInfo_i = m_MinuteModeData[k];
-
-            var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum !== -1) {
-                is_ShowTag = true;
-            }
-            //根据数据存在情况加入列表
-            IsDataShowList.push(is_ShowTag);
-        }
-        //判定是否有数据条填充 若无填充 则返回空值
-        var IS_ShowTag = false;
-        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
-        var rect_Height = Math.round(40 / m_MinuteModeData.length, 2);
-        if (rect_Height > 10) {
-            rect_Height = 10;
-        }
-        for (var i = 0; i < m_MinuteModeData.length; i++) {
-            var DateRect = '';
-            var Rect_Y = i * rect_Height;
-            //生成RECT 样式
-            if (IsDataShowList[i] === true) {
-                //获取当前图层是否显示信息
-                var Ishow = m_LayerShowTypeList[i];
-                var RectLineEnd = Rect_Y + rect_Height - 0.4;
-                //根据显示情况
-                if (Ishow) {
-                    IS_ShowTag = true;
-                    //若该图层显示 则为蓝色
-                    DateRect = '<rect class="Rect_Data_Show" x="-0.2" y="' + Rect_Y + '" width="12.7" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                } else {
-                    IS_ShowTag = true;
-                    //不显示则为灰色
-                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                }
-            } else {
-                //若没有数据 则为空
-                DateRect = '';
-            }
-            //组成矩阵
-            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
-        }
-        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag === false) {
-            ShowLayer_DataSVG = '';
-        }
-        return ShowLayer_DataSVG;
-    };
-
-
     var GetMinuteMode_DataShowList = function (Show_DayDate, ShowTransLate) {
 
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
-        if (m_MinuteModeData.length === 0 || !m_MinuteModeData.length) {
+        if (m_LayerAllModeData.length === 0 || !m_LayerAllModeData.length) {
             return '';
         }
         //数据整体svg
@@ -1180,37 +1105,27 @@ function TimeLine() {
             + ' transform="translate(' + ShowTransLate + ')">';
 
         //日期格式赋值
-        var Date_Rect = Show_DayDate;
+
         //是否显示列表
-        var IsDataShowList = [];
+
         var DataMomentBegin = moment.utc(Show_DayDate);
         var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'minute');
         //查找是否存在数据
-        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
-        for (var k = 0; k < DataList.length; k++) {
-            var is_ShowTag = false;
-            var m_DataInfo_i = DataList[k];
+        var IsDataShowList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, DataMomentEnd - DataMomentBegin);
 
-            if (m_DataInfo_i.isExist) {
-                is_ShowTag = true;
-            }
-            //根据数据存在情况加入列表
-            IsDataShowList.push(m_DataInfo_i);
-        }
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
         //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
-        var rect_Height = Math.round(40 / m_MinuteModeData.length, 2);
+        var rect_Height = Math.round(40 / m_LayerAllModeData.length, 2);
         if (rect_Height > 10) {
             rect_Height = 10;
         }
-        for (var i = 0; i < m_MinuteModeData.length; i++) {
+        for (var i = 0; i < m_LayerAllModeData.length; i++) {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
             if (IsDataShowList[i].isExist === true) {
                 //获取当前图层是否显示信息
-                console.log(IsDataShowList[i]);
                 var Ishow = IsDataShowList[i].isShow;
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
                 //根据显示情况
@@ -1236,7 +1151,7 @@ function TimeLine() {
         }
         ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
         if (IS_ShowTag === false) {
-            ShowLayer_DataSVG === '';
+            ShowLayer_DataSVG = '';
         }
         return ShowLayer_DataSVG;
     };
@@ -1282,7 +1197,7 @@ function TimeLine() {
     var MouseMove_Day = function (event) {
         //计算拖动位移
         if (isMove_Day) {
-            var x_Day = event.clientX;
+            x_Day = event.clientX;
             var DrgNum = X_Before_Day - x_Day;
             if (DrgNum >= 1 || DrgNum <= -1) {
                 X_Before_Day = x_Day;
@@ -1296,7 +1211,7 @@ function TimeLine() {
      * @constructor
      */
     var Day_ClickFucn = function () {
-        // console.log("Day_ClickFucn");
+
         //日点击事件
         var m_Btn_DayRectList = document.getElementsByClassName('Btn_DayRect');
         for (var t = 0; t < m_Btn_DayRectList.length; t++) {
@@ -1445,80 +1360,11 @@ function TimeLine() {
      * @returns {*}
      * @constructor
      */
-    var GetDayMode_DataShowList_bak = function (Show_DayDate, ShowTransLate) {
-        Show_DayDate = Show_DayDate.toString();
-        //若数据长度为0 则返回空
-        if (!m_DayModeData.length || m_DayModeData.lemgth === 0) {
-            return '';
-        }
-        //数据整体svg
-        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
-            + ' transform="translate(' + ShowTransLate + ')">';
-
-        //日期格式赋值
-        var Date_Rect = Show_DayDate;
-
-        //是否显示列表
-        var IsDataShowList = [];
-        //查找是否存在数据
-        for (var k = 0; k < m_DayModeData.length; k++) {
-            var is_ShowTag = false;
-            var m_DataInfo_i = m_DayModeData[k];
-            var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum !== -1) {
-                is_ShowTag = true;
-            }
-            //根据数据存在情况加入列表
-            IsDataShowList.push(is_ShowTag);
-        }
-        //判定是否有数据条填充 若无填充 则返回空值
-        var IS_ShowTag = false;
-        //生成基于 数据的是否显示Ture False 列表 使用列表初始化显示
-        var rect_Height = Math.round(40 / m_DayModeData.length, 2);
-        if (rect_Height > 10) {
-            rect_Height = 10;
-        }
-        for (var i = 0; i < m_DayModeData.length; i++) {
-            var DateRect = '';
-            var Rect_Y = i * rect_Height;
-            //生成RECT 样式
-            if (IsDataShowList[i] === true) {
-                //获取当前图层是否显示信息
-                var Ishow = m_LayerShowTypeList[i];
-                var RectLineEnd = Rect_Y + rect_Height - 0.4;
-                //根据显示情况
-                if (Ishow) {
-                    IS_ShowTag = true;
-                    //若该图层显示 则为蓝色
-                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                } else {
-                    IS_ShowTag = true;
-                    //不显示则为灰色
-                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                }
-            } else {
-                //若没有数据 则为空
-                DateRect = '';
-            }
-            //组成矩阵
-            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
-        }
-        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag === false) {
-            ShowLayer_DataSVG === '';
-        }
-        return ShowLayer_DataSVG;
-    };
-
     var GetDayMode_DataShowList = function (Show_DayDate, ShowTransLate) {
-
+        //   console.log('GetDayMode_DataShowList');
         Show_DayDate = Show_DayDate.toString();
         //若数据长度为0 则返回空
-        if (!m_DayModeData.length || m_DayModeData.length === 0) {
+        if (!m_LayerAllModeData.length || m_LayerAllModeData.length === 0) {
             return '';
         }
         //数据整体svg
@@ -1538,7 +1384,6 @@ function TimeLine() {
 
         //查找是否存在数据
         for (var k = 0; k < DataList.length; k++) {
-
             var m_DataInfo_i = DataList[k];
             //根据数据存在情况加入列表
             IsDataShowList.push(m_DataInfo_i);
@@ -1546,15 +1391,16 @@ function TimeLine() {
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
         //生成基于 数据的是否显示Ture False 列表 使用列表初始化显示
-        var rect_Height = Math.round(40 / m_DayModeData.length, 2);
+        var rect_Height = Math.round(40 / m_LayerAllModeData.length, 2);
         if (rect_Height > 10) {
             rect_Height = 10;
         }
-        for (var i = 0; i < m_DayModeData.length; i++) {
+        for (var i = 0; i < m_LayerAllModeData.length; i++) {
             var DateRect = '';
             var Rect_Y = i * rect_Height;
             //生成RECT 样式
             if (IsDataShowList[i].isExist === true) {
+                //   console.log(IsDataShowList[i].isExist);
                 //获取当前图层是否显示信息
                 var Ishow = IsDataShowList[i].isShow;
                 var RectLineEnd = Rect_Y + rect_Height - 0.4;
@@ -1768,82 +1614,11 @@ function TimeLine() {
      * @returns {*}
      * @constructor
      */
-    var GetYearMode_DataShowList_bak = function (Show_YearDate, ShowTransLate) {
-        Show_YearDate = Show_YearDate.toString();
-        //若数据长度为0 则返回空
-        if (m_YearModeData.length === 0 || !m_YearModeData.length) {
-            return '';
-        }
-
-        //数据整体svg
-        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
-            + ' transform="translate(' + ShowTransLate + ')">';
-
-        //日期格式赋值
-        var Date_Rect = Show_YearDate;
-
-        //是否显示列表
-        var IsDataShowList = [];
-        //查找是否存在数据
-        for (var k = 0; k < m_YearModeData.length; k++) {
-            var is_ShowTag = false;
-            var m_DataInfo_i = m_YearModeData[k];
-            var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum !== -1) {
-                is_ShowTag = true;
-            }
-            //根据数据存在情况加入列表
-            IsDataShowList.push(is_ShowTag);
-        }
-
-        //判定是否有数据条填充 若无填充 则返回空值
-        var IS_ShowTag = false;
-
-        var rect_Height = Math.round(40 / m_YearModeData.length, 2);
-        if (rect_Height > 10) {
-            rect_Height = 10;
-        }
-        for (var i = 0; i < m_YearModeData.length; i++) {
-            var DateRect = '';
-            var Rect_Y = i * rect_Height;
-            //生成RECT 样式
-            if (IsDataShowList[i] === true) {
-                //获取当前图层是否显示信息
-                var Ishow = m_LayerShowTypeList[i];
-                var RectLineEnd = Rect_Y + rect_Height - 0.4;
-                //根据显示情况
-                if (Ishow) {
-                    IS_ShowTag = true;
-                    //若该图层显示 则为蓝色
-                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="25" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="25" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="25" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                } else {
-                    IS_ShowTag = true;
-                    //不显示则为灰色
-                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="25" height="' + rect_Height + '" ></rect>'
-                        + '<line x1="0" x2="25" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="25" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                }
-            } else {
-                //若没有数据 则为空
-                DateRect = '';
-            }
-            //组成矩阵
-            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
-        }
-        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-        if (IS_ShowTag === false) {
-            ShowLayer_DataSVG === '';
-        }
-        return ShowLayer_DataSVG;
-    };
-
 
     var GetYearMode_DataShowList = function (Show_YearDate, ShowTransLate) {
         Show_YearDate = Show_YearDate.toString();
         //若数据长度为0 则返回空
-        if (m_YearModeData.length === 0 || !m_YearModeData.length) {
+        if (m_LayerAllModeData.length === 0 || !m_LayerAllModeData.length) {
             return '';
         }
 
@@ -1851,8 +1626,6 @@ function TimeLine() {
         var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
             + ' transform="translate(' + ShowTransLate + ')">';
 
-        //日期格式赋值
-        //   var Date_Rect = Show_YearDate;
 
         //是否显示列表
         var IsDataShowList = [];
@@ -1877,7 +1650,7 @@ function TimeLine() {
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
 
-        var rect_Height = Math.round(40 / m_YearModeData.length, 2);
+        var rect_Height = Math.round(40 / m_LayerAllModeData.length, 2);
         if (rect_Height > 10) {
             rect_Height = 10;
         }
@@ -2105,14 +1878,12 @@ function TimeLine() {
      */
     var GetMothMode_DataShowList = function (Show_MonthDate, ShowTransLate) {
 
-        if (!m_DataInfoALL.length && m_DataInfoALL.length === 0) {
+        if (!m_LayerAllModeData.length && m_LayerAllModeData.length === 0) {
             return "";
         }
         var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
             + ' transform="translate(' + ShowTransLate + ')">';
 
-        //日期格式赋值
-        var Date_Rect = Show_MonthDate;
         //是否显示列表
         var IsDataShowList = [];
 
@@ -2130,7 +1901,7 @@ function TimeLine() {
             IsDataShowList.push(m_DataInfo_i);
         }
         //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
-        var rect_Height = Math.round(40 / m_MonthModeData.length, 2);
+        var rect_Height = Math.round(40 / m_LayerAllModeData.length, 2);
 
         if (rect_Height > 10) {
             rect_Height = 10;
@@ -2169,68 +1940,6 @@ function TimeLine() {
         return ShowLayer_DataSVG;
     };
 
-    var GetMothMode_DataShowList_bak = function (Show_MonthDate, ShowTransLate) {
-
-        if (!m_MonthModeData.length) {
-            return "";
-        }
-        var ShowLayer_DataSVG = '<g style="width: 12px;height: 40px;fill:#5F5F01" class="tick_Data_Show"'
-            + ' transform="translate(' + ShowTransLate + ')">';
-
-        //日期格式赋值
-        var Date_Rect = Show_MonthDate;
-        //是否显示列表
-        var IsDataShowList = [];
-        //查找是否存在数据
-        for (var k = 0; k < m_MonthModeData.length; k++) {
-            var is_ShowTag = false;
-            var m_DataInfo_i = m_MonthModeData[k];
-            var IndexNum = m_DataInfo_i.indexOf(Date_Rect);
-            if (IndexNum !== -1) {
-                is_ShowTag = true;
-            }
-            //根据数据存在情况加入列表
-            IsDataShowList.push(is_ShowTag);
-        }
-        //生成基于 数据的是否显示Ture False 列表　使用列表初始化显示
-        var rect_Height = Math.round(40 / m_MonthModeData.length, 2);
-
-        if (rect_Height > 10) {
-            rect_Height = 10;
-        }
-        var Rect_ShowHeight = rect_Height - 0.8;
-        //遍历获取
-        for (var i = 0; i < m_MonthModeData.length; i++) {
-            var DateRect = '';
-            var Rect_Y = i * rect_Height;
-            //生成RECT 样式
-            if (IsDataShowList[i] === true) {
-                //获取当前图层是否显示信息
-                var IsData_show = m_LayerShowTypeList[i];
-                var RectLineEnd = Rect_Y + rect_Height - 0.2;
-                //根据显示情况
-                if (IsData_show) {
-                    //若该图层显示 则为蓝色
-                    DateRect = '<rect class="Rect_Data_Show" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                } else {
-                    //有数据 但是当前列 不显示 则为灰色
-                    DateRect = '<rect class="Rect_Data_Hide" x="0" y="' + Rect_Y + '" width="12.5" height="' + Rect_ShowHeight + '" ></rect>'
-                        + '<line x1="0" x2="12.5" y1="' + Rect_Y + '" y2="' + Rect_Y + '" class="Data_tick_Line"></line>'
-                        + '<line x1="0" x2="12.5" y1="' + RectLineEnd + '" y2="' + RectLineEnd + '" class="Data_tick_Line"></line>';
-                }
-            } else {
-                //若没有数据 则为
-                DateRect = '';
-            }
-            //组成矩阵
-            ShowLayer_DataSVG = ShowLayer_DataSVG + DateRect;
-        }
-        ShowLayer_DataSVG = ShowLayer_DataSVG + '</g>';
-
-        return ShowLayer_DataSVG;
-    };
     /**
      * 整体显示 --  点击按钮 伸缩界面 事件
      * @constructor
@@ -2385,66 +2094,34 @@ function TimeLine() {
         if (LengthAddCount) {
             for (var i = 0; i < LengthAddCount; i++) {
                 var m_ADDItem = ADDDatas[i];
-                m_DataInfoALL.push(m_ADDItem);
+                //添加 数据图层名称
                 var m_LayerName = m_ADDItem.DataName;
-
+                //添加数据图层 存在状态
                 var m_Layeris_Show = m_ADDItem.Layeris_Show;
                 var IndexNum = m_LayerDataList.indexOf(m_LayerName);
                 //若当前不存在 则加入列表及列表-表现层 并为各组数据添加新数据
                 if (IndexNum === -1) {
                     m_LayerDataList.push(m_LayerName);
                     m_LayerShowTypeList.push(m_Layeris_Show);
-                    m_YearModeData.push([]);
-                    m_MonthModeData.push([]);
-                    m_DayModeData.push([]);
-                    m_MinuteModeData.push([]);
+                    m_LayerAllModeData.push(m_ADDItem);
                     IndexNum = m_LayerDataList.length - 1;
                 }
-                var m_LayerDataInfo = m_ADDItem.DataInfo;
-
-                //根据DataInfo中第一字段的长度，对当前数据是哪一种类型进行判断
-                try {
-                    var m_FirstItem = m_LayerDataInfo[0];
-                    switch (m_FirstItem.length) {
-
-                        case 4:
-                        {
-                            m_YearModeData[IndexNum] = m_LayerDataInfo;
-                            break;
-                        }
-                        case 6:
-                        case 7:
-                        {
-                            m_MonthModeData[IndexNum] = m_LayerDataInfo;
-                            break;
-                        }
-                        case 10:
-                        {
-                            m_DayModeData[IndexNum] = m_LayerDataInfo;
-                            break;
-                        }
-                        case 16:
-                        {
-                            m_MinuteModeData[IndexNum] = m_LayerDataInfo;
-                            break;
-                        }
-                        default:
-                        {
-                            //     console.log(m_FirstItem);
-                            break;
-                        }
-                    }
-                } catch (err) {
-
-                }
-                // console.log("end One");
             }
         }
+        m_LayerExistLayer = [];
         Year_SVGMove(0);
         Month_SvgMove(0);
         Day_SVGMove(0);
         Minute_SVGMove(0);
     };
+
+    function addDataLayer_Year(m_ADDItem) {
+        var DataJson={
+            "layerName":"",
+            "LayerBeginTime":""
+        };
+
+    }
 
     /**
      * 集成原有函数
@@ -2455,68 +2132,6 @@ function TimeLine() {
         this.ADDLayerData(m_InsertData);
     };
 
-    /**
-     * 重构当前数据
-     * @constructor
-     */
-    var ResetLayerData = function () {
-
-        //对于每一个添加的变量
-        for (var i = 0; i < m_LayerDataList.length; i++) {
-            var m_OrderItem = m_LayerDataList[i];
-            //  var m_showType = m_LayerShowTypeList[i];
-            m_DataInfoALL.forEach(function (m_infoData) {
-                if (m_infoData.DataName === m_OrderItem) {
-                    var m_LayerDataInfo = m_infoData.DataInfo;
-                    //根据DataInfo中第一字段的长度，对当前数据是哪一种类型进行判断
-                    try {
-                        var m_FirstItem = m_LayerDataInfo[0];
-                        switch (m_FirstItem.length) {
-
-                            case 4:
-                            {
-                                m_YearModeData[i] = m_LayerDataInfo;
-                                break;
-                            }
-                            case 6:
-                            case 7:
-                            {
-                                m_MonthModeData[i] = m_LayerDataInfo;
-                                break;
-                            }
-                            case 10:
-                            {
-                                m_DayModeData[i] = m_LayerDataInfo;
-                                break;
-                            }
-                            case 16:
-                            {
-                                m_MinuteModeData[i] = m_LayerDataInfo;
-                                break;
-                            }
-                            default:
-                            {
-                                //  console.log(m_FirstItem); todo 不符合标准则丢弃
-                                break;
-                            }
-                        }
-                    } catch (err) {
-
-                    }
-                } else {
-                }
-            });
-        }
-
-
-        //刷新显示
-        Year_SVGMove(0);
-        Month_SvgMove(0);
-        Day_SVGMove(0);
-        Minute_SVGMove(0);
-        //RefreshTimeShow(); 会触发重新赋值造成循环
-
-    };
 
     /**
      * 根据名称 对当前数据进行移除
@@ -2525,22 +2140,20 @@ function TimeLine() {
      */
     this.RemoveLayerDataByName = function (RemoveDataLayerName) {
         var IndexNum = m_LayerDataList.indexOf(RemoveDataLayerName);
+        //不更改顺序
         if (IndexNum !== -1) {
             m_LayerDataList.splice(IndexNum, 1);
             m_LayerShowTypeList.splice(IndexNum, 1);
-            m_YearModeData.splice(IndexNum, 1);
-            m_MonthModeData.splice(IndexNum, 1);
-            m_DayModeData.splice(IndexNum, 1);
-            m_MinuteModeData.splice(IndexNum, 1);
+            m_LayerAllModeData.splice(IndexNum, 1);
         }
         //删除名称匹配的总数据项目
-        var m_NewDat = [];
-        for (var i = 0; i < m_DataInfoALL.length; i++) {
-            if (m_DataInfoALL[i].DataName !== RemoveDataLayerName) {
-                m_NewDat.push(m_DataInfoALL[i]);
-            }
-        }
-        m_DataInfoALL = m_NewDat;
+        /*     var m_NewDat = [];
+         for (var i = 0; i < m_LayerAllModeData.length; i++) {
+         if (m_LayerAllModeData[i].DataName !== RemoveDataLayerName) {
+         m_NewDat.push(m_LayerAllModeData[i]);
+         }
+         }
+         m_LayerAllModeData = m_NewDat;*/
         //根据当前移除
         switch (self.ShowMode) {
             case "Year_Mode":
@@ -2574,22 +2187,20 @@ function TimeLine() {
      * @constructor
      */
     this.ReSetLayerList = function (m_NewDataList) {
+        var m_LayerAllModeData_bak = m_LayerAllModeData;
         m_LayerDataList = [];
         m_LayerShowTypeList = [];
-        m_YearModeData = [];
-        m_MonthModeData = [];
-        m_DayModeData = [];
-        m_MinuteModeData = [];
+        m_LayerAllModeData = [];
         for (var i = 0; i < m_NewDataList.length; i++) {
             m_LayerDataList.push(m_NewDataList[i].DataName);
             m_LayerShowTypeList.push(m_NewDataList[i].Layeris_Show);
-            m_YearModeData.push([]);
-            m_MonthModeData.push([]);
-            m_DayModeData.push([]);
-            m_MinuteModeData.push([]);
+            m_LayerAllModeData_bak.forEach(function (dataItem) {
+                if (dataItem.DataName === m_NewDataList[i].DataName) {
+                    m_LayerAllModeData.push(dataItem);
+                }
+            });
         }
-        //
-        ResetLayerData(m_DataInfoALL);
+        console.log('ReSetLayerList:' + m_LayerAllModeData.length);
     };
 
 
@@ -2632,11 +2243,11 @@ function TimeLine() {
             console.log("参数 数据类型错误！结束日期的数据类型选择必须为 moment");
             return;
         }
-        var m_Length = m_DataInfoALL.length;
+        var m_Length = m_LayerAllModeData.length;
         var m_MacthData = [];
         //根据输入条件获取当前json数据 只有一个
         if (m_Length !== undefined && m_Length > 0) {
-            m_DataInfoALL.forEach(function (m_dataitem) {
+            m_LayerAllModeData.forEach(function (m_dataitem) {
                 //根据名字进行 第一次筛选出符合条件的
                 if (m_dataitem.DataName === m_LayerName) {
                     var m_dataType = "";
@@ -2768,11 +2379,11 @@ function TimeLine() {
 
         try {
             //遍历选出当前符合条件的data
-            var m_Length = m_DataInfoALL.length;
+            var m_Length = m_LayerAllModeData.length;
             var m_MacthData = [];
             //根据输入条件获取当前json数据 只有一个
             if (m_Length !== undefined && m_Length > 0) {
-                m_DataInfoALL.forEach(function (m_dataitem) {
+                m_LayerAllModeData.forEach(function (m_dataitem) {
                     //根据名字进行 第一次筛选出符合条件的
                     if (m_dataitem.DataName === m_LayerName) {
                         var m_dataType = "";
@@ -2842,6 +2453,34 @@ function TimeLine() {
 
     };
 
+
+    /**
+     * 返回所有依据于当前时间的 所有开始列表
+     * @returns {*}
+     */
+    this.getDataInfoBeginList = function () {
+        console.log('_FindTimeBegin');
+        var dataStrNew = moment().utc(this.DateShow).format('YYYYMMDDHHmmss');
+        var isFind = false;
+        if (m_LayerAllModeData.length > 0) {
+            m_LayerAllModeData.forEach(function (dataItem) {
+                var dataInfoItem = dataItem.DataInfo;
+                //若没有找到匹配
+                if (!isFind) {
+                    var beginTimem = moment.utc(dataInfoItem.BeginTime);
+                    var endTimem = moment.utc(dataInfoItem.EndTime);
+                    var timeSelect = moment.utc(dataStrNew);
+                    if (timeSelect.isBetween(beginTimem, endTimem)) {
+                        dataStrNew = beginTimem.format('YYYYMMDDHHmm') + "00";
+                        isFind = true;
+                        console.log("Find Begin!" + dataStrNew);
+                    }
+                }
+            });
+        }
+        console.log("dataStrNew:" + dataStrNew);
+        return dataStrNew;
+    };
 
     /**
      * 动画显示部分 begin
@@ -3000,25 +2639,6 @@ function TimeLine() {
     //使用不区分模式 的 选择
     //每一种 产品作为一个 json 项目，不再区分 模式。
 
-    var DemoJson = [
-        {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": [{"BeginTime": "2017-10-17 06:11:12", "EndTime": "2017-10-17 06:14:12"}
-            ],
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": [{"BeginTime": "2017-10-17 06:17:12", "EndTime": "2017-10-17 06:22:12"}
-            ],
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }
-    ];
-
 
     var CheckDataTimeExistStatus = function (BeginTime_moment, EndTimeStr_moment, MinuteTimeBase) {
         //
@@ -3041,8 +2661,10 @@ function TimeLine() {
         }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
         ExistReturn = [];
         //处理JSON
-        m_DataInfoALL.forEach(function (DataJsonItem) {
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
             var ExistReturnItem = {
+                "layerName": DataJsonItem.DataName,
+                "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
                 "isExist": false,
                 "isShow": false,
                 "Width": 0,
@@ -3051,28 +2673,26 @@ function TimeLine() {
                 "isEnd": false
             };
             var DataInfo = DataJsonItem.DataInfo;
-            if (DataInfo.length > 0) {
+            if (DataInfo && DataInfo.length > 0) {
                 //遍历每一个时段 对 当前时间段内的数据存在进行查找。
                 DataInfo.forEach(function (DataTimeItem) {
                     var BeginTime = moment.utc(DataTimeItem.BeginTime);
                     var EndTime = moment.utc(DataTimeItem.EndTime);
-
                     //存在数据时间 完全包含 数据存在字段 |11|
-                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                    if (BeginTime - TimeCompare_begin >= 0 && TimeCompare_end - EndTime > 0) {
                         ExistReturnItem.Width = BeginTime - EndTime / MinuteTimeBase * 12.5;
                         ExistReturnItem.isExist = true;
                         ExistReturnItem.Width = ShowModeWidth;
                         ExistReturnItem.isAll = true;
                     }
-
                     //当前时间 在范围内 1||1
-                    if (TimeCompare_begin - BeginTime > 0 && EndTime - TimeCompare_end > 0) {
+                    if (TimeCompare_begin - BeginTime >= 0 && EndTime - TimeCompare_end > 0) {
                         ExistReturnItem.isExist = true;
                         ExistReturnItem.Width = ShowModeWidth;
                         ExistReturnItem.isAll = true;
                     }
                     //时间段 前半段 1|1|
-                    if (EndTime - TimeCompare_begin > 0 && TimeCompare_end - EndTime > 0) {
+                    if (EndTime - TimeCompare_begin >= 0 && TimeCompare_end - EndTime > 0) {
                         ExistReturnItem.isExist = true;
                         var WitdhBefore = (EndTime - TimeCompare_begin) / MinuteTimeBase * 12.5;
                         ExistReturnItem.Width = WitdhBefore;
@@ -3080,7 +2700,7 @@ function TimeLine() {
                         ExistReturnItem.isBofore = true;
                     }
                     //时间段  后半段 |1|1
-                    if (BeginTime - TimeCompare_begin > 0 && TimeCompare_end - BeginTime > 0) {
+                    if (BeginTime - TimeCompare_begin >= 0 && TimeCompare_end - BeginTime > 0) {
                         ExistReturnItem.isExist = true;
                         var WitdhAfter = (BeginTime - TimeCompare_end) / MinuteTimeBase * 12.5;
                         ExistReturnItem.Width = WitdhAfter;
@@ -3091,14 +2711,65 @@ function TimeLine() {
                 });
             }
             if (ExistReturnItem.isExist === true) {
-                console.log(ExistReturnItem);
+                // console.log(ExistReturnItem);
             }
             //设置查找
             ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
             ExistReturn.push(ExistReturnItem);
         });
+
         return ExistReturn;
+    };
+
+    /**
+     * 对外接口 获取当前数据时间段内的 开始时间 若无时间，则返回当前选择时间。
+     * @type {_findDataExistList}
+     */
+    this.findDataExistList = _findDataExistList;
+
+    /**
+     * 根据 当前 Layer的名字 对数据开始时间进行查找，若能查找到 则显示
+     * @param lamuduleName
+     * @returns {string}
+     * @private
+     */
+    function _findDataExistList(layerName) {
+        var TimeSP = moment(this.DateShow).utc().format('YYYYMMDDHHmm') + "00";
+        var TimeStrReturn = TimeSP;
+        var isFindExist = false;
+        console.log('ReSetLayerList11111:' + m_LayerAllModeData.length);
+        //  console.log("m_LayerAllModeData.length:" + m_LayerAllModeData.length);
+        // console.log(m_LayerAllModeData.length);
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
+            var DataName = DataJsonItem.DataName;
+
+            if (DataName.toString() === layerName.toString() && isFindExist === false) {
+                var DataInfoList = DataJsonItem.DataInfo;
+                //遍历每一个时间段
+                if (DataInfoList) {
+                    DataInfoList.forEach(function (DataTimeItem) {
+                        if (isFindExist === false) {
+                            var BeginTime = moment.utc(DataTimeItem.BeginTime);
+                            var EndTime = moment.utc(DataTimeItem.EndTime);
+                            var TimeSelect = moment.utc(TimeSP, "YYYYMMDDHHmmss");
+                            if (TimeSelect.isBetween(BeginTime, EndTime)
+                                || TimeSelect.isSame(BeginTime)
+                                || TimeSelect.isSame(EndTime)
+                            ) {
+                                isFindExist = true;
+                                TimeStrReturn = BeginTime.format('YYYYMMDDHHmmss');
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+        var returnJson = {"isFindExist": isFindExist, "TimeStrReturn": TimeStrReturn};
+        return returnJson;
     }
+
+
 }
 
 

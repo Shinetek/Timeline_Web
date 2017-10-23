@@ -25,11 +25,12 @@
     </div>
     <br/>
     <div>
-        <button style="width: 150px;height: 50px;" onclick="AddData_Year()">添加图层数据_年模式</button>
-        <button style="width: 150px;height: 50px;" onclick="AddData_Month()">添加图层数据_月模式</button>
-        <button style="width: 150px;height: 50px;" onclick="AddData_Day()">添加图层数据_日模式</button>
-
-        <button style="width: 150px;height: 50px;" onclick="AddData_Minute()">添加图层数据_分钟模式</button>
+        <button style="width: 150px;height: 50px;" onclick="AddData_A()"> 添加图层数据A</button>
+        <button style="width: 150px;height: 50px;" onclick="AddData_B()"> 添加图层数据B</button>
+        <button style="width: 150px;height: 50px;" onclick="AddData_C()"> 添加图层数据C</button>
+        <button style="width: 150px;height: 50px;" onclick="RemoveData_A()"> 移除图层数据A</button>
+        <button style="width: 150px;height: 50px;" onclick="RemoveData_B()"> 移除图层数据B</button>
+        <button style="width: 150px;height: 50px;" onclick="RemoveData_C()"> 移除图层数据C</button>
     </div>
     <br/>
     <div>
@@ -45,11 +46,11 @@
 
     var m_TimeLine = new TimeLine();
     //初始化
-    m_TimeLine.Init("TestADD", "MINUTE");
-    //m_TimeLine.Init("TestADD", "YEAR");
+    m_TimeLine.init("TestADD", "MINUTE");
+    //m_TimeLine.init("TestADD", "YEAR");
 
-    //m_TimeLine.Init("TestADD", "MONTH");
-    //m_TimeLine.Init("TestADD", "DAY");
+    //m_TimeLine.init("TestADD", "MONTH");
+    //m_TimeLine.init("TestADD", "DAY");
 
     console.log(m_TimeLine.DateShow);
 
@@ -76,6 +77,7 @@
     //测试用数据
 
     /*测试用数据*/
+
     var DemoJson = [
         {
             "DataName": "测试数据1",
@@ -88,174 +90,160 @@
         {
             "DataName": "测试数据2",
             "DataMode": "Day_Mode",
-            "DataInfo": [{"BeginTime": "2017-10-18 10:17:12", "EndTime": "2017-10-18 10:22:12"}
-                , {"BeginTime": "2017-10-18 06:17:12", "EndTime": "2017-10-18 06:22:12"},
+            "DataInfo": [{"BeginTime": "2017-10-17 06:17:12", "EndTime": "2017-10-17 06:22:12"}
+            ],
+            "Layeris_Show": true,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        }
+    ];
+    var DemoJson_A = [
+        {
+            "DataName": "测试数据2",
+            "DataMode": "Day_Mode",
+            "DataInfo": [
+                {
+                    "BeginTime": "2017-10-20 08:00:00",
+                    "EndTime": "2017-10-20 08:14:59"
+                }, {"BeginTime": "2017-10-20 08:00:00", "EndTime": "2017-10-20 08:14:59"}, {
+                    "BeginTime": "2017-10-20 07:00:00",
+                    "EndTime": "2017-10-20 07:14:59"
+                }, {"BeginTime": "2017-10-20 07:00:00", "EndTime": "2017-10-20 07:14:59"}, {
+                    "BeginTime": "2017-10-20 06:15:00",
+                    "EndTime": "2017-10-20 06:29:59"
+                }, {"BeginTime": "2017-10-20 06:15:00", "EndTime": "2017-10-20 06:29:59"}, {
+                    "BeginTime": "2017-10-20 06:00:00",
+                    "EndTime": "2017-10-20 06:14:59"
+                }, {"BeginTime": "2017-10-20 06:00:00", "EndTime": "2017-10-20 06:14:59"}, {
+                    "BeginTime": "2017-10-20 05:45:00",
+                    "EndTime": "2017-10-20 05:59:59"
+                }, {"BeginTime": "2017-10-20 05:45:00", "EndTime": "2017-10-20 05:59:59"}, {
+                    "BeginTime": "2017-10-20 05:00:00",
+                    "EndTime": "2017-10-20 05:14:59"
+                }, {"BeginTime": "2017-10-20 05:00:00", "EndTime": "2017-10-20 05:14:59"}, {
+                    "BeginTime": "2017-10-20 04:00:00",
+                    "EndTime": "2017-10-20 04:14:59"
+                }, {"BeginTime": "2017-10-20 04:00:00", "EndTime": "2017-10-20 04:14:59"}, {
+                    "BeginTime": "2017-10-20 03:15:00",
+                    "EndTime": "2017-10-20 03:29:59"
+                }, {"BeginTime": "2017-10-20 03:15:00", "EndTime": "2017-10-20 03:29:59"}, {
+                    "BeginTime": "2017-10-20 02:45:00",
+                    "EndTime": "2017-10-20 02:59:59"
+                }, {"BeginTime": "2017-10-20 02:45:00", "EndTime": "2017-10-20 02:59:59"}, {
+                    "BeginTime": "2017-10-20 03:00:00",
+                    "EndTime": "2017-10-20 03:14:59"
+                }, {"BeginTime": "2017-10-20 03:00:00", "EndTime": "2017-10-20 03:14:59"}, {
+                    "BeginTime": "2017-10-20 02:45:00",
+                    "EndTime": "2017-10-20 02:59:59"
+                }, {"BeginTime": "2017-10-20 02:45:00", "EndTime": "2017-10-20 02:59:59"}, {
+                    "BeginTime": "2017-10-20 02:00:00",
+                    "EndTime": "2017-10-20 02:14:59"
+                }, {"BeginTime": "2017-10-20 02:00:00", "EndTime": "2017-10-20 02:14:59"}, {
+                    "BeginTime": "2017-10-20 01:00:00",
+                    "EndTime": "2017-10-20 01:14:59"
+                }, {"BeginTime": "2017-10-20 01:00:00", "EndTime": "2017-10-20 01:14:59"}, {
+                    "BeginTime": "2017-10-20 00:15:00",
+                    "EndTime": "2017-10-20 00:29:59"
+                }, {"BeginTime": "2017-10-20 00:15:00", "EndTime": "2017-10-20 00:29:59"}, {
+                    "BeginTime": "2017-10-20 00:00:00",
+                    "EndTime": "2017-10-20 00:14:59"
+                }, {"BeginTime": "2017-10-20 00:00:00", "EndTime": "2017-10-20 00:14:59"}, {
+                    "BeginTime": "2017-10-19 23:45:00",
+                    "EndTime": "2017-10-19 23:59:59"
+                }, {"BeginTime": "2017-10-19 23:45:00", "EndTime": "2017-10-19 23:59:59"}, {
+                    "BeginTime": "2017-10-19 23:00:00",
+                    "EndTime": "2017-10-19 23:14:59"
+                }, {"BeginTime": "2017-10-19 23:00:00", "EndTime": "2017-10-19 23:14:59"}, {
+                    "BeginTime": "2017-10-19 22:00:00",
+                    "EndTime": "2017-10-19 22:14:59"
+                }, {"BeginTime": "2017-10-19 22:00:00", "EndTime": "2017-10-19 22:14:59"}, {
+                    "BeginTime": "2017-10-19 21:15:00",
+                    "EndTime": "2017-10-19 21:29:59"
+                }, {"BeginTime": "2017-10-19 21:15:00", "EndTime": "2017-10-19 21:29:59"}, {
+                    "BeginTime": "2017-10-19 21:00:00",
+                    "EndTime": "2017-10-19 21:14:59"
+                }, {"BeginTime": "2017-10-19 21:00:00", "EndTime": "2017-10-19 21:14:59"}, {
+                    "BeginTime": "2017-10-19 20:45:00",
+                    "EndTime": "2017-10-19 20:59:59"
+                }, {"BeginTime": "2017-10-19 20:45:00", "EndTime": "2017-10-19 20:59:59"}, {
+                    "BeginTime": "2017-10-19 20:00:00",
+                    "EndTime": "2017-10-19 20:14:59"
+                }, {"BeginTime": "2017-10-19 20:00:00", "EndTime": "2017-10-19 20:14:59"}, {
+                    "BeginTime": "2017-10-19 16:00:00",
+                    "EndTime": "2017-10-19 16:14:59"
+                }, {"BeginTime": "2017-10-19 16:00:00", "EndTime": "2017-10-19 16:14:59"}, {
+                    "BeginTime": "2017-10-19 15:15:00",
+                    "EndTime": "2017-10-19 15:29:59"
+                }, {"BeginTime": "2017-10-19 15:15:00", "EndTime": "2017-10-19 15:29:59"}, {
+                    "BeginTime": "2017-10-19 15:00:00",
+                    "EndTime": "2017-10-19 15:14:59"
+                }, {"BeginTime": "2017-10-19 15:00:00", "EndTime": "2017-10-19 15:14:59"}, {
+                    "BeginTime": "2017-10-19 14:45:00",
+                    "EndTime": "2017-10-19 14:59:59"
+                }, {"BeginTime": "2017-10-19 14:45:00", "EndTime": "2017-10-19 14:59:59"}, {
+                    "BeginTime": "2017-10-19 14:00:00",
+                    "EndTime": "2017-10-19 14:14:59"
+                }, {"BeginTime": "2017-10-19 14:00:00", "EndTime": "2017-10-19 14:14:59"}, {
+                    "BeginTime": "2017-10-19 13:00:00",
+                    "EndTime": "2017-10-19 13:14:59"
+                }, {"BeginTime": "2017-10-19 13:00:00", "EndTime": "2017-10-19 13:14:59"}, {
+                    "BeginTime": "2017-10-19 12:15:00",
+                    "EndTime": "2017-10-19 12:29:59"
+                }, {"BeginTime": "2017-10-19 12:15:00", "EndTime": "2017-10-19 12:29:59"}, {
+                    "BeginTime": "2017-10-19 12:00:00",
+                    "EndTime": "2017-10-19 12:14:59"
+                }, {"BeginTime": "2017-10-19 12:00:00", "EndTime": "2017-10-19 12:14:59"}, {
+                    "BeginTime": "2017-10-19 11:45:00",
+                    "EndTime": "2017-10-19 11:59:59"
+                }, {"BeginTime": "2017-10-19 11:45:00", "EndTime": "2017-10-19 11:59:59"}], "Layeris_Show": false,
+            "DataRefreshTime": "2016-11-09 12:11:34"
+        }];
+
+    var DemoJson_B = [
+        {
+            "DataName": "测试数据2",
+            "DataMode": "Day_Mode",
+            "DataInfo": [
+                {"BeginTime": "2017-10-18 10:17:12", "EndTime": "2017-10-18 10:22:12"},
+                {"BeginTime": "2017-10-17 06:17:12", "EndTime": "2017-10-17 06:22:12"},
                 {"BeginTime": "2017-10-18 11:17:12", "EndTime": "2017-10-18 12:22:12"}
             ],
             "Layeris_Show": false,
             "DataRefreshTime": "2016-11-09 12:11:34"
         }
     ];
-
-    //月模式　已测试
-    var DataLoadMonth = [
+    var DemoJson_C = [
         {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2015-10", "2015-11", "2015-12"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2015-10", "2015-11", "2016-1"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }, {
             "DataName": "测试数据3",
             "DataMode": "Day_Mode",
-            "DataInfo": ["2015-10", "2015-11", "2016-1"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }];
-    //添加数据函数 月模式
-    function AddData_Month() {
-        m_TimeLine.AddMonthData(DemoJson);
-    }
-    //日模式
-    //日模式数据
-    var DataLoadDay = [
-        {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-12", "2016-11-13", "2016-11-14", "2016-11-15", "2016-11-16", "2016-11-19", "2016-11-20"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-13", "2016-11-14", "2016-11-15"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }, {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-12", "2016-11-13", "2016-11-14", "2016-11-15", "2016-11-16", "2016-11-19", "2016-11-20"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2017-03-11",
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }, {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-02", "2016-11-13", "2016-10-14", "2016-11-15", "2016-11-18", "2016-11-19", "2016-11-20"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2017-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }, {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-12", "2016-11-13", "2016-11-14", "2016-11-15", "2016-11-17", "2016-11-19", "2016-11-20"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2017-03-11",
+            "DataInfo": [{"BeginTime": "2017-10-18 09:17:12", "EndTime": "2017-10-18 09:22:12"}
+                , {"BeginTime": "2017-10-18 06:17:12", "EndTime": "2017-10-18 06:22:12"},
+                {"BeginTime": "2017-10-18 11:17:12", "EndTime": "2017-10-18 12:22:12"}
+            ],
             "Layeris_Show": true,
             "DataRefreshTime": "2016-11-09 12:11:34"
         }
-        , {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-11-12", "2016-11-13", "2016-11-14", "2016-11-15", "2016-11-17", "2016-11-19", "2016-11-20"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2017-03-11",
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }];
+    ];
+    function AddData_A() {
+        m_TimeLine.ADDLayerData(DemoJson_A);
 
-    function AddData_Day() {
-        m_TimeLine.AddDayData(DataLoadDay);
+    }
+    function AddData_B() {
+        m_TimeLine.ADDLayerData(DemoJson_B);
+
+    }
+    function AddData_C() {
+        m_TimeLine.ADDLayerData(DemoJson_C);
+
     }
 
-    //年模式
-    var DataLoadYear = [
-        {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2010", "2011", "2012"],
-            "BeginDate": "2000-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2010", "2011", "2012", "2013", "2014", "2015"],
-            "BeginDate": "2000-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2010", "2011", "2012", "2013", "2014", "2015"],
-            "BeginDate": "2000-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }];
-
-
-    function AddData_Year() {
-
-        m_TimeLine.AddYearData(DataLoadYear);
+    function RemoveData_A() {
+        m_TimeLine.RemoveLayerDataByName('测试数据1');
     }
-
-    //分钟模式
-
-    var DataLoadMinute = [
-        {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-12-08 11:00", "2016-12-08 11:05", "2016-12-08 11:10", "2016-12-08 11:15", "2016-12-08 11:20", "2016-12-08 11:25"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        },
-        {
-            "DataName": "测试数据2",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-12-08 11:00", "2016-12-08 11:05", "2016-12-08 11:10", "2016-12-08 12:00", "2016-12-08 10:05"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2016-03-11",
-            "Layeris_Show": true,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }, {
-            "DataName": "测试数据1",
-            "DataMode": "Day_Mode",
-            "DataInfo": ["2016-12-08 11:00", "2016-12-08 11:05", "2016-12-08 11:10", "2016-12-08 12:00", "2016-12-08 10:05"],
-            "BeginDate": "2015-10-11",
-            "EndDate": "2017-03-11",
-            "Layeris_Show": false,
-            "DataRefreshTime": "2016-11-09 12:11:34"
-        }];
-
-    function AddData_Minute() {
-        m_TimeLine.AddMinuteData(DataLoadMinute);
+    function RemoveData_B() {
+        m_TimeLine.RemoveLayerDataByName('测试数据2');
+    }
+    function RemoveData_C() {
+        m_TimeLine.RemoveLayerDataByName('测试数据3');
     }
 
 

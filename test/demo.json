@@ -1,0 +1,26 @@
+[
+  {
+    "DataName": "测试数据1",
+    "DataMode": "All_Mode",
+    "DataInfo": [
+      {
+        "BeginTime": "2017-10-17 06:11:12",
+        "EndTime": "2017-10-17 06:14:12"
+      }
+    ],
+    "Layeris_Show": true,
+    "DataRefreshTime": "2017-11-09 12:11:34"
+  },
+  {
+    "DataName": "测试数据2",
+    "DataMode": "All_Mode",
+    "DataInfo": [
+      {
+        "BeginTime": "2017-10-17 06:17:12",
+        "EndTime": "2017-10-17 06:22:12"
+      }
+    ],
+    "Layeris_Show": false,
+    "DataRefreshTime": "2017-11-09 12:11:34"
+  }
+]
