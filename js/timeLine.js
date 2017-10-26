@@ -513,7 +513,7 @@ var TimeLine = function () {
      * 初始化 显示TimeLine div
      * @private
      */
-    var _initTimeLineShow = function () {
+    var  _initTimeLineShow = function () {
         switch (_self.ShowMode) {
             case "Year_Mode":
             {

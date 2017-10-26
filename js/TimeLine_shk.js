@@ -10,14 +10,26 @@ function TimeLine() {
      * @type {Date}
      */
     this.DateShow = new Date();
-    var Year_Show = 2016;
-    var Month_Show = 1;
-    var Day_Show = 1;
-    var Hour_Show = 0;
-    var Minute_Show = 0;
+
+    /**
+     *  当前用来显示的  年月日 时分秒
+     * @type {{Year_Show: number, Month_Show: number, Day_Show: number, Hour_Show: number, Minute_Show: number}}
+     */
+    var DATE_SHOW = {
+        Year_Show: 2016,
+        Month_Show: 1,
+        Day_Show: 1,
+        Hour_Show: 0,
+        Minute_Show: 0
+    };
+
+
+
+
 
     //返回当前选择年月日， 所在的 数据列表 及开始时间
     this.DataShowBegin = [];
+
 
     /**
      * 整体显示 -- 当前浏览器类型
@@ -46,11 +58,15 @@ function TimeLine() {
      */
     this.Is_ShowSVGLine = true;
 
+
+    var POINT_X = {
+        isMove_Minute: false,
+        x_Minute: 0,
+        X_Before_Minute: -150,
+        m_Trans_Minute: -150
+    };
     /* 分钟模式  鼠标 操作 变量*/
-    var isMove_Minute = false;
-    var x_Minute = 0;
-    var X_Before_Minute = 0;
-    var m_Trans_Minute = -150;
+
     //分钟模式下 初始化显示日期
     var MinuteBegin_Date = new Date(moment.utc().add(0.0, "hours").format("YYYY-MM-DD HH").toString() + ":00:00");
 
@@ -195,15 +211,15 @@ function TimeLine() {
      */
     var RefreshTimeShow = function () {
         //根据当前选择时间获取 年月日
-        Year_Show = self.DateShow.getUTCFullYear();
-        Month_Show = self.DateShow.getMonth() + 1;
-        Day_Show = self.DateShow.getDate();
-        Hour_Show = self.DateShow.getHours();
-        Minute_Show = self.DateShow.getMinutes();
+        DATE_SHOW.Year_Show = self.DateShow.getUTCFullYear();
+        DATE_SHOW.Month_Show = self.DateShow.getMonth() + 1;
+        DATE_SHOW.Day_Show = self.DateShow.getDate();
+        DATE_SHOW.Hour_Show = self.DateShow.getHours();
+        DATE_SHOW.Minute_Show = self.DateShow.getMinutes();
         //年月日赋值显示
-        document.getElementById('txt_Year').value = Year_Show.toString();
-        document.getElementById('txt_Month').value = Month_Show.toString();
-        document.getElementById('txt_Day').value = Day_Show.toString();
+        document.getElementById('txt_Year').value = DATE_SHOW.Year_Show.toString();
+        document.getElementById('txt_Month').value = DATE_SHOW.Month_Show.toString();
+        document.getElementById('txt_Day').value = DATE_SHOW.Day_Show.toString();
         //调用数据修改函数 ，触发外部func
         self.DateTimeChange();
         //根据模式重绘
@@ -241,12 +257,12 @@ function TimeLine() {
         //DateShow 添加一天
         self.DateShow = new Date(moment(self.DateShow).add(1, 'day'));
         //重设位移值 年位移位置
-        self.m_Trans = (Year_Show - moment(self.DateShow).year() + 5 ) * 150;
+        self.m_Trans = (DATE_SHOW.Year_Show - moment(self.DateShow).year() + 5 ) * 150;
 
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5;
         //分钟位移位置 修改为1分钟模式
-        m_Trans_Minute = m_Trans_Minute - 12.5 * 60 * 24;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute - 12.5 * 60 * 24;
         RefreshTimeShow();
     };
 
@@ -258,7 +274,7 @@ function TimeLine() {
         var momentStr = (  moment(self.DateShow).add(1, 'month') - moment(self.DateShow)) / 1000 / 3600 / 24;
         self.DateShow = new Date(moment(self.DateShow).add(1, 'month'));
         self.m_Trans = ( self.m_TransYear - moment(self.DateShow).year() + 5 ) * 150;
-        m_Trans_Minute = m_Trans_Minute - momentStr * 12.5 * 24 * 60;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute - momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5 * momentStr;
         RefreshTimeShow();
@@ -272,7 +288,7 @@ function TimeLine() {
         var momentStr = (moment(self.DateShow).add(1, 'year') - moment(self.DateShow)) / 1000 / 3600 / 24;
 
         //分钟模式 位移
-        m_Trans_Minute = m_Trans_Minute - momentStr * 12.5 * 24 * 60;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute - momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day - 12.5 * momentStr;
         //月位移 todo
@@ -290,7 +306,7 @@ function TimeLine() {
     var MinusDay = function () {
         self.DateShow = new Date(moment(self.DateShow).add(-1, 'day'));
         //分钟模式
-        m_Trans_Minute = m_Trans_Minute + 12.5 * 60 * 24;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute + 12.5 * 60 * 24;
         //天模式
         m_Trans_Day = m_Trans_Day + 12.5;
         RefreshTimeShow();
@@ -303,7 +319,7 @@ function TimeLine() {
     var MinusMonth = function () {
         var momentStr = (moment(self.DateShow) - moment(self.DateShow).add(-1, 'month')) / 1000 / 3600 / 24;
         self.DateShow = new Date(moment(self.DateShow).add(-1, 'month'));
-        m_Trans_Minute = m_Trans_Minute + 12.5 * 24 * 60 * momentStr;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute + 12.5 * 24 * 60 * momentStr;
 
 
         //天模式
@@ -321,7 +337,7 @@ function TimeLine() {
 
         self.DateShow = new Date(moment.utc(self.DateShow).add(-1, 'year'));
         //分钟模式
-        m_Trans_Minute = m_Trans_Minute + momentStr * 12.5 * 24 * 60;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute + momentStr * 12.5 * 24 * 60;
         //天模式
         m_Trans_Day = m_Trans_Day + 12.5 * momentStr;
         RefreshTimeShow();
@@ -489,11 +505,11 @@ function TimeLine() {
     var InitDateClickFunc = function () {
         //初始化时间
         self.DateShow = new Date();
-        Year_Show = self.DateShow.getUTCFullYear();
-        Month_Show = self.DateShow.getUTCMonth() + 1;
-        Day_Show = self.DateShow.getUTCDate();
-        Hour_Show = self.DateShow.getUTCHours();
-        Minute_Show = self.DateShow.getUTCMinutes();
+        DATE_SHOW.Year_Show = self.DateShow.getUTCFullYear();
+        DATE_SHOW.Month_Show = self.DateShow.getUTCMonth() + 1;
+        DATE_SHOW.Day_Show = self.DateShow.getUTCDate();
+        DATE_SHOW.Hour_Show = self.DateShow.getUTCHours();
+        DATE_SHOW.Minute_Show = self.DateShow.getUTCMinutes();
 
         /*初始化点击事件*/
         //年月日 加一 函数赋值
@@ -513,9 +529,9 @@ function TimeLine() {
         btn_MinusDay.onclick = MinusDay;
 
         //初始化设置时间选择值 重新 赋值
-        document.getElementById('txt_Year').value = Year_Show.toString();
-        document.getElementById('txt_Month').value = Month_Show.toString();
-        document.getElementById('txt_Day').value = Day_Show.toString();
+        document.getElementById('txt_Year').value = DATE_SHOW.Year_Show.toString();
+        document.getElementById('txt_Month').value = DATE_SHOW.Month_Show.toString();
+        document.getElementById('txt_Day').value = DATE_SHOW.Day_Show.toString();
 
         //设置 年TimeLine 滚动事件
         var m_ShowTimeLineDiv_Year = document.getElementById("ShowTimeLineDiv_Year");
@@ -817,8 +833,8 @@ function TimeLine() {
      */
     var SetShowYear = function (Year) {
         if (Year) {
-            Year_Show = parseInt(Year).toString();
-            self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
+            DATE_SHOW.Year_Show = parseInt(Year).toString();
+            self.DateShow = new Date(DATE_SHOW.Year_Show, DATE_SHOW.Month_Show - 1, DATE_SHOW.Day_Show, DATE_SHOW.Hour_Show, DATE_SHOW.Minute_Show, 0);
             RefreshTimeShow();
             return true;
         } else {
@@ -838,10 +854,10 @@ function TimeLine() {
         var new_Year = TimeStr.split("-")[0];
         var new_Month = TimeStr.split("-")[1];
         if (new_Year && new_Month) {
-            Year_Show = parseInt(new_Year).toString();
-            Month_Show = parseInt(new_Month).toString();
+            DATE_SHOW.Year_Show = parseInt(new_Year).toString();
+            DATE_SHOW.Month_Show = parseInt(new_Month).toString();
             //设置年月日
-            self.DateShow = new Date(Year_Show, Month_Show - 1, Day_Show, Hour_Show, Minute_Show, 0);
+            self.DateShow = new Date(DATE_SHOW.Year_Show, DATE_SHOW.Month_Show - 1, DATE_SHOW.Day_Show, DATE_SHOW.Hour_Show, DATE_SHOW.Minute_Show, 0);
             RefreshTimeShow();
             return true;
         } else {
@@ -855,9 +871,9 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseDown_Minute = function (event) {
-        isMove_Minute = true;
-        x_Minute = event.clientX;
-        X_Before_Minute = x_Minute;
+        POINT_X.isMove_Minute = true;
+        POINT_X.x_Minute = event.clientX;
+        POINT_X.X_Before_Minute = POINT_X.x_Minute;
     };
 
     /**
@@ -866,7 +882,7 @@ function TimeLine() {
      * @constructor
      */
     var GetMouseUP_Minute = function (event) {
-        isMove_Minute = false;
+        POINT_X.isMove_Minute = false;
     };
 
     /**
@@ -876,7 +892,7 @@ function TimeLine() {
     var GetMouseOut_Minute = function () {
         //若非火狐 则移动
         if (self.browserType !== "Firefox" && self.browserType !== 'Edge') {
-            isMove_Minute = false;
+            POINT_X.isMove_Minute = false;
         }
     };
 
@@ -887,11 +903,11 @@ function TimeLine() {
      */
     var MouseMove_Minute = function (event) {
         //计算拖动位移
-        if (isMove_Minute) {
-            x_Minute = event.clientX;
-            var DrgNum = X_Before_Minute - x_Minute;
+        if (POINT_X.isMove_Minute) {
+            POINT_X.x_Minute = event.clientX;
+            var DrgNum = POINT_X.X_Before_Minute - POINT_X.x_Minute;
             if (DrgNum >= 1 || DrgNum <= -1) {
-                X_Before_Minute = x_Minute;
+                POINT_X.X_Before_Minute = POINT_X.x_Minute;
                 Minute_SVGMove(DrgNum);
             }
         }
@@ -923,22 +939,22 @@ function TimeLine() {
         var SVG_Show = '';
 
         //全局变量 修改
-        m_Trans_Minute = m_Trans_Minute - trans;
+        POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute - trans;
 
         //向后拖动
-        while (m_Trans_Minute > 0) {
-            m_Trans_Minute = m_Trans_Minute - 12 * 12.5 * 5;
+        while (POINT_X.m_Trans_Minute > 0) {
+            POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute - 12 * 12.5 * 5;
             //减一个小时
             MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() - 1);
         }
         //向前拖动
-        while (m_Trans_Minute < -60 * 12.5) {
-            m_Trans_Minute = m_Trans_Minute + 12 * 12.5 * 5;
+        while (POINT_X.m_Trans_Minute < -60 * 12.5) {
+            POINT_X.m_Trans_Minute = POINT_X.m_Trans_Minute + 12 * 12.5 * 5;
             //加1小时
             MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() + 1);
         }
         //每个月的位移 初始化位0
-        var Month_Trans = m_Trans_Minute;
+        var Month_Trans = POINT_X.m_Trans_Minute;
         //初始时间为2016年1月 当前月
         var CountDate = MinuteBegin_Date;
         //当前选择日期 str
@@ -2116,9 +2132,9 @@ function TimeLine() {
     };
 
     function addDataLayer_Year(m_ADDItem) {
-        var DataJson={
-            "layerName":"",
-            "LayerBeginTime":""
+        var DataJson = {
+            "layerName": "",
+            "LayerBeginTime": ""
         };
 
     }
@@ -2140,20 +2156,15 @@ function TimeLine() {
      */
     this.RemoveLayerDataByName = function (RemoveDataLayerName) {
         var IndexNum = m_LayerDataList.indexOf(RemoveDataLayerName);
-        //不更改顺序
+        //不更改顺序 从原始数据中删除 当前移除的数据
         if (IndexNum !== -1) {
             m_LayerDataList.splice(IndexNum, 1);
             m_LayerShowTypeList.splice(IndexNum, 1);
             m_LayerAllModeData.splice(IndexNum, 1);
         }
-        //删除名称匹配的总数据项目
-        /*     var m_NewDat = [];
-         for (var i = 0; i < m_LayerAllModeData.length; i++) {
-         if (m_LayerAllModeData[i].DataName !== RemoveDataLayerName) {
-         m_NewDat.push(m_LayerAllModeData[i]);
-         }
-         }
-         m_LayerAllModeData = m_NewDat;*/
+        //根据新的数据顺序 处理当前列表
+
+
         //根据当前移除
         switch (self.ShowMode) {
             case "Year_Mode":
