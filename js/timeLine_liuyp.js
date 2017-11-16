@@ -5,14 +5,15 @@
 
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function (obj, fromIndex) {
-            if (fromIndex == null) {
+            if (fromIndex === null) {
                 fromIndex = 0;
             } else if (fromIndex < 0) {
                 fromIndex = Math.max(0, this.length + fromIndex);
             }
             for (var i = fromIndex, j = this.length; i < j; i++) {
-                if (this[i] === obj)
+                if (this[i] === obj) {
                     return i;
+                }
             }
             return -1;
         };
@@ -33,7 +34,7 @@
 
 
         if (!this.GLOBALVAR.DIVID) {
-            alert("需要制定一个 控件 DIV");
+            //  alert("需要制定一个 控件 DIV");
             return;
         }
 
@@ -271,7 +272,6 @@
          * @private
          */
         _getFullModeWidth: function () {
-
 
             var m_browserType = this.GLOBALVAR.browserType;
             var m_DIVID = this.GLOBALVAR.DIVID;
@@ -563,6 +563,13 @@
             },
 
             _showDayMode: function () {
+                console.log('_showDayMode');
+                var _self = TimeLine.models;
+                // _self.ShowMode = "YEAR";
+                _self._Base.GLOBALVAR.ShowMode = "DAY";
+                _self._Base._initModeModel();
+                TimeLine.models.drag(0);
+
                 var m_Show_YearDiv = document.getElementById("Show_YearDiv");
                 var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
                 var m_Show_DayDiv = document.getElementById("Show_DayDiv");
@@ -580,11 +587,17 @@
                 $("#btn_AddDay").attr("disabled", false);
                 $("#btn_MinusDay").attr("disabled", false);
 
-                this.GLOBALVAR.ShowMode = "DAY";
-                this._initModeModel();
+
             },
 
             _showMinuteMode: function () {
+                console.log('_showMinuteMode');
+                var _self = TimeLine.models;
+                // _self.ShowMode = "YEAR";
+                _self._Base.GLOBALVAR.ShowMode = "MINUTE";
+                _self._Base._initModeModel();
+                TimeLine.models.drag(0);
+
                 var m_Show_YearDiv = document.getElementById("Show_YearDiv");
                 var m_Show_MonthDiv = document.getElementById("Show_MonthDiv");
                 var m_Show_DayDiv = document.getElementById("Show_DayDiv");
@@ -602,8 +615,6 @@
                 $("#btn_AddDay").attr("disabled", false);
                 $("#btn_MinusDay").attr("disabled", false);
 
-                this.GLOBALVAR.ShowMode = "MINUTE";
-                this._initModeModel();
 
             },
 
@@ -667,12 +678,13 @@
                 }
                 case "DAY":
                 {
-                    TimeLine.models = new TimeLine.YearModel(this);
+                    console.log("DayModel");
+                    TimeLine.models = new TimeLine.DayModel(this);
                     break;
                 }
                 case "MINUTE":
                 {
-                    TimeLine.models = new TimeLine.YearModel(this);
+                    TimeLine.models = new TimeLine.MinuteModel(this);
                     break;
                 }
                 default:
@@ -700,10 +712,6 @@
         drawSvg: function (dragNum) {
             //每一种模式都进行 位移
             TimeLine.models.drag(dragNum);
-            /* if (typeof(callback) !== "undefined") {
-             this.callback = callback;
-             }*/
-            //  this.injectScript(this.base_json_url, this.loadSheets);
         }
         ,
 
@@ -837,6 +845,7 @@
          Returns all of the elements (rows) of the worksheet as objects
          */
         drag: function (transform) {
+            console.log('drag_day');
             //计算当前最新位移
             this.YEARMODEVAR.Trans_Year = this.YEARMODEVAR.Trans_Year - transform;
             //获取遍历赋值的局部位移 初始量
@@ -929,27 +938,17 @@
 
         btnClickGetYear: function (event) {
             var self = TimeLine.models;
-
             var toElement = event.toElement;
-
             //调用设置年函数
             var Tag = toElement.innerHTML.toString().replace('<title>', '');
             Tag = Tag.replace('</title>', '');
-
             var m_Year = parseInt(Tag);
-
-            var DEMO = console.log(m_Year + " " + self.DateInfo.MONTHSHOW + " " + self.DateInfo.DAYSHOW + " " +
-                self.DateInfo.HOURSHOW + " " + self.DateInfo.MINUTESHOW + " " + 0);
             //重新设置
             var SELECTDATE = moment.utc([m_Year, parseInt(self.DateInfo.MONTHSHOW - 1), parseInt(self.DateInfo.DAYSHOW),
                 parseInt(self.DateInfo.HOURSHOW), parseInt(self.DateInfo.MINUTESHOW), 0]);
-            console.log(SELECTDATE.format("YYYYMMDDHHmmss"));
             //刷新显示 对外 显示
             self._Base._reSetDate(SELECTDATE);
-
-
-        }
-        ,
+        },
         /**
          * 根据当前年时间 和位移 绘制 svg 图像
          * @param YearClick
@@ -959,8 +958,6 @@
         getYearMode_DataShowList: function (YearClick, Trans) {
             return "";
         }
-
-
     };
 
 
@@ -982,28 +979,23 @@
         init: function (baseModel) {
             this.MONTHMODEVAR = {
                 Trans_Month: 0,
-                MonthShowCount: 10
+                MonthShowCount: 15
 
             };
             this._Base = baseModel;
             this.MONTHMODEVAR.SELECTDATE = this._Base.DateInfo.SELECTDATE;
             var SelectTime = this.MONTHMODEVAR.SELECTDATE.format("YYYY");
             this.MONTHMODEVAR.MonthBegin_Date = moment.utc(SelectTime, "YYYY").add(-3.0, "year");
-
-            console.log("SelectTime:" + SelectTime);
-            console.log("SELECTDATE:");
-            console.log(this.MONTHMODEVAR.SELECTDATE);
             this.DateInfo = this._Base.DateInfo;
             this.MONTHMODEVAR.browserType = this._Base.GLOBALVAR.browserType;
             this.MouseVAR = {x_Month: 0, "x_Before_Month": 0, isMove_Month: false};
-
             this.drag(0);
             this.initMouseMove();
         },
 
         initMouseMove: function () {
-            console.log('_initMouseMove');
-            var m_ShowTimeLineDiv_Year = document.getElementById("ShowTimeLineDiv_Year");
+
+            var m_ShowTimeLineDiv_Year = document.getElementById("ShowTimeLineDiv_Month");
             m_ShowTimeLineDiv_Year.onmousedown = this.mouseMove_Func._getMouseDown_Month;
             m_ShowTimeLineDiv_Year.onmouseup = this.mouseMove_Func._getMouseUP_Month;
             m_ShowTimeLineDiv_Year.onmouseout = this.mouseMove_Func._getMouseOut_Month;
@@ -1012,8 +1004,8 @@
 
         mouseMove_Func: {
             _getMouseDown_Month: function (event) {
-                var self = TimeLine.models;
 
+                var self = TimeLine.models;
                 event = event || window.event;
                 self.MouseVAR.x_Month = event.clientX;
                 self.MouseVAR.x_Before_Month = self.MouseVAR.x_Month;
@@ -1021,6 +1013,7 @@
 
             },
             _getMouseUP_Month: function () {
+
                 var self = TimeLine.models;
                 self.MouseVAR.isMove_Month = false;
             },
@@ -1047,8 +1040,7 @@
         },
 
         drag: function (tarnsform) {
-            console.log("drag_month");
-
+            this.MONTHMODEVAR.SELECTDATE = this._Base.DateInfo.SELECTDATE;
             //获取 月模式下 SVG的DIV
             var m_ShowSVG = document.getElementById("ShowSVG");
 
@@ -1066,7 +1058,7 @@
             }
 
             var mBeginTimeStr = this.MONTHMODEVAR.MonthBegin_Date.format("YYYY-MM");
-            var mSelectTimeStr = this.MONTHMODEVAR.SELECTDATE.format("YYYY-MM");
+            var mSelectTimeStr = this._Base.DateInfo.SELECTDATE.format("YYYY-MM");
             //  var m_BeginYear = parseInt(this.MONTHMODEVAR.MonthBegin_Date.format("YYYY"));
 
             //获取当前选择时间的月份 STR 用于Title显示
@@ -1098,7 +1090,7 @@
                         + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
                         + '</g>';
                     //若显示月为当前月
-                    console.log(TimeShowStr_Month + ":" + ShowDateStr);
+
                     if (TimeShowStr_Month.toString() === ShowDateStr.toString()) {
                         TimeGar = '<g id="guitarpick" class="SVG_guitarpick"'
                             + ' transform="translate(' + (Trans + TransMonth - 10) + ',-10)">'
@@ -1139,7 +1131,6 @@
             }
             //绑定点击事件
             // MonthClickFunc();
-            //console.log("month" + InnerSvgTotal);
             var m_MonthRectList = document.getElementsByClassName("Btn_MonthRect");
             for (var i = 0; i < m_MonthRectList.length; i++) {
                 m_MonthRectList[i].onclick = this.btnClickGetMonth;
@@ -1149,23 +1140,19 @@
 
         btnClickGetMonth: function (event) {
             var self = TimeLine.models;
-
             var toElement = event.toElement;
-
             //调用设置年函数
             var Tag = toElement.innerHTML.toString().replace('<title>', '');
             Tag = Tag.replace('</title>', '');
+            var YearStr = Tag.substr(0, 4);
+            var MonthStr = Tag.substr(5, 2);
+            var _YearStr = parseInt(YearStr);
+            var _MonthStr = parseInt(MonthStr);
 
-
-            var m_TimeStr = parseInt(Tag);
-            console.log(m_TimeStr);
-
-            var DEMO = console.log(m_TimeStr + " " + self.DateInfo.MONTHSHOW + " " + self.DateInfo.DAYSHOW + " " +
-                self.DateInfo.HOURSHOW + " " + self.DateInfo.MINUTESHOW + " " + 0);
             //重新设置
-            var SELECTDATE = moment.utc([m_TimeStr, parseInt(self.DateInfo.MONTHSHOW - 1), parseInt(self.DateInfo.DAYSHOW),
+            var SELECTDATE = moment.utc([_YearStr, parseInt(_MonthStr - 1), parseInt(self.DateInfo.DAYSHOW),
                 parseInt(self.DateInfo.HOURSHOW), parseInt(self.DateInfo.MINUTESHOW), 0]);
-            console.log(SELECTDATE.format("YYYYMMDDHHmmss"));
+
             //刷新显示 对外 显示
             self._Base._reSetDate(SELECTDATE);
         },
@@ -1176,6 +1163,525 @@
          * @returns {string}
          */
         _getMonthMode_DataShowList: function (YearClick, Trans) {
+            return "";
+        }
+
+
+    };
+
+
+    TimeLine.DayModel = function (_BaseModel) {
+
+        this.init(_BaseModel);
+        return this;
+    };
+
+    TimeLine.DayModel.prototype = {
+
+
+        DateInfo: {},
+        _self: this,
+
+        /**
+         * 初始化SVG绘制
+         */
+        init: function (baseModel) {
+            this.DAYMODEVAR = {
+                Trans_Day: 0,
+                DAYShowCount: 15
+
+            };
+            this._Base = baseModel;
+            this.DAYMODEVAR.SELECTDATE = this._Base.DateInfo.SELECTDATE;
+
+            this.DAYMODEVAR.DayBegin_Date = moment.utc(this.DAYMODEVAR.SELECTDATE.format('YYYY-MM-DD'), "YYYY-MM-DD");
+
+            this.DAYMODEVAR.DayBegin_Date = this.DAYMODEVAR.DayBegin_Date.add(-1.0, "month");
+
+
+            this.DateInfo = this._Base.DateInfo;
+            this.DAYMODEVAR.browserType = this._Base.GLOBALVAR.browserType;
+            this.MouseVAR = {x_Day: 0, "x_Before_Day": 0, isMove_Day: false};
+            this.drag(0);
+            this.initMouseMove();
+        },
+
+        initMouseMove: function () {
+
+            var m_ShowTimeLineDiv_Day = document.getElementById("ShowTimeLineDiv_Day");
+            m_ShowTimeLineDiv_Day.onmousedown = this.mouseMove_Func._getMouseDown_Month;
+            m_ShowTimeLineDiv_Day.onmouseup = this.mouseMove_Func._getMouseUP_Month;
+            m_ShowTimeLineDiv_Day.onmouseout = this.mouseMove_Func._getMouseOut_Month;
+            m_ShowTimeLineDiv_Day.onmousemove = this.mouseMove_Func._getMouseMove_Month;
+        },
+
+        mouseMove_Func: {
+            _getMouseDown_Month: function (event) {
+
+                var self = TimeLine.models;
+                event = event || window.event;
+                self.MouseVAR.x_Day = event.clientX;
+                self.MouseVAR.x_Before_Day = self.MouseVAR.x_Day;
+                self.MouseVAR.isMove_Day = true;
+
+            },
+            _getMouseUP_Month: function () {
+
+                var self = TimeLine.models;
+                self.MouseVAR.isMove_Day = false;
+            },
+            _getMouseOut_Month: function () {
+                var self = TimeLine.models;
+                var browserType = self._Base.GLOBALVAR.browserType;
+                if (browserType !== "Firefox" && browserType !== 'Edge') {
+                    self.MouseVAR.isMove_Day = false;
+                }
+            },
+            _getMouseMove_Month: function (event) {
+                var self = TimeLine.models;
+                event = event || window.event;
+                if (self.MouseVAR.isMove_Day) {
+                    self.MouseVAR.x_Day = event.clientX;
+                    var DrgNum = self.MouseVAR.x_Before_Day - self.MouseVAR.x_Day;
+                    if (DrgNum >= 1 || DrgNum <= -1) {
+                        self.MouseVAR.x_Before_Day = self.MouseVAR.x_Day;
+                        if (DrgNum > 500) {
+                            DrgNum = 500;
+                        }
+                        self.drag(DrgNum);
+                    }
+                }
+            }
+
+        },
+
+        drag: function (tarnsform) {
+            if (tarnsform > 500) {
+                console.log('drag_day:' + tarnsform);
+            }
+            //界面显示2个月
+            var SVG_Show = '';
+            this.DAYMODEVAR.SELECTDATE = this._Base.DateInfo.SELECTDATE;
+
+
+            this.DAYMODEVAR.Trans_Day = this.DAYMODEVAR.Trans_Day - tarnsform;
+            /*    var SelectTime = this.DAYMODEVAR.SELECTDATE.format("YYYY-MM");
+             this.DAYMODEVAR.DayBegin_Date = moment.utc(SelectTime, "YYYY-MM").add(-2.0, "month");*/
+            //向前拖动
+            while (this.DAYMODEVAR.Trans_Day > 0) {
+                //减少一个月
+                this.DAYMODEVAR.DayBegin_Date.add(-1.0, "month");
+                //计算上一个月长度
+                var BeforeMonthLength = this.DAYMODEVAR.DayBegin_Date.daysInMonth() * 12.5;
+                this.DAYMODEVAR.Trans_Day = this.DAYMODEVAR.Trans_Day - BeforeMonthLength;
+            }
+            //向前拖动
+            while (this.DAYMODEVAR.Trans_Day < -350) {
+                this.DAYMODEVAR.DayBegin_Date.add(1.0, "month");
+                var MonthLength = this.DAYMODEVAR.DayBegin_Date.daysInMonth() * 12.5;
+                this.DAYMODEVAR.Trans_Day = this.DAYMODEVAR.Trans_Day + MonthLength;
+            }
+            var Day_Trans = this.DAYMODEVAR.Trans_Day;
+            //初始时间为2016年1月 当前月
+            //   var CountDate = this.DAYMODEVAR.DayBegin_Date.format('YYYY-MM-DD');
+            //当前选择日期 str
+            var DateShowNowStr = this.DAYMODEVAR.SELECTDATE.format('YYYY-MM-DD');
+            // console.log(CountDate + ":" + DateShowNowStr);
+
+            var momentCount = moment.utc(this.DAYMODEVAR.DayBegin_Date.format('YYYY-MM-DD'), 'YYYY-MM-DD');
+
+            //月份循环
+            for (var i = 0; i < this.DAYMODEVAR.DAYShowCount; i++) {
+                var TimeGar = '';
+                //计算当前月份天数
+                var TimeDateCount = momentCount.daysInMonth();
+                //月开始 绘制
+                var SVG_Month = '  <g class="tick_Total_Year" transform="translate(' + Day_Trans + ')">' +
+                    '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
+                //每一天循环
+                for (var j = 0; j < TimeDateCount; j++) {
+                    //计算每一天的位移
+                    var Day_Trans_min = (j * 12.5).toString();
+                    //根据时间计算当前块显示 DATE YYYY-MM-dd
+                    var DayTimeStr = momentCount.format('YYYY-MM-DD');
+
+                    //根据时间加载数据 svg
+                    var Data_SVG = this._getDayMode_DataShowList(DayTimeStr, Day_Trans_min);
+
+                    //若当前日期为显示日期
+
+                    if (DayTimeStr.toString() === DateShowNowStr.toString()) {
+
+                        TimeGar = '<g id="guitarpick" class="SVG_guitarpick"  '
+                            + ' transform="translate(' + (Day_Trans_min - 8) + ',-10)">'
+                            + '<title>' + DateShowNowStr + '</title>'
+                            + '<path d="'
+                            + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
+                            + '"></path>'
+                            + '<rect width="3" height="20" x="9" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="14" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="19" y="11" ></rect>'
+                            + '</g>';
+                    }
+
+                    //根据时间 初始化 基础svg
+                    /*      + ' onclick="javascript:' + self.DayRectOnClick(evt, ' + ShowYear + ', ' + ShowMonth + ', ' + j + ') + '"   >'*/
+                    var SVG_Day = '   <g class="tick_Year_One" transform="translate(' + Day_Trans_min + ')" >'
+                        + '<rect class="DayRect Btn_DayRect" x="0.2" y="0" width="12.5" height="55" value="' + DayTimeStr + '">'
+                        + '<title>' + DayTimeStr + '</title>'
+                        + '</rect>'
+                        + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
+                        + '</g>';
+                    SVG_Month = SVG_Month + Data_SVG + SVG_Day;
+                    if (Day_Trans_min === "62.5" || Day_Trans_min === "125" || Day_Trans_min === "187.5"
+                        || Day_Trans_min === "250" || Day_Trans_min === "312.5" || Day_Trans_min === "375") {
+                        SVG_Month = SVG_Month
+                            + '<line x1="' + Day_Trans_min + '" x2="' + Day_Trans_min + '" y1="40" y2="55" class="tick_10DayLine"'
+                            + ' ></line>';
+                    }
+
+                    //时间相加
+                    momentCount = momentCount.add(1.0, 'day');
+                }
+                Day_Trans = ( TimeDateCount * 12.5) + Day_Trans;
+                var Width = ( TimeDateCount * 12.5);
+                var Time = momentCount.format('YYYY-MM');
+                var Month_End = '<g transform="translate(0)">'
+                    + '<rect x="0" y="55" width="' + Width + '" height="25" class="Rect_White"/>'
+                    + '<text x="12" y="73" class="Month_Text_Show">' + Time + '</text>'
+                    + '</g>'
+                    + '<g>'
+                    + '<circle cx="0" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                    + '<circle cx="' + Width + '" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                    + '</g>'
+                    + '<line x1="' + Width + '" x2="' + Width + '" y1="0" y2="80" class="tick_Line"></line>'
+                    + '</g>';
+                SVG_Month = SVG_Month + TimeGar + Month_End;
+                //月显示完结
+                SVG_Show = SVG_Show + SVG_Month;
+
+            }
+            //时间相加
+            var ShowTimeLine = document.getElementById("ShowSVG_Day");
+            //IE处理
+            if (self.browserType !== "MSIE") {
+                ShowTimeLine.innerHTML = SVG_Show;
+            } else {
+                $("#ShowSVG_Day").html(SVG_Show);
+            }
+            //日点击事件
+            var m_Btn_DayRectList = document.getElementsByClassName('Btn_DayRect');
+            for (var t = 0; t < m_Btn_DayRectList.length; t++) {
+                m_Btn_DayRectList[t].onclick = this.btnClickGetDay;
+            }
+        },
+
+
+        btnClickGetDay: function (event) {
+            var self = TimeLine.models;
+            var toElement = event.toElement;
+            //调用设置年函数
+            var Tag = toElement.innerHTML.toString().replace('<title>', '');
+            Tag = Tag.replace('</title>', '');
+            var YearStr = Tag.substr(0, 4);
+            var MonthStr = Tag.substr(5, 2);
+            var DayStr = Tag.substr(8, 2);
+            var _YearStr = parseInt(YearStr);
+            var _MonthStr = parseInt(MonthStr);
+            var _DayStr = parseInt(DayStr);
+
+            //重新设置
+            var SELECTDATE = moment.utc([_YearStr, parseInt(_MonthStr - 1), _DayStr,
+                parseInt(self.DateInfo.HOURSHOW), parseInt(self.DateInfo.MINUTESHOW), 0]);
+            console.log('Change:' + SELECTDATE.format('YYYYMMDD'));
+            //刷新显示 对外 显示
+            self._Base._reSetDate(SELECTDATE);
+        }
+        ,
+        /**
+         * 根据当前年时间 和位移 绘制 svg 图像
+         * @param YearClick
+         * @param Trans
+         * @returns {string}
+         */
+        _getDayMode_DataShowList: function (YearClick, Trans) {
+            return "";
+        }
+
+
+    };
+
+    /**
+     * 分钟模式
+     * @param _BaseModel
+     * @returns {TimeLine.MinuteMode}
+     * @constructor
+     */
+    TimeLine.MinuteModel = function (_BaseModel) {
+        this.init(_BaseModel);
+        return this;
+    };
+
+    TimeLine.MinuteModel.prototype = {
+
+
+        DateInfo: {},
+        _self: this,
+
+        /**
+         * 初始化SVG绘制
+         */
+        init: function (baseModel) {
+            this.MINUTEMODEVAR = {
+                Trans_Minute: 0,
+                MinuteShowCount: 15
+
+            };
+            this._Base = baseModel;
+            this.MINUTEMODEVAR.SELECTDATE = this._Base.DateInfo.SELECTDATE;
+
+            this.MINUTEMODEVAR.MinuteBegin_Date = moment.utc(this.MINUTEMODEVAR.SELECTDATE.format('YYYY-MM-DD HHmmss'), "YYYY-MM-DD HHmmss");
+
+            this.MINUTEMODEVAR.MinuteBegin_Date = this.MINUTEMODEVAR.MinuteBegin_Date.add(-1.0, "hour");
+
+
+            this.DateInfo = this._Base.DateInfo;
+            this.MINUTEMODEVAR.browserType = this._Base.GLOBALVAR.browserType;
+            this.MouseVAR = {x_Day: 0, "x_Before_Day": 0, isMove_Day: false};
+            this.drag(0);
+            this.initMouseMove();
+        },
+
+        initMouseMove: function () {
+
+            var m_ShowTimeLineDiv_Minute = document.getElementById("ShowTimeLineDiv_Minute");
+            m_ShowTimeLineDiv_Minute.onmousedown = this.mouseMove_Func._getMouseDown_Month;
+            m_ShowTimeLineDiv_Minute.onmouseup = this.mouseMove_Func._getMouseUP_Month;
+            m_ShowTimeLineDiv_Minute.onmouseout = this.mouseMove_Func._getMouseOut_Month;
+            m_ShowTimeLineDiv_Minute.onmousemove = this.mouseMove_Func._getMouseMove_Month;
+        },
+
+        mouseMove_Func: {
+            _getMouseDown_Month: function (event) {
+
+                var self = TimeLine.models;
+                event = event || window.event;
+                self.MouseVAR.x_Day = event.clientX;
+                self.MouseVAR.x_Before_Day = self.MouseVAR.x_Day;
+                self.MouseVAR.isMove_Day = true;
+
+            },
+            _getMouseUP_Month: function () {
+
+                var self = TimeLine.models;
+                self.MouseVAR.isMove_Day = false;
+            },
+            _getMouseOut_Month: function () {
+                var self = TimeLine.models;
+                var browserType = self._Base.GLOBALVAR.browserType;
+                if (browserType !== "Firefox" && browserType !== 'Edge') {
+                    self.MouseVAR.isMove_Day = false;
+                }
+            },
+            _getMouseMove_Month: function (event) {
+                var self = TimeLine.models;
+                event = event || window.event;
+                if (self.MouseVAR.isMove_Day) {
+                    self.MouseVAR.x_Day = event.clientX;
+                    var DrgNum = self.MouseVAR.x_Before_Day - self.MouseVAR.x_Day;
+                    if (DrgNum >= 1 || DrgNum <= -1) {
+                        self.MouseVAR.x_Before_Day = self.MouseVAR.x_Day;
+                        if (DrgNum > 500) {
+                            DrgNum = 500;
+                        }
+                        self.drag(DrgNum);
+                    }
+                }
+            }
+
+        },
+
+        drag: function (tarnsform) {
+            if (tarnsform > 500) {
+                console.log('drag_Minute:' + tarnsform);
+            }
+            //界面显示2个月
+            //用于整体显示的SVG InnerHTML
+            var SVG_Show = '';
+            //  this.MINUTEMODEVAR.MinuteBegin_Date;
+
+            //全局变量 修改
+            this.MINUTEMODEVAR.Trans_Minute = this.MINUTEMODEVAR.Trans_Minute - tarnsform;
+
+            //向后拖动
+            while (this.MINUTEMODEVAR.Trans_Minute > 0) {
+                this.MINUTEMODEVAR.Trans_Minute = this.MINUTEMODEVAR.Trans_Minute - 12 * 12.5 * 5;
+                //减一个小时
+                this.MINUTEMODEVAR.MinuteBegin_Date.add(-1.0, 'hour');
+                // MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() - 1);
+            }
+            //向前拖动
+            while (this.MINUTEMODEVAR.Trans_Minute < -60 * 12.5) {
+                this.MINUTEMODEVAR.Trans_Minute = this.MINUTEMODEVAR.Trans_Minute + 12 * 12.5 * 5;
+                //加1小时
+                this.MINUTEMODEVAR.MinuteBegin_Date.add(1.0, 'hour');
+                //   MinuteBegin_Date.setHours(MinuteBegin_Date.getHours() + 1);
+            }
+            //每个月的位移 初始化位0
+            var Month_Trans = this.MINUTEMODEVAR.Trans_Minute;
+            //初始时间为2016年1月 当前月
+            var CountDate = moment.utc(this.MINUTEMODEVAR.MinuteBegin_Date.format("YYYY-MM-DD HH:00"), "YYYY-MM-DD HH:00");
+            console.log(CountDate.format("YYYY-MM-DD HH:mm"));
+            //当前选择日期 str
+            var DateShowNowStr = this.MINUTEMODEVAR.SELECTDATE.format("YYYY-MM-DD HH:mm");
+            //小时份循环
+
+            /// var TimeCompareStr = this.MINUTEMODEVAR.SELECTDATE.format("YYYY-MM-DD HH:mm");
+
+            var is_GutiarFlag = false;
+            //小时开始 绘制 21个小时
+            for (var i = 0; i < this.MINUTEMODEVAR.MinuteShowCount; i++) {
+                //时间 指针 （当前显示时间）
+                var TimeGar = '';
+
+                var SVG_Hour = '<g class="tick_Total_Year" transform="translate(' + Month_Trans + ')">' +
+                    '<line x1="0" x2="0" y1="0" y2="80" class="tick_Line"></line>';
+                // var HourNow = new Date(moment(CountDate).format("YYYY-MM-DD HH:mm"));
+                //每一个小时 中 1 min循环    一小时12
+                for (var j = 0; j < 60; j++) {
+                    //每一个小时中 每5min的位移
+                    var Minute_Trans = (j * 12.5).toString();
+                    //根据时间计算当前块显示 DATE YYYY-MM-dd
+                    console.log(CountDate);
+                    try {
+                        var MinuteTimeStr = CountDate.format("YYYY-MM-DD HH:mm");
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    //根据时间加载数据 svg
+                    var Data_SVG = this._getMinuteMode_DataShowList(MinuteTimeStr, Minute_Trans);
+
+                    //根据动画模式 设置是否需要显示动画模块 V1.1 20170321
+                    // var Trans_SVG = GetMinuteMode_AnimeDateList(DayTimeStr, Minute_Trans);
+
+                    //  若非动画模式 则按照原有选择时间进行处理
+
+                    // 是否为当前显示 时分秒
+
+                    //若指针时间在范围内 显示指针
+                    if (DateShowNowStr === MinuteTimeStr && is_GutiarFlag === false) {
+                        is_GutiarFlag = true;
+                        TimeGar = '<g id="guitarpick" class="SVG_guitarpick" '
+                            + ' transform="translate(' + (Minute_Trans - 8) + ',-10)">'
+                            + '<title>' + MinuteTimeStr + '</title>'
+                            + '<path d="'
+                            + 'M3.658 0.743C1.775 0.743 0.25 3.793 0.25 7.555l0 21.272l7.302 15.711l7.302 15.711l7.302 -15.711l7.302 -15.711l0 -21.272c0 -3.763 -1.526 -6.813 -3.408 -6.813l-22.392 0z'
+                            + '"></path>'
+                            + '<rect width="3" height="20" x="9" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="14" y="11" ></rect>'
+                            + '<rect width="3" height="20" x="19" y="11" ></rect>'
+                            + '</g>';
+                    }
+
+
+                    //根据时间 初始化 基础svg
+                    var SVG_Day = '<g class="tick_Year_One" transform="translate(' + Minute_Trans + ')" >'
+                        + '<rect class="DayRect Btn_MinuteRect" x="0.2" y="0" width="12.5" height="55" value="' + MinuteTimeStr + '">'
+                        + '<title>' + MinuteTimeStr + '</title>'
+                        + '</rect>'
+                        + '<line class="tick_dot" x1="12" x2="12" y1="0" y2="52"></line>'
+                        + '</g>';
+                    //SVG_Hour = SVG_Hour + Data_SVG + SVG_Day + TimeGar;
+
+                    SVG_Hour = SVG_Hour + Data_SVG + SVG_Day;
+
+                    if (Minute_Trans % (12.5 * 5) === 0) {
+                        if (Minute_Trans % (12.5 * 5 * 2) === 0) {
+                            SVG_Hour = SVG_Hour
+                                + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="20" y2="55" class="tick_10DayLine"'
+                                + ' ></line>';
+                        } else {
+                            SVG_Hour = SVG_Hour
+                                + '<line x1="' + Minute_Trans + '" x2="' + Minute_Trans + '" y1="40" y2="55" class="tick_10DayLine"'
+                                + ' ></line>';
+                        }
+                    }
+                    // 加5min
+                    CountDate = CountDate.add(1.0, 'minute');
+                }
+                Month_Trans = 60 * 12.5 + Month_Trans;
+                var Width = 60 * 12.5;
+                var TimeHourShow = CountDate.format("YYYY-MM-DD HH:mm");
+                if (CountDate.format("HH:mm") === '00:00') {
+                    TimeHourShow = CountDate.format("YYYY-MM-DD");
+                } else {
+                    TimeHourShow = CountDate.format("HH:mm");
+                }
+                var Month_End = '<g transform="translate(0)">'
+                    + '<rect x="0" y="55" width="' + Width + '" height="25" class="Rect_White"/>'
+                    + '<text x="12" y="73" class="Month_Text_Show">' + TimeHourShow + '</text>'
+                    + '</g>'
+                    + '<g>'
+                    + '<circle cx="0" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                    + '<circle cx="' + Width + '" cy="55" r="5" stroke="white" stroke-width="2" fill="white"/>'
+                    + '</g>'
+                    + '<line x1="' + Width + '" x2="' + Width + '" y1="0" y2="80" class="tick_Line"></line>'
+                    + '</g>';
+                SVG_Hour = SVG_Hour + TimeGar + Month_End;
+
+                //小时显示完结
+                SVG_Show = SVG_Show + SVG_Hour;
+                //时间相加
+                CountDate = new Date(moment(CountDate).add(1, 'hour'));
+            }
+            //时间相加
+            var ShowTimeLine = document.getElementById("ShowSVG_Minute");
+
+            //IE显示处理
+            if (self.browserType !== "MSIE") {
+                ShowTimeLine.innerHTML = SVG_Show;
+            } else {
+                $("#ShowSVG_Day").append(SVG_Show);
+            }
+            //ShowTimeLine.innerHTML = SVG_Show;
+            //重新设置分钟点击
+
+
+            var m_Btn_MinuteRectList = document.getElementsByClassName('Btn_MinuteRect');
+            for (var t = 0; t < m_Btn_MinuteRectList.length; t++) {
+                m_Btn_MinuteRectList[t].onclick = this.btnClickGetMinute;
+            }
+        },
+
+
+        btnClickGetMinute: function (event) {
+            var self = TimeLine.models;
+            var toElement = event.toElement;
+            //调用设置年函数
+            var Tag = toElement.innerHTML.toString().replace('<title>', '');
+            Tag = Tag.replace('</title>', '');
+            var YearStr = Tag.substr(0, 4);
+            var MonthStr = Tag.substr(5, 2);
+            var DayStr = Tag.substr(8, 2);
+            var _YearStr = parseInt(YearStr);
+            var _MonthStr = parseInt(MonthStr);
+            var _DayStr = parseInt(DayStr);
+
+            //重新设置
+            var SELECTDATE = moment.utc([_YearStr, parseInt(_MonthStr - 1), _DayStr,
+                parseInt(self.DateInfo.HOURSHOW), parseInt(self.DateInfo.MINUTESHOW), 0]);
+            console.log('Change:' + SELECTDATE.format('YYYYMMDD'));
+            //刷新显示 对外 显示
+            self._Base._reSetDate(SELECTDATE);
+        }
+        ,
+        /**
+         * 根据当前年时间 和位移 绘制 svg 图像
+         * @param YearClick
+         * @param Trans
+         * @returns {string}
+         */
+        _getMinuteMode_DataShowList: function (YearClick, Trans) {
             return "";
         }
 

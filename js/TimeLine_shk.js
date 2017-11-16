@@ -24,9 +24,6 @@ function TimeLine() {
     };
 
 
-
-
-
     //返回当前选择年月日， 所在的 数据列表 及开始时间
     this.DataShowBegin = [];
 
@@ -1121,13 +1118,11 @@ function TimeLine() {
             + ' transform="translate(' + ShowTransLate + ')">';
 
         //日期格式赋值
-
         //是否显示列表
-
         var DataMomentBegin = moment.utc(Show_DayDate);
         var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'minute');
         //查找是否存在数据
-        var IsDataShowList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, DataMomentEnd - DataMomentBegin);
+        var IsDataShowList = CheckDataTimeExistStatus_Minute(DataMomentBegin, DataMomentEnd, DataMomentEnd - DataMomentBegin);
 
         //判定是否有数据条填充 若无填充 则返回空值
         var IS_ShowTag = false;
@@ -1394,9 +1389,8 @@ function TimeLine() {
         var IsDataShowList = [];
         var DataMomentBegin = moment.utc(Show_DayDate);
         var DataMomentEnd = moment.utc(Show_DayDate).add(1.0, 'day');
-        var MinusCount = DataMomentEnd - DataMomentBegin;
         //查找是否存在数据
-        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, MinusCount);
+        var DataList = CheckDataTimeExistStatus_Day(DataMomentBegin);
 
         //查找是否存在数据
         for (var k = 0; k < DataList.length; k++) {
@@ -1650,7 +1644,7 @@ function TimeLine() {
         var DataMomentEnd = moment.utc(Show_YearDate).add(1.0, 'year');
 
         //查找是否存在数据
-        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        var DataList = CheckDataTimeExistStatus_Year(DataMomentBegin);
         //查找是否存在数据
         for (var k = 0; k < DataList.length; k++) {
             var is_ShowTag = false;
@@ -1907,7 +1901,7 @@ function TimeLine() {
         var DataMomentEnd = moment.utc(Show_MonthDate).add(1.0, 'month');
 
         //查找是否存在数据
-        var DataList = CheckDataTimeExistStatus(DataMomentBegin, DataMomentEnd, 1000 * 60);
+        var DataList = CheckDataTimeExistStatus_Month(DataMomentBegin);
         //查找是否存在数据
         for (var k = 0; k < DataList.length; k++) {
 
@@ -2099,6 +2093,11 @@ function TimeLine() {
         Minute_SVGMove(m_Trans);
     };
 
+
+    var m_LayerAllModeDataMinute = [];
+    var m_LayerAllModeDataYear = [];
+    var m_LayerAllModeDataMonth = [];
+    var m_LayerAllModeDataDay = [];
     /**
      * 添加数据函数
      * @param ADDDatas
@@ -2120,6 +2119,10 @@ function TimeLine() {
                     m_LayerDataList.push(m_LayerName);
                     m_LayerShowTypeList.push(m_Layeris_Show);
                     m_LayerAllModeData.push(m_ADDItem);
+                    m_LayerAllModeDataMinute.push(m_ADDItem.DataInfoMinute);
+                    m_LayerAllModeDataYear.push(m_ADDItem.DataInfoYear);
+                    m_LayerAllModeDataMonth.push(m_ADDItem.DataInfoMonth);
+                    m_LayerAllModeDataDay.push(m_ADDItem.DataInfoDay);
                     IndexNum = m_LayerDataList.length - 1;
                 }
             }
@@ -2650,18 +2653,9 @@ function TimeLine() {
     //使用不区分模式 的 选择
     //每一种 产品作为一个 json 项目，不再区分 模式。
 
+    var CheckDataTimeExistStatus = function (BeginTime_moment, EndTimeStr_moment, TimeMode) {
 
-    var CheckDataTimeExistStatus = function (BeginTime_moment, EndTimeStr_moment, MinuteTimeBase) {
-        //
-        // MinuteTimeBase = 1000 * 60;
-        //MinuteTimeBase = MinuteTimeBase;
-        var TimeCompare_begin = BeginTime_moment;
-
-        var TimeCompare_end = EndTimeStr_moment;
-        //根据不用模式对 当前开始结束时间 进行比较、
-
-        //根据当前的 timeStr 对是否存在数据进行返回
-        var ShowModeWidth = 12.5;
+        var TimeCompare_begin = BeginTime_moment.format("YYYY-MM-DD HH:mm");
         //返回一个 n维数组
         var ExistReturn = [{
             "isExist": true,
@@ -2671,58 +2665,22 @@ function TimeLine() {
             "isEnd": ""
         }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
         ExistReturn = [];
+
         //处理JSON
         m_LayerAllModeData.forEach(function (DataJsonItem) {
             var ExistReturnItem = {
                 "layerName": DataJsonItem.DataName,
                 "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
-                "isExist": false,
-                "isShow": false,
-                "Width": 0,
-                "isAll": false,
-                "isBofore": false,
-                "isEnd": false
+                "isExist": false
             };
-            var DataInfo = DataJsonItem.DataInfo;
+            var DataInfo = DataJsonItem.DataInfoMinute;
             if (DataInfo && DataInfo.length > 0) {
                 //遍历每一个时段 对 当前时间段内的数据存在进行查找。
                 DataInfo.forEach(function (DataTimeItem) {
-                    var BeginTime = moment.utc(DataTimeItem.BeginTime);
-                    var EndTime = moment.utc(DataTimeItem.EndTime);
-                    //存在数据时间 完全包含 数据存在字段 |11|
-                    if (BeginTime - TimeCompare_begin >= 0 && TimeCompare_end - EndTime > 0) {
-                        ExistReturnItem.Width = BeginTime - EndTime / MinuteTimeBase * 12.5;
+                    if (TimeCompare_begin === DataTimeItem.TimeStr) {
                         ExistReturnItem.isExist = true;
-                        ExistReturnItem.Width = ShowModeWidth;
-                        ExistReturnItem.isAll = true;
                     }
-                    //当前时间 在范围内 1||1
-                    if (TimeCompare_begin - BeginTime >= 0 && EndTime - TimeCompare_end > 0) {
-                        ExistReturnItem.isExist = true;
-                        ExistReturnItem.Width = ShowModeWidth;
-                        ExistReturnItem.isAll = true;
-                    }
-                    //时间段 前半段 1|1|
-                    if (EndTime - TimeCompare_begin >= 0 && TimeCompare_end - EndTime > 0) {
-                        ExistReturnItem.isExist = true;
-                        var WitdhBefore = (EndTime - TimeCompare_begin) / MinuteTimeBase * 12.5;
-                        ExistReturnItem.Width = WitdhBefore;
-                        ExistReturnItem.isAll = false;
-                        ExistReturnItem.isBofore = true;
-                    }
-                    //时间段  后半段 |1|1
-                    if (BeginTime - TimeCompare_begin >= 0 && TimeCompare_end - BeginTime > 0) {
-                        ExistReturnItem.isExist = true;
-                        var WitdhAfter = (BeginTime - TimeCompare_end) / MinuteTimeBase * 12.5;
-                        ExistReturnItem.Width = WitdhAfter;
-                        ExistReturnItem.isAll = false;
-                        ExistReturnItem.isEnd = true;
-                    }
-
                 });
-            }
-            if (ExistReturnItem.isExist === true) {
-                // console.log(ExistReturnItem);
             }
             //设置查找
             ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
@@ -2731,6 +2689,148 @@ function TimeLine() {
 
         return ExistReturn;
     };
+
+    var CheckDataTimeExistStatus_Year = function (BeginTime_moment) {
+        var TimeCompare_begin = BeginTime_moment.format("YYYY");
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+
+        //处理JSON
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "layerName": DataJsonItem.DataName,
+                "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
+                "isExist": false
+            };
+            var DataInfo = DataJsonItem.DataInfoYear;
+            if (DataInfo && DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    if (TimeCompare_begin === DataTimeItem.TimeStr) {
+                        ExistReturnItem.isExist = true;
+                    }
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+
+        return ExistReturn;
+    };
+    var CheckDataTimeExistStatus_Month = function (BeginTime_moment) {
+        var TimeCompare_begin = BeginTime_moment.format("YYYY-MM");
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+
+        //处理JSON
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "layerName": DataJsonItem.DataName,
+                "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
+                "isExist": false
+            };
+            var DataInfo = DataJsonItem.DataInfoMonth;
+            if (DataInfo && DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    if (TimeCompare_begin === DataTimeItem.TimeStr) {
+                        ExistReturnItem.isExist = true;
+                    }
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+
+        return ExistReturn;
+    };
+    var CheckDataTimeExistStatus_Day = function (BeginTime_moment) {
+        var TimeCompare_begin = BeginTime_moment.format("YYYY-MM-DD");
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+
+        //处理JSON
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "layerName": DataJsonItem.DataName,
+                "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
+                "isExist": false
+            };
+            var DataInfo = DataJsonItem.DataInfoDay;
+            if (DataInfo && DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    if (TimeCompare_begin === DataTimeItem.TimeStr) {
+                        ExistReturnItem.isExist = true;
+                    }
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+
+        return ExistReturn;
+    };
+    var CheckDataTimeExistStatus_Minute = function (BeginTime_moment) {
+        var TimeCompare_begin = BeginTime_moment.format("YYYY-MM-DD HH:mm");
+        //返回一个 n维数组
+        var ExistReturn = [{
+            "isExist": true,
+            "isShow": true,
+            "Width": "",
+            "isBofore": "",
+            "isEnd": ""
+        }, {"isExist": true, "isShow": true, "Width": 0, "isBofore": "", "isEnd": ""}];
+        ExistReturn = [];
+
+        //处理JSON
+        m_LayerAllModeData.forEach(function (DataJsonItem) {
+            var ExistReturnItem = {
+                "layerName": DataJsonItem.DataName,
+                "timeNow": BeginTime_moment.format("YYYYMMDDHHmmss"),
+                "isExist": false
+            };
+            var DataInfo = DataJsonItem.DataInfoMinute;
+            if (DataInfo && DataInfo.length > 0) {
+                //遍历每一个时段 对 当前时间段内的数据存在进行查找。
+                DataInfo.forEach(function (DataTimeItem) {
+                    if (TimeCompare_begin === DataTimeItem.TimeStr) {
+                        ExistReturnItem.isExist = true;
+                    }
+                });
+            }
+            //设置查找
+            ExistReturnItem.isShow = DataJsonItem.Layeris_Show;
+            ExistReturn.push(ExistReturnItem);
+        });
+
+        return ExistReturn;
+    };
+
 
     /**
      * 对外接口 获取当前数据时间段内的 开始时间 若无时间，则返回当前选择时间。

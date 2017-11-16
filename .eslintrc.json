@@ -56,6 +56,6 @@
         // 要求使用 JSDoc 注释
         // "Require-jsdoc":"error",
         // 要求对象字面量属性名称用引号括起来
-        "quote-props": "error"
+        "quote-props": "off"
     }
 }

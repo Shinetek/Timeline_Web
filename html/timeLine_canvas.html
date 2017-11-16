@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas 版本 时间轴</title>
+    <script type="text/javascript" src="../lib/moment.min.js"></script>
+    <script type="text/javascript" src="../js/timeLine_canvas.js"></script>
+</head>
+<body>
+
+<div id="timeLine" style="float: left;">
+
+</div>
+</body>
+<script type="application/javascript">
+
+
+    function _initTimeLine() {
+        var _timeline = document.getElementById('timeLine');
+        var _options = {};
+        timeLine.initialize(_timeline, _options);
+    }
+    _initTimeLine();
+
+</script>
+</html>
