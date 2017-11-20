@@ -23,6 +23,8 @@
     }
     _initTimeLine();
 
+
+    //测试点击事件
     $("#timeLine").on("DateTimeChange", function (event, selectDate) {
         console.log("控件数值修改 ，触发事件！ 修改后的时间为：");
         console.log(selectDate.format("YYYY-MM-DD HH:mm:ss"));

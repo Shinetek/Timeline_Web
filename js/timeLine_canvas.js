@@ -63,31 +63,34 @@ var timeLine = {
                 mode_timespan: [12.5, 12.5, 12.5, 5],
 
                 select_modeindex: 2,
-                select_date: moment.utc(),
+                moment_select: moment.utc(),
                 moment_mousein: moment.utc(),
                 //动画控制部分
                 //是否拖拽
                 is_drag: false,
+
+                //鼠标当前位置
+                mouse_x: 0,
                 //开始拖拽x
                 begin_X: 0,
                 end_X: 0
             };
             //初始化全部显示
             this.init_container();
-            //
+            //设置窗口的重设事件
             window.onresize = this._resizeScreen;
 
         },
 
 
         init_container: function () {
-            console.log(this._el);
+            //     console.log(this._el);
             //获取 宽高
             this._resizeScreen();
             this.init_beginTime();
             this.init_controller();
             this.init_timeline();
-
+            this.init_timeMode();
 
         },
 
@@ -100,9 +103,9 @@ var timeLine = {
         },
 
         /**
-         * 初始化时间轴
+         * 初始化时间轴 左侧控制部分
          */
-        init_controller: function () {
+        init_controller_css: function () {
             var _canvas = document.createElement("canvas");
             _canvas.width = this.options.controller_width;
             _canvas.height = this.options.controller_height;
@@ -143,22 +146,338 @@ var timeLine = {
             context.closePath();
             context.fill();
 
-        }
-        ,
+            var ShowAll =
+                ' <div class="TimeInputDiv">'
+                + '<div id="YearInputDiv">'
+                + '<div class="UpButton" id="btn_AddYear">'
+                + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+                + '<path d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div>'
+                + '<input class="TimeInput" id="txt_Year" type="text" readOnly="true">  '
+                + '<div class="DownButton" id="btn_MinusYear">'
+                + '<svg>'
+                + '<path transform="rotate(-180 50,14.5) " d="m25.5,20.5l23.49999,-12l23.50001,12l-47,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div>'
+                + '</div>'
+                + '<div id="MonthInputDiv">'
+                + '<div class="UpButton" id="btn_AddMonth">'
+                + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+                + '<path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div>'
+                + '<input class="MonthInput" id="txt_Month" type="text" readOnly="true">  '
+                + '<div class="DownButton" id="btn_MinusMonth">'
+                + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+                + '<path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div>'
+                + '</div>'
+                + '<div id="DayInputDiv">'
+                + '<div class="UpButton" id="btn_AddDay">'
+                + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+                + '<path d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div>'
+                + '<input class="MonthInput" id="txt_Day" type="text"  readOnly="true"> '
+                + '<div class="DownButton" id="btn_MinusDay">'
+                + '<svg width="98" height="25" xmlns="http://www.w3.org/2000/svg">'
+                + '<path transform="rotate(-180 30,14.5) " d="m10,20.5l19.99999,-12l20.00001,12l-40,0z" fill="#fff"/>'
+                + '</svg>'
+                + '</div> '
+                + '</div>'
+                + '<div class="AfterDiv" id="btn_BeforeTime">'
+                + '<svg style="width: 24px;height: 44px;margin-top: 26px; transform:scaleX(-1);">'
+                + '<path style="fill: #fff ;" d="M 10.240764,0 24,22 10.240764,44 0,44 13.759236,22 0,0 10.240764,0 z"></path>'
+                + '</svg>'
+                + '</div>'
+                + '<div class="AfterDiv" id="btn_AfterTime">'
+                + '<svg style="width: 24px;height: 44px;margin-top: 26px; ">'
+                + '<path style="fill: #fff;" d="M 10.240764,0 24,22 10.240764,44 0,44 13.759236,22 0,0 10.240764,0 z"></path>'
+                + '</svg>'
+                + '</div>'
+                + '</div>'
+                + '<div class="TimeLineTotalDiv" id="ShowTimeLine">'
+                + '<div class="TimeLineDiv" id="Show_YearDiv">';
+
+
+        },
+        init_controller: function () {
+            var controller_div = document.createElement("div");
+            controller_div.style.width = timeLine.options.controller_width + "px";
+            controller_div.style.height = timeLine.options.controller_height + "px";
+            controller_div.style.float = "left";
+            controller_div.style.background = timeLine.options.default_bg_color;
+            controller_div.id = "_controller";
+
+            this._el.container.appendChild(controller_div);
+            //设置 年部分
+            timeLine._init_Year_div(controller_div);
+            timeLine._init_Month_div(controller_div);
+            timeLine._init_Day_div(controller_div);
+
+
+        },
+        //绘制年
+        _init_Year_div: function (controller_div) {
+            var YearDiv = document.createElement("div");
+            YearDiv.style.width = "75px";
+            YearDiv.style.height = "75px";
+            YearDiv.style.float = "left";
+            YearDiv.id = "YearInputDiv";
+            controller_div.appendChild(YearDiv);
+
+            var addYearDiv = document.createElement("div");
+            addYearDiv.style.width = "80px";
+            addYearDiv.style.height = "25px";
+            addYearDiv.style.float = "left";
+            addYearDiv.id = "btn_AddYear";
+            addYearDiv.onclick = timeLine._addOneYear;
+            YearDiv.appendChild(addYearDiv);
+
+            var addYearSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            //  var addYearSvg = document.createElement("svg");
+            addYearSvg.style.width = "68px";
+            addYearSvg.style.height = "25px";
+            addYearDiv.appendChild(addYearSvg);
+
+            var addYearPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // var addYearPath = document.createElement("path");
+            addYearPath.setAttribute("fill", "#fff");
+            addYearPath.setAttribute("d", "m25.5,20.5l23.49999,-12l23.50001,12l-47,0z");
+            addYearSvg.appendChild(addYearPath);
+
+            var addYear_input = document.createElement("input");
+            addYear_input.setAttribute("type", "text");
+            addYear_input.setAttribute("readOnly", "true");
+            addYear_input.setAttribute("id", "txt_Year");
+            addYear_input.setAttribute("value", timeLine.options.moment_select.format("YYYY"));
+            addYear_input.style.width = "95px";
+            addYear_input.style.margin = " 3px 8px";
+
+            addYear_input.style.height = "20px";
+            addYear_input.style.margin = " 0px";
+            addYear_input.style.padding = "0px";
+            addYear_input.style.border = "0px";
+            addYear_input.style.float = "left";
+            addYear_input.style.color = "#fff";
+            addYear_input.style.fontSize = "18px";
+            addYear_input.style.textAlign = "center";
+            addYear_input.style.border = "0";
+            addYear_input.style.float = "left";
+            addYear_input.style.color = "#fff";
+            addYear_input.style.background = timeLine.options.default_bg_color;
+            YearDiv.appendChild(addYear_input);
+
+            var minusYearDiv = document.createElement("div");
+            minusYearDiv.style.width = "95px";
+            minusYearDiv.style.height = "25px";
+            minusYearDiv.style.float = "left";
+            minusYearDiv.id = "btn_AddYear";
+            minusYearDiv.onclick = timeLine._minusOneYear;
+            YearDiv.appendChild(minusYearDiv);
+
+            var minusYearSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            //  var addYearSvg = document.createElement("svg");
+            minusYearSvg.style.width = "98px";
+            minusYearSvg.style.height = "25px";
+
+            minusYearDiv.appendChild(minusYearSvg);
+
+            var minusYearPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // var addYearPath = document.createElement("path");
+            minusYearPath.setAttribute("fill", "#fff");
+            minusYearPath.setAttribute("d", "m25.5,20.5l23.49999,-12l23.50001,12l-47,0z");
+            minusYearPath.setAttribute("transform", "rotate(-180 48,14.5)");
+            minusYearSvg.appendChild(minusYearPath);
+        },
+
+        //绘制月
+        _init_Month_div: function (controller_div) {
+            var MonthDiv = document.createElement("div");
+            MonthDiv.style.width = "55px";
+            MonthDiv.style.height = "75px";
+            MonthDiv.style.float = "left";
+            MonthDiv.id = "YearInputDiv";
+            controller_div.appendChild(MonthDiv);
+
+            var addMonthDiv = document.createElement("div");
+            addMonthDiv.style.width = "65px";
+            addMonthDiv.style.height = "25px";
+            addMonthDiv.style.float = "left";
+            addMonthDiv.id = "btn_AddYear";
+            addMonthDiv.onclick = timeLine._addOneMonth;
+            MonthDiv.appendChild(addMonthDiv);
+
+            var addMonthSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            addMonthSvg.style.width = "65px";
+            addMonthSvg.style.height = "25px";
+            addMonthDiv.appendChild(addMonthSvg);
+
+            var addMonthPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            addMonthPath.setAttribute("fill", "#fff");
+            addMonthPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            addMonthSvg.appendChild(addMonthPath);
+
+            var addMonth_input = document.createElement("input");
+            addMonth_input.setAttribute("type", "text");
+            addMonth_input.setAttribute("readOnly", "true");
+            addMonth_input.setAttribute("id", "txt_Month");
+            addMonth_input.setAttribute("value", timeLine.options.moment_select.format("MM"));
+            addMonth_input.style.width = "60px";
+            addMonth_input.style.height = "20px";
+            addMonth_input.style.margin = " 0px";
+            addMonth_input.style.padding = "0px";
+            addMonth_input.style.border = "0px";
+            addMonth_input.style.float = "left";
+            addMonth_input.style.color = "#fff";
+            addMonth_input.style.fontSize = "18px";
+            addMonth_input.style.textAlign = "center";
+            addMonth_input.style.verticalAlign = "text-bottom";
+            addMonth_input.style.background = timeLine.options.default_bg_color;
+            MonthDiv.appendChild(addMonth_input);
+
+            var minusMonthDiv = document.createElement("div");
+            minusMonthDiv.style.width = "65px";
+            minusMonthDiv.style.height = "25px";
+            minusMonthDiv.style.float = "left";
+            minusMonthDiv.id = "btn_AddYear";
+            minusMonthDiv.onclick = timeLine._minusOneMonth;
+            MonthDiv.appendChild(minusMonthDiv);
+
+            var minusMonthSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            //  var addYearSvg = document.createElement("svg");
+            minusMonthSvg.style.width = "65px";
+            minusMonthSvg.style.height = "25px";
+            minusMonthDiv.appendChild(minusMonthSvg);
+
+            var minusMonthPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // var addYearPath = document.createElement("path");
+            minusMonthPath.setAttribute("fill", "#fff");
+            minusMonthPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            minusMonthPath.setAttribute("transform", "rotate(-180 30,14.5)");
+            minusMonthSvg.appendChild(minusMonthPath);
+        },
+
+        //绘制天
+        _init_Day_div: function (controller_div) {
+            var DayDiv = document.createElement("div");
+            DayDiv.style.width = "65px";
+            DayDiv.style.height = "75px";
+            DayDiv.style.float = "left";
+            DayDiv.id = "YearInputDiv";
+            controller_div.appendChild(DayDiv);
+
+            var addDayDiv = document.createElement("div");
+            addDayDiv.style.width = "65px";
+            addDayDiv.style.height = "25px";
+            addDayDiv.style.float = "left";
+            addDayDiv.id = "btn_AddYear";
+            addDayDiv.onclick = timeLine._addOneDay;
+            DayDiv.appendChild(addDayDiv);
+
+            var addDaySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            //  var addYearSvg = document.createElement("svg");
+            addDaySvg.style.width = "65px";
+            addDaySvg.style.height = "25px";
+            addDayDiv.appendChild(addDaySvg);
+
+            var addDayPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // var addYearPath = document.createElement("path");
+            addDayPath.setAttribute("fill", "#fff");
+            addDayPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            addDaySvg.appendChild(addDayPath);
+
+
+            var addDay_input = document.createElement("input");
+            addDay_input.setAttribute("type", "text");
+            addDay_input.setAttribute("readOnly", "true");
+            addDay_input.setAttribute("id", "txt_Day");
+            addDay_input.setAttribute("value", timeLine.options.moment_select.format("DD"));
+            addDay_input.style.width = "60px";
+            addDay_input.style.height = "20px";
+            addDay_input.style.margin = " 0px";
+            addDay_input.style.padding = "0px";
+            addDay_input.style.border = "0px";
+            addDay_input.style.float = "left";
+            addDay_input.style.color = "#fff";
+            addDay_input.style.fontSize = "18px";
+            addDay_input.style.textAlign = "center";
+            addDay_input.style.verticalAlign = "text-bottom";
+            addDay_input.style.background = timeLine.options.default_bg_color;
+            DayDiv.appendChild(addDay_input);
+
+
+            var minusDayDiv = document.createElement("div");
+            minusDayDiv.style.width = "65px";
+            minusDayDiv.style.height = "25px";
+            minusDayDiv.style.float = "left";
+            minusDayDiv.id = "btn_AddDay";
+            minusDayDiv.onclick = timeLine._minusOneDay;
+            DayDiv.appendChild(minusDayDiv);
+
+            var minusDaySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            //  var addYearSvg = document.createElement("svg");
+            minusDaySvg.style.width = "65px";
+            minusDaySvg.style.height = "25px";
+            minusDayDiv.appendChild(minusDaySvg);
+
+            var minusDayPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            // var addYearPath = document.createElement("path");
+            minusDayPath.setAttribute("fill", "#fff");
+            minusDayPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            minusDayPath.setAttribute("transform", "rotate(-180 30,14.5)");
+            minusDaySvg.appendChild(minusDayPath);
+        },
+
+        //添加一年
+        _addOneYear: function () {
+            timeLine.options.moment_select.add(1.0, 'years');
+            timeLine._resetInputShow();
+        },
+        _minusOneYear: function () {
+            timeLine.options.moment_select.add(-1.0, 'years');
+            timeLine._resetInputShow();
+        },
+
+        _addOneMonth: function () {
+            timeLine.options.moment_select.add(1.0, 'month');
+            timeLine._resetInputShow();
+        },
+        _minusOneMonth: function () {
+            timeLine.options.moment_select.add(-1.0, 'month');
+            timeLine._resetInputShow();
+        },
+
+        _addOneDay: function () {
+            timeLine.options.moment_select.add(1.0, 'day');
+            timeLine._resetInputShow();
+        },
+        _minusOneDay: function () {
+            timeLine.options.moment_select.add(-1.0, 'day');
+            timeLine._resetInputShow();
+        },
+
+        /**
+         * 初始化 时间轴 右侧 模式显示及伸缩部分
+         */
+        init_timeMode: function () {
+
+
+        },
+
 
         /**
          * 初始化时间轴
          */
         init_timeline: function () {
-            console.log('init_timeline');
             var _canvas = document.createElement("canvas");
             _canvas.width = this.options.timeline_width;
             _canvas.height = this.options.timeline_height;
             _canvas.id = "_timeline";
             _canvas.style.float = "left";
 
-            //设置 tooltip
-            _canvas.tooltip = "1121";
             this._el.container.appendChild(_canvas);
             this._el.timecanvas = _canvas;
 
@@ -176,25 +495,73 @@ var timeLine = {
 
             //鼠标双击选择时间
             _canvas.addEventListener("dblclick", timeLine.onMouseClick, false);
+            _canvas.addEventListener('mousewheel', timeLine.scrollFunc, false);
+            /*  if (_canvas.addEventListener) {
+             _canvas.addEventListener('mousewheel', timeLine.scrollFunc, false);
+             }*/
             timeLine._drag(0);
         }
         ,
 
-        _draw_bg: function () {
-            var _canvas = this._el.timecanvas;
-            if (_canvas) {
-                var ctx = _canvas.getContext('2d');
-                ctx.rect(0, 0, timeLine.options.timeline_width, timeLine.options.timeline_height);
-                ctx.fillStyle = timeLine.options.default_bg_color;
-                ctx.fill();
+
+        /**
+         *鼠标滚轮事件
+         * @param event
+         */
+        scrollFunc: function (event) {
+            //鼠标滚轮事件，
+            //正为向上
+            //负为向下
+
+            var ev = event;
+            var delta = ev.wheelDelta ? (ev.wheelDelta / 120) : (-ev.detail / 3); // Firefox using `wheelDelta` IE using `detail`
+
+            if (delta > 0) {
+                timeLine.options.select_modeindex = timeLine.options.select_modeindex - 1;
             }
-        }
-        ,
+            else {
+                timeLine.options.select_modeindex = timeLine.options.select_modeindex + 1;
+            }
+            //多超界 进行判定
+            if (timeLine.options.select_modeindex < 0) {
+                timeLine.options.select_modeindex = 0;
+            }
+            if (timeLine.options.select_modeindex > 3) {
+                timeLine.options.select_modeindex = 3;
+            }
+            timeLine._switchMode();
+        },
+
+        //根据当前鼠标时间 重新设置 index位置
+        _switchMode: function () {
+            //根据鼠标位置 重新计算开始结束
+            var selectMode = timeLine.options.select_modeindex;
+            // var modeName = this.options.mode_list [selectMode];
+            //在当前模式下，选择精确到的 单位
+            var selectmodeunit = timeLine.options.mode_unit[selectMode];
+            //每一个单位大小
+            var selectmodetimespan = timeLine.options.mode_timespan[selectMode];
+            //基于当前时间计算
+            var width_before = timeLine.options.mouse_x;
+            var width_after = timeLine.options.timeline_width - timeLine.options.mouse_x;
+            var unitNum_before = -parseFloat(width_before / selectmodetimespan);
+            var unitNum_after = parseFloat(width_after / selectmodetimespan);
+            var moment_begin = moment.utc(timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+
+            timeLine.options.moment_begin = moment_begin.add(unitNum_before, selectmodeunit);
+
+            var moment_end = moment.utc(timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+
+            timeLine.options.moment_end = moment_end.add(unitNum_after, selectmodeunit);
+
+            timeLine._drag(0);
+        },
+
+
 //开始移动
         startMove: function (event) {
 
             function doMouseDown(event) {
-                console.log('startMove');
                 event.preventDefault();
                 timeLine.options.is_drag = true;
                 timeLine.options.begin_X = event.offsetX;
@@ -260,9 +627,7 @@ var timeLine = {
             timeLine.options.moment_select = timeLine.options.moment_mousein;
             console.log(timeLine.options.moment_select.format("YYYY-MM-DD HH:mm:ss"));
             timeLine.DateTimeChange();
-
-        }
-        ,
+        },
 
 //用于显示的date
         _formatDateShow: function () {
@@ -291,7 +656,7 @@ var timeLine = {
             //  console.log(time.format("YYYYMMDD HHmmss"));
 
             //设置鼠标当前位置
-
+            timeLine.options.mouse_x = mouse_x;
             timeLine.options.moment_mousein = time;
             //   console.log(timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm:ss"));
             //根据当前像素单位 姐鼠标位置获取时间
@@ -311,11 +676,11 @@ var timeLine = {
             var width_after = this.options.timeline_width * 0.25;
             var unitNum_before = -parseFloat(width_before / selectmodetimespan);
             var unitNum_after = parseFloat(width_after / selectmodetimespan);
-            var moment_begin = moment.utc(this.options.select_date.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+            var moment_begin = moment.utc(this.options.moment_select.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
 
             timeLine.options.moment_begin = moment_begin.add(unitNum_before, selectmodeunit);
 
-            var moment_end = moment.utc(this.options.select_date.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
+            var moment_end = moment.utc(this.options.moment_select.format("YYYY-MM-DD HH:mm:ss"), "YYYY-MM-DD HH:mm:ss");
 
             timeLine.options.moment_end = moment_end.add(unitNum_after, selectmodeunit);
         }
@@ -348,16 +713,22 @@ var timeLine = {
             //在当前模式下，选择精确到的 单位
             var selectmodeunit = this.options.mode_unit  [selectMode];
             var selectmode_pix = this.options.mode_timespan  [selectMode];
-            //  this._draw_year(moment_begin, moment_end, this.options.select_date, "month", 12.5);
-            timeLine._draw_timeline(moment_begin, moment_end, this.options.select_date, selectmodeunit, selectmode_pix);
+            timeLine._draw_timeline(moment_begin, moment_end, this.options.moment_select,selectmodeunit, selectmode_pix);
+        },
 
-        }
-        ,
+        //绘制 时间轴背景
+        _draw_bg: function () {
+            var _canvas = this._el.timecanvas;
+            if (_canvas) {
+                var ctx = _canvas.getContext('2d');
+                ctx.rect(0, 0, timeLine.options.timeline_width, timeLine.options.timeline_height);
+                ctx.fillStyle = timeLine.options.default_bg_color;
+                ctx.fill();
+            }
+        },
 
-//根据开始结束时间 绘制时间轴
+        //根据开始结束时间 绘制时间轴
         _draw_timeline: function (begin_date, end_date, select_date, unit_str, unit_pix) {
-
-
 
             //绘制横线
             timeLine._canvas_line("white", 0, timeLine.options.timeline_height_top, timeLine.options.timeline_width, timeLine.options.timeline_height_top);
@@ -638,8 +1009,19 @@ var timeLine = {
 
         _draw_timeLine: function () {
 
-        }
+        },
 
+        _resetInputShow: function () {
+
+            var Year_input = document.getElementById("txt_Year");
+            Year_input.setAttribute("value", timeLine.options.moment_select.format("YYYY"));
+
+            var Month_input = document.getElementById("txt_Month");
+            Month_input.setAttribute("value", timeLine.options.moment_select.format("MM"));
+            var Day_input = document.getElementById("txt_Day");
+            Day_input.setAttribute("value", timeLine.options.moment_select.format("DD"));
+
+        }
 
     }
     ;
