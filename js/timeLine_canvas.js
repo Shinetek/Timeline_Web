@@ -36,6 +36,7 @@ var timeLine = {
             } else {
                 this._el.container = document.getElementById(elem);
             }
+            elem.style.float = "left";
             //设置宽高
             this.options = {
                 script_path: "",
@@ -50,7 +51,8 @@ var timeLine = {
                 //时间轴 距离 顶部的 高
                 timeline_height_top: 50,
                 //默认背景颜色
-                default_bg_color: "black",
+                default_bg_color: "#313133",
+                default_button_color: "#444444",
                 dataline_color: "#4682B4",
                 //默认当前时间
                 default_time: moment.utc(),
@@ -74,7 +76,9 @@ var timeLine = {
                 mouse_x: 0,
                 //开始拖拽x
                 begin_X: 0,
-                end_X: 0
+                end_X: 0,
+
+                isHide: false
             };
             this.datainfo = [];
             //初始化全部显示
@@ -165,112 +169,78 @@ var timeLine = {
             timeLine._init_Month_div(controller_div);
             timeLine._init_Day_div(controller_div);
             timeLine._init_Hour_div(controller_div);
+            timeLine._init_Hide_div(controller_div);
+
+            timeLine._init_pre_div(controller_div);
+            timeLine._init_next_div(controller_div);
         },
         //绘制年
         _init_Year_div: function (controller_div) {
             var YearDiv = document.createElement("div");
-            YearDiv.style.width = "75px";
-            YearDiv.style.height = "75px";
-            YearDiv.style.float = "left";
             YearDiv.id = "YearInputDiv";
+            YearDiv.setAttribute("class", "year_show_div");
             controller_div.appendChild(YearDiv);
-
             var addYearDiv = document.createElement("div");
-            addYearDiv.style.width = "80px";
-            addYearDiv.style.height = "25px";
-            addYearDiv.style.float = "left";
+
             addYearDiv.id = "btn_AddYear";
+            addYearDiv.setAttribute("class", "time_up_year");
             addYearDiv.onclick = timeLine._addOneYear;
             YearDiv.appendChild(addYearDiv);
 
             var addYearSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            addYearSvg.style.width = "68px";
-            addYearSvg.style.height = "25px";
             addYearDiv.appendChild(addYearSvg);
 
             var addYearPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // var addYearPath = document.createElement("path");
-            addYearPath.setAttribute("fill", "#fff");
-            addYearPath.setAttribute("d", "m25.5,20.5l23.49999,-12l23.50001,12l-47,0z");
+            addYearPath.setAttribute("d", "m15,20.5l18,-10l18,10l-36,0z");
             addYearSvg.appendChild(addYearPath);
 
             var addYear_input = document.createElement("label");
-            //  addYear_input.setAttribute("type", "text");
             addYear_input.setAttribute("readOnly", "true");
             addYear_input.setAttribute("id", "txt_Year");
+            addYear_input.setAttribute("class", "year_input");
             addYear_input.innerHTML = timeLine.options.moment_select.format("YYYY");
             addYear_input.style.pointerEvents = "none";
             addYear_input.style.cursor = "default";
-            //cursor: default;
-            //     pointer-events: none;
             timeLine._setDocUnSelectable(addYear_input);
 
-            addYear_input.style.width = "95px";
-            addYear_input.style.margin = " 3px 8px";
 
-            addYear_input.style.height = "20px";
-            addYear_input.style.margin = " 0px";
-            addYear_input.style.padding = "0px";
-            addYear_input.style.border = "0px";
-            addYear_input.style.float = "left";
-            addYear_input.style.color = "#fff";
-            addYear_input.style.fontSize = "18px";
-            addYear_input.style.textAlign = "center";
-            addYear_input.style.border = "0";
-            addYear_input.style.float = "left";
-            addYear_input.style.color = "#fff";
             addYear_input.style.background = timeLine.options.default_bg_color;
             YearDiv.appendChild(addYear_input);
 
             var minusYearDiv = document.createElement("div");
-            minusYearDiv.style.width = "95px";
-            minusYearDiv.style.height = "25px";
             minusYearDiv.style.float = "left";
-            minusYearDiv.id = "btn_AddYear";
+            minusYearDiv.id = "btn_MinusYear";
+            minusYearDiv.setAttribute("class", "time_down_year");
             minusYearDiv.onclick = timeLine._minusOneYear;
             YearDiv.appendChild(minusYearDiv);
 
             var minusYearSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            minusYearSvg.style.width = "98px";
-            minusYearSvg.style.height = "25px";
-
             minusYearDiv.appendChild(minusYearSvg);
 
             var minusYearPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // var addYearPath = document.createElement("path");
-            minusYearPath.setAttribute("fill", "#fff");
-            minusYearPath.setAttribute("d", "m25.5,20.5l23.49999,-12l23.50001,12l-47,0z");
-            minusYearPath.setAttribute("transform", "rotate(-180 48,14.5)");
+            minusYearPath.setAttribute("d", "m15,20.5l18,-10l18,10l-36,0z");
+            minusYearPath.setAttribute("transform", "rotate(-180 33,14.5)");
             minusYearSvg.appendChild(minusYearPath);
         },
 
         //绘制月
         _init_Month_div: function (controller_div) {
             var MonthDiv = document.createElement("div");
-            MonthDiv.style.width = "55px";
-            MonthDiv.style.height = "75px";
-            MonthDiv.style.float = "left";
-            MonthDiv.id = "YearInputDiv";
+            MonthDiv.setAttribute("class", "month_show_div");
+            MonthDiv.id = "MonthInputDiv";
             controller_div.appendChild(MonthDiv);
 
             var addMonthDiv = document.createElement("div");
-            addMonthDiv.style.width = "65px";
-            addMonthDiv.style.height = "25px";
-            addMonthDiv.style.float = "left";
-            addMonthDiv.id = "btn_AddYear";
+            addMonthDiv.setAttribute("class", "time_up_month");
+            addMonthDiv.id = "btn_AddMonth";
             addMonthDiv.onclick = timeLine._addOneMonth;
             MonthDiv.appendChild(addMonthDiv);
 
             var addMonthSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            addMonthSvg.style.width = "65px";
-            addMonthSvg.style.height = "25px";
             addMonthDiv.appendChild(addMonthSvg);
 
             var addMonthPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            addMonthPath.setAttribute("fill", "#fff");
-            addMonthPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            addMonthPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
             addMonthSvg.appendChild(addMonthPath);
 
             var addMonth_input = document.createElement("label");
@@ -281,68 +251,45 @@ var timeLine = {
             addMonth_input.innerHTML = timeLine.options.moment_select.format("MM");
 
             timeLine._setDocUnSelectable(addMonth_input);
-            addMonth_input.style.width = "60px";
-            addMonth_input.style.height = "20px";
-            addMonth_input.style.margin = " 0px";
-            addMonth_input.style.padding = "0px";
-            addMonth_input.style.border = "0px";
-            addMonth_input.style.float = "left";
-            addMonth_input.style.color = "#fff";
-            addMonth_input.style.fontSize = "18px";
-            addMonth_input.style.textAlign = "center";
-            addMonth_input.style.verticalAlign = "text-bottom";
+            addMonth_input.setAttribute("class", "month_input");
             addMonth_input.style.background = timeLine.options.default_bg_color;
             MonthDiv.appendChild(addMonth_input);
 
             var minusMonthDiv = document.createElement("div");
-            minusMonthDiv.style.width = "65px";
-            minusMonthDiv.style.height = "25px";
-            minusMonthDiv.style.float = "left";
-            minusMonthDiv.id = "btn_AddYear";
+            minusMonthDiv.id = "btn_MinusMonth";
+            minusMonthDiv.setAttribute("class", "time_up_month");
             minusMonthDiv.onclick = timeLine._minusOneMonth;
             MonthDiv.appendChild(minusMonthDiv);
 
             var minusMonthSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            minusMonthSvg.style.width = "65px";
-            minusMonthSvg.style.height = "25px";
             minusMonthDiv.appendChild(minusMonthSvg);
 
             var minusMonthPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
             // var addYearPath = document.createElement("path");
-            minusMonthPath.setAttribute("fill", "#fff");
-            minusMonthPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
-            minusMonthPath.setAttribute("transform", "rotate(-180 30,14.5)");
+            minusMonthPath.setAttribute("fill", timeLine.options.default_button_color);
+            minusMonthPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
+            minusMonthPath.setAttribute("transform", "rotate(-180 28,14.5)");
             minusMonthSvg.appendChild(minusMonthPath);
         },
 
         //绘制天
         _init_Day_div: function (controller_div) {
             var DayDiv = document.createElement("div");
-            DayDiv.style.width = "65px";
-            DayDiv.style.height = "75px";
-            DayDiv.style.float = "left";
-            DayDiv.id = "YearInputDiv";
+            DayDiv.setAttribute("class", "month_show_div");
+            DayDiv.id = "DayInputDiv";
             controller_div.appendChild(DayDiv);
 
             var addDayDiv = document.createElement("div");
-            addDayDiv.style.width = "65px";
-            addDayDiv.style.height = "25px";
-            addDayDiv.style.float = "left";
             addDayDiv.id = "btn_AddYear";
+            addDayDiv.setAttribute("class", "time_up_month");
             addDayDiv.onclick = timeLine._addOneDay;
             DayDiv.appendChild(addDayDiv);
 
             var addDaySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            addDaySvg.style.width = "65px";
-            addDaySvg.style.height = "25px";
             addDayDiv.appendChild(addDaySvg);
 
             var addDayPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // var addYearPath = document.createElement("path");
-            addDayPath.setAttribute("fill", "#fff");
-            addDayPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            addDayPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
             addDaySvg.appendChild(addDayPath);
 
 
@@ -353,69 +300,47 @@ var timeLine = {
             addDay_input.setAttribute("value", timeLine.options.moment_select.format("DD"));
             addDay_input.innerHTML = timeLine.options.moment_select.format("DD");
             timeLine._setDocUnSelectable(addDay_input);
-            addDay_input.style.width = "60px";
-            addDay_input.style.height = "20px";
-            addDay_input.style.margin = " 0px";
-            addDay_input.style.padding = "0px";
-            addDay_input.style.border = "0px";
-            addDay_input.style.float = "left";
-            addDay_input.style.color = "#fff";
-            addDay_input.style.fontSize = "18px";
-            addDay_input.style.textAlign = "center";
-            addDay_input.style.verticalAlign = "text-bottom";
+            addDay_input.setAttribute("class", "month_input");
             addDay_input.style.background = timeLine.options.default_bg_color;
             DayDiv.appendChild(addDay_input);
 
-
             var minusDayDiv = document.createElement("div");
-            minusDayDiv.style.width = "65px";
-            minusDayDiv.style.height = "25px";
-            minusDayDiv.style.float = "left";
-            minusDayDiv.id = "btn_AddDay";
+            minusDayDiv.id = "btn_MinusDay";
+            minusDayDiv.setAttribute("class", "time_up_month");
             minusDayDiv.onclick = timeLine._minusOneDay;
             DayDiv.appendChild(minusDayDiv);
 
             var minusDaySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            minusDaySvg.style.width = "65px";
-            minusDaySvg.style.height = "25px";
+
             minusDayDiv.appendChild(minusDaySvg);
 
             var minusDayPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // var addYearPath = document.createElement("path");
-            minusDayPath.setAttribute("fill", "#fff");
-            minusDayPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
-            minusDayPath.setAttribute("transform", "rotate(-180 30,14.5)");
+
+            minusDayPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
+            minusDayPath.setAttribute("transform", "rotate(-180 28,14.5)");
             minusDaySvg.appendChild(minusDayPath);
         },
 
         //绘制小时
         _init_Hour_div: function (controller_div) {
             var HourDiv = document.createElement("div");
-            HourDiv.style.width = "65px";
-            HourDiv.style.height = "75px";
-            HourDiv.style.float = "left";
-            HourDiv.id = "YearInputDiv";
+            HourDiv.setAttribute("class", "month_show_div");
+            HourDiv.id = "HourInputDiv";
             controller_div.appendChild(HourDiv);
 
             var addHourDiv = document.createElement("div");
-            addHourDiv.style.width = "65px";
-            addHourDiv.style.height = "25px";
-            addHourDiv.style.float = "left";
+            addHourDiv.setAttribute("class", "time_up_month");
             addHourDiv.id = "btn_AddYear";
             addHourDiv.onclick = timeLine._addOneHour;
             HourDiv.appendChild(addHourDiv);
 
             var addHourSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            addHourSvg.style.width = "65px";
-            addHourSvg.style.height = "25px";
             addHourDiv.appendChild(addHourSvg);
 
             var addHourPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
             // var addYearPath = document.createElement("path");
-            addHourPath.setAttribute("fill", "#fff");
-            addHourPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
+            addHourPath.setAttribute("fill", timeLine.options.default_button_color);
+            addHourPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
             addHourSvg.appendChild(addHourPath);
 
 
@@ -426,41 +351,108 @@ var timeLine = {
             addHour_input.setAttribute("value", timeLine.options.moment_select.format("HH"));
             addHour_input.innerHTML = timeLine.options.moment_select.format("HH");
             timeLine._setDocUnSelectable(addHour_input);
-            addHour_input.style.width = "60px";
-            addHour_input.style.height = "20px";
-            addHour_input.style.margin = " 0px";
-            addHour_input.style.padding = "0px";
-            addHour_input.style.border = "0px";
-            addHour_input.style.float = "left";
-            addHour_input.style.color = "#fff";
-            addHour_input.style.fontSize = "18px";
-            addHour_input.style.textAlign = "center";
-            addHour_input.style.verticalAlign = "text-bottom";
+            addHour_input.setAttribute("class", "month_input");
             addHour_input.style.background = timeLine.options.default_bg_color;
             HourDiv.appendChild(addHour_input);
 
 
             var minusHourDiv = document.createElement("div");
-            minusHourDiv.style.width = "65px";
-            minusHourDiv.style.height = "25px";
-            minusHourDiv.style.float = "left";
+            minusHourDiv.setAttribute("class", "time_up_month");
             minusHourDiv.id = "btn_minusHour";
             minusHourDiv.onclick = timeLine._minusOneHour;
             HourDiv.appendChild(minusHourDiv);
 
             var minusHourSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            //  var addYearSvg = document.createElement("svg");
-            minusHourSvg.style.width = "65px";
-            minusHourSvg.style.height = "25px";
             minusHourDiv.appendChild(minusHourSvg);
 
             var minusHourPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // var addYearPath = document.createElement("path");
-            minusHourPath.setAttribute("fill", "#fff");
-            minusHourPath.setAttribute("d", "m10,20.5l19.99999,-12l20.00001,12l-40,0z");
-            minusHourPath.setAttribute("transform", "rotate(-180 30,14.5)");
+
+            minusHourPath.setAttribute("d", "m10,20.5l18,-10l18,10l-40,0z");
+            minusHourPath.setAttribute("transform", "rotate(-180 28,14.5)");
             minusHourSvg.appendChild(minusHourPath);
         },
+
+
+        //绘制开始div
+        _init_pre_div: function (controller_div) {
+            console.log('_init_pre_div');
+            var PreDiv = document.createElement("div");
+            PreDiv.setAttribute("class", "pre_div");
+            PreDiv.id = "pre_div";
+            controller_div.appendChild(PreDiv);
+            var preSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            PreDiv.appendChild(preSvg);
+
+            var prePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            prePath.setAttribute("d", "M 8,0 16,0 8,20 16,40 8,40 0,20 8,0z");
+            preSvg.appendChild(prePath);
+
+            PreDiv.onclick = timeLine._preClickFunc;
+        },
+        _preClickFunc: function () {
+
+        },
+
+
+        //绘制开始div
+        _init_next_div: function (controller_div) {
+            console.log('_init_next_div');
+            var NextDiv = document.createElement("div");
+            NextDiv.id = "next_div";
+            NextDiv.setAttribute("class", "pre_div");
+            controller_div.appendChild(NextDiv);
+
+            var nextSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            NextDiv.appendChild(nextSvg);
+
+            var nextPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            nextPath.setAttribute("d", "M  0,0 8,0 16,20 8,40 0,40 8,20 0,0z");
+            nextSvg.appendChild(nextPath);
+
+            NextDiv.onclick = timeLine._nextClickFunc;
+
+        },
+
+        _nextClickFunc: function () {
+
+        },
+
+        _init_Hide_div: function (controller_div) {
+            var _timeLine = document.getElementById("timeLine");
+            console.log('_init_Hide_div');
+            var hide_div = document.createElement("div");
+            hide_div.style.width = "25px";
+            hide_div.style.height = timeLine.options.controller_height + "px";
+            hide_div.style.float = "right";
+            hide_div.style.background = timeLine.options.default_bg_color;
+            hide_div.style.borderLeft = "1px solid white";
+            hide_div.style.borderRight = "1px solid white";
+            hide_div.style.padding = "-1px";
+            hide_div.id = "hide_Div";
+
+            _timeLine.appendChild(hide_div);
+            hide_div.addEventListener("mousedown", timeLine.setHideAndShow, false);
+        }
+        ,
+
+//设置显示隐藏
+        setHideAndShow: function () {
+            console.log('setHideAndShow');
+            var _controller = document.getElementById('_controller');
+            var _timeline = document.getElementById('_timeline');
+            if (timeLine.options.isHide === true) {
+                _controller.style.display = "none";
+                _timeline.style.display = "none";
+                timeLine.options.isHide = false;
+            }
+            else {
+                _controller.style.display = "block";
+                _timeline.style.display = "block";
+                timeLine.options.isHide = true;
+            }
+
+        }
+        ,
 
         _setDocUnSelectable: function (_el) {
             /*   -webkit-touch-callout: none; /!* iOS Safari *!/
@@ -476,7 +468,8 @@ var timeLine = {
             _el.style.msUserSelect = "none";
             _el.style.userSelect = "none";
             _el.style.mozUserSelect = "none";
-        },
+        }
+        ,
 
 //添加一年
         _addOneYear: function () {
@@ -812,7 +805,7 @@ var timeLine = {
             timeLine._draw_timeline(moment_begin, moment_end, this.options.moment_select, selectmodeunit, selectmode_pix);
         }
         ,
-        //绘制 时间轴背景
+//绘制 时间轴背景
         _draw_bg: function () {
             var _canvas = this._el.timecanvas;
             if (_canvas) {
@@ -821,7 +814,8 @@ var timeLine = {
                 ctx.fillStyle = timeLine.options.default_bg_color;
                 ctx.fill();
             }
-        },
+        }
+        ,
 
 //根据开始结束时间 绘制时间轴
         _draw_timeline: function (begin_date, end_date, select_date, unit_str, unit_pix) {
@@ -849,7 +843,7 @@ var timeLine = {
                 for (var i = 0; i < timeLine.datainfo.length; i++) {
                     var rect_y = i * rect_height;
                     var ProdItem = timeLine.datainfo[i];
-                    console.log('ProdItem');
+                    console.log('ProdItem:' + timeLine.datainfo.length);
 
                     if (ProdItem.datainfolist) {
                         var select_datainfo = ProdItem.datainfolist[timeLine.options.mode_unit[timeLine.options.select_modeindex]];
@@ -859,8 +853,6 @@ var timeLine = {
                              ProdItem.datainfolist.forEach(function (datainfo) {*/
                             var datainfo = select_datainfo[t];
                             timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix)
-
-
                         }
                     }
                 }
@@ -1208,6 +1200,8 @@ var timeLine = {
             timeLine.options.default_width = document.body.offsetWidth;
             timeLine.options.timeline_width = timeLine.options.default_width - timeLine.options.controller_width_sp;
             timeLine._fit_timeline();
+            timeLine._switchMode();
+            //timeLine._drag(0);
         }
         ,
         _fit_timeline: function () {
@@ -1218,7 +1212,7 @@ var timeLine = {
                 ctx.rect(0, 0, this.options.timeline_width, this.options.timeline_height);
                 ctx.fillStyle = this.options.default_bg_color;
                 ctx.fill();
-                timeLine._drag(0);
+                //   timeLine._drag(0);
             }
         }
         ,
@@ -1246,10 +1240,11 @@ var timeLine = {
             Hour_input.setAttribute("value", timeLine.options.moment_select.format("HH"));
             Hour_input.innerHTML = timeLine.options.moment_select.format("HH");
 
-        },
+        }
+        ,
 
 
-        //对外接口 添加数据信息
+//对外接口 添加数据信息
         addDataInfo: function (datainfolist) {
             //  console.log(datainfolist);
             if (datainfolist) {
@@ -1261,10 +1256,14 @@ var timeLine = {
                         for (var t = 0; t < timeLine.datainfo.length; t++) {
                             var _datainfo = timeLine.datainfo[t];
                             if (!isin) {
+                                console.log(_datainfo.name + ":" + addinfo.name);
                                 if (_datainfo.name === addinfo.name) {
+
                                     isin = true;
                                     var dataConvert = timeLine._dataConvert(addinfo);
                                     timeLine.datainfo[t] = dataConvert;
+
+                                    console.log("replace!");
 
                                 }
                             }
@@ -1272,7 +1271,7 @@ var timeLine = {
                         if (!isin) {
                             var dataConvert = timeLine._dataConvert(addinfo);
 
-
+                            console.log("push!");
                             timeLine.datainfo.push(dataConvert);
 
                         }
@@ -1281,7 +1280,8 @@ var timeLine = {
             }
             console.log(timeLine.datainfo);
             timeLine._drag(0);
-        },
+        }
+        ,
 
         removeDataInfo: function (datainfoName) {
             if (datainfoName) {
@@ -1297,7 +1297,8 @@ var timeLine = {
                 }
             }
             timeLine._drag(0);
-        },
+        }
+        ,
 
         _dataConvert: function (datainfo) {
             var DataInfoJson = {
