@@ -36,6 +36,12 @@
 
 
 </div>
+
+<div>
+    <button onclick="setOneMonthTimeAfter()"> 设置时间为一个月后</button>
+
+
+</div>
 </body>
 <script type="application/javascript">
 
@@ -47,6 +53,10 @@
                 {
                     "begintime": "20171122002000",
                     "endtime": "20171122003000"
+                },
+                {
+                    "begintime": "20171122001000",
+                    "endtime": "20171122002000"
                 }]
         };
         timeLine.addDataInfo([DataA]);
@@ -124,8 +134,15 @@
         timeLine.removeDataInfo("E");
     }
 
-    function resetOrder ()    {
-        timeLine.setDataInfoListOrder(["E","D","C","B","A"]);
+    function resetOrder() {
+        timeLine.setDataInfoListOrder(["E", "D", "C", "B", "A"]);
+    }
+
+
+    function setOneMonthTimeAfter() {
+        var _select_moment = moment.utc();
+        _select_moment.add(1.0, "month");
+        timeLine.setSelectMoment(_select_moment)
     }
     function _initTimeLine() {
         var _timeline = document.getElementById('timeLine');

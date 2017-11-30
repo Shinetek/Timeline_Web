@@ -40,7 +40,7 @@ var timeLine = {
             this.options = {
                 script_path: "",
                 //整体timeline 除了 右侧数据的部分
-                controller_width_sp: 425,
+                controller_width_sp: 350,
                 //控制器部分宽高
                 controller_width: 300,
                 controller_height: 72,
@@ -53,6 +53,7 @@ var timeLine = {
                 default_bg_color: "#313133",
                 default_button_color: "#444444",
                 dataline_color: "#4682B4",
+                dataline_color_1: "#0B69CB",
                 //默认当前时间
                 default_time: moment.utc(),
                 //默认一格的毫秒数目
@@ -105,6 +106,16 @@ var timeLine = {
         DateTimeChange: function () {
             $(timeLine._el.container).trigger("DateTimeChange", [timeLine.options.moment_select]);
         },
+
+        //前一帧
+        PreFrameChange: function () {
+            $(timeLine._el.container).trigger("FrameChange", -1);
+        },
+        //后一帧
+        NextFrameChange: function () {
+            $(timeLine._el.container).trigger("FrameChange", 1);
+        },
+
 
         _init_controller: function () {
             var controller_div = document.createElement("div");
@@ -860,7 +871,7 @@ var timeLine = {
                         var select_datainfo = ProdItem.datainfolist[timeLine.options.mode_unit[timeLine.options.select_modeindex]];
                         for (var t = 0; t < select_datainfo.length; t++) {
                             var datainfo = select_datainfo[t];
-                            timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix)
+                            timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, t)
                         }
                     }
                 }
@@ -901,7 +912,7 @@ var timeLine = {
             }
         }
         ,
-        _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix) {
+        _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex) {
 
             var is_Draw = true;
             if ((datainfo.begintime < begin_date_str && datainfo.endtime < begin_date_str)
@@ -958,7 +969,8 @@ var timeLine = {
                     "rect_x": rect_x,
                     "rect_width": rect_width,
                     "rect_y": rect_y,
-                    "rect_height": rect_height
+                    "rect_height": rect_height,
+                    "dataindex": dataindex
                 };
                 timeLine._draw_dataline(dataInfo);
             }
@@ -969,7 +981,11 @@ var timeLine = {
             var _canvas = timeLine._el.timecanvas;
             if (_canvas) {
                 var context = _canvas.getContext('2d');
-                context.fillStyle = timeLine.options.dataline_color;
+                if (dataInfo.dataindex % 2 === 0) {
+                    context.fillStyle = timeLine.options.dataline_color;
+                } else {
+                    context.fillStyle = timeLine.options.dataline_color_1;
+                }
                 context.fillRect(dataInfo.rect_x, dataInfo.rect_y + 5, dataInfo.rect_width, dataInfo.rect_height - 1);
             }
         }
@@ -1205,7 +1221,6 @@ var timeLine = {
                 ctx.rect(0, 0, this.options.timeline_width, this.options.timeline_height);
                 ctx.fillStyle = this.options.default_bg_color;
                 ctx.fill();
-                //   timeLine._drag(0);
             }
         }
         ,
@@ -1236,6 +1251,34 @@ var timeLine = {
         }
         ,
 
+        setSelectMoment: function (newDate) {
+            console.log('setSelectMoment');
+            var old_moment = moment.utc(timeLine.options.moment_select.format("YYYYMMDDHHmmss"), "YYYYMMDDHHmmss");
+console.log(typeof newDate);
+            var isReset = false;
+            if (typeof newDate === "moment") {
+                timeLine.options.moment_select = newDate;
+                isReset = true;
+            }
+            else {
+                if (typeof newDate === "Date") {
+                    timeLine.options.moment_select = moment(newDate);
+                    isReset = true;
+                }
+                else {
+                    isReset = false;
+                }
+            }
+            if (isReset) {
+                console.log('isReset');
+                var selectUnit = timeLine.options.mode_unit[timeLine.options.select_modeindex];
+                var selectUnit_pix = timeLine.options.mode_timespan[timeLine.options.select_modeindex];
+                var _trans = -old_moment.diff(timeLine.options.moment_select, selectUnit, true) * selectUnit_pix;
+                timeLine._resetInputShow();
+                timeLine._drag(_trans);
+            }
+
+        },
 
 //对外接口 添加数据信息
         addDataInfo: function (datainfolist) {
