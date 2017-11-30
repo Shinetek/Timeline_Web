@@ -1,4 +1,7 @@
 /*输入框*/
+.controller_div {
+    border-right: 1px solid #777777;
+}
 
 .year_input {
     width: 70px;
@@ -171,6 +174,12 @@
     background-color: transparent;
 }
 
+/*
+.pre_div:hover {
+    background-color: #7f7f7f;
+}
+*/
+
 .pre_div > svg {
     height: 40px;
     width: 18px;
@@ -185,3 +194,39 @@
 
     fill: #7f7f7f;
 }
+
+.hide_div {
+    width: 25px;
+    height: 72px;
+    float: right;
+    background: #313133;
+    border-left: 1px solid #777777;
+    border-right: 1px solid white;
+
+    -moz-border-radius-bottomright: 5px; /* Gecko browsers */
+    -moz-border-radius-topright: 5px; /* Gecko browsers */
+    -webkit-border-top-right-radius: 5px; /* Webkit browsers */
+    -webkit-border-bottom-right-radius: 5px; /* Webkit browsers */
+    border-top-right-radius: 5px; /* W3C syntax */
+    border-bottom-right-radius: 5px; /* W3C syntax */
+}
+
+.hide_div:hover {
+    background-color: #7f7f7f;
+}
+
+.hide_div > svg {
+    width: 25px;
+    height: 73px;
+}
+
+.hide_div > svg > rect {
+    width: 15px;
+    height: 2px;
+    fill: white;
+}
+
+/*
+.hide_div > svg > rect:hover {
+    fill: #7f7f7f;
+}*/

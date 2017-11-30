@@ -12,7 +12,6 @@ var timeLine = {
          * @param options 参数
          */
         initialize: function (elem, options) {
-            console.log('initialize');
             //var self = this;
             //参数配置
             if (!options) {
@@ -82,21 +81,20 @@ var timeLine = {
             };
             this.datainfo = [];
             //初始化全部显示
-            this.init_container();
+            this._init_container();
             //设置窗口的重设事件
             window.onresize = this._resizeScreen;
 
         },
 
 
-        init_container: function () {
-            //     console.log(this._el);
+        _init_container: function () {
             //获取 宽高
             this._resizeScreen();
-            this.init_beginTime();
-            this.init_controller();
-            this.init_timeline();
-            this.init_timeMode();
+            this._init_beginTime();
+            this._init_controller();
+            this._init_timeline();
+            this._init_timeMode();
 
         },
 
@@ -108,60 +106,14 @@ var timeLine = {
             $(timeLine._el.container).trigger("DateTimeChange", [timeLine.options.moment_select]);
         },
 
-        /**
-         * 初始化时间轴 左侧控制部分
-         */
-        init_controller_bycanvas: function () {
-            var _canvas = document.createElement("canvas");
-            _canvas.width = this.options.controller_width;
-            _canvas.height = this.options.controller_height;
-            _canvas.id = "_controller";
-            _canvas.style.float = "left";
-            this._el.container.appendChild(_canvas);
-
-            var ctx = _canvas.getContext('2d');
-            ctx.rect(0, 0, this.options.default_width, this.options.controller_height);
-            ctx.fillStyle = this.options.default_bg_color;
-            ctx.fill();
-
-
-            //绘制 年月日 时分秒
-            var context = _canvas.getContext('2d');
-
-            context.strokeStyle = "white";//轮廓颜色
-            //context.strokeRect(16, 22, 64, 31);//绘制矩形轮廓
-            //context.strokeRect(86, 22, 36, 31);//绘制矩形轮廓
-            //context.strokeRect(126, 22, 36, 31);//绘制矩形轮廓
-            context.font = "normal 22px Verdana";
-            context.fillStyle = "white";
-            context.fillText("2017", 20, 45);
-
-            context.font = "normal 22px Verdana";
-            context.strokeStyle = "white";
-            context.fillText("11", 90, 45);
-
-            context.font = "normal 22px Verdana";
-            context.strokeStyle = "white";
-            context.fillText("15", 130, 45);
-
-            // 三角形
-            context.beginPath();
-            context.moveTo(26, 17);
-            context.lineTo(48, 8);
-            context.lineTo(70, 17);
-            context.closePath();
-            context.fill();
-
-
-        },
-
-        init_controller: function () {
+        _init_controller: function () {
             var controller_div = document.createElement("div");
             controller_div.style.width = timeLine.options.controller_width + "px";
             controller_div.style.height = timeLine.options.controller_height + "px";
             controller_div.style.float = "left";
             controller_div.style.background = timeLine.options.default_bg_color;
             controller_div.id = "_controller";
+            controller_div.setAttribute('class', "controller_div");
 
             this._el.container.appendChild(controller_div);
             //设置 年部分
@@ -375,7 +327,6 @@ var timeLine = {
 
         //绘制开始div
         _init_pre_div: function (controller_div) {
-            console.log('_init_pre_div');
             var PreDiv = document.createElement("div");
             PreDiv.setAttribute("class", "pre_div");
             PreDiv.id = "pre_div";
@@ -390,13 +341,41 @@ var timeLine = {
             PreDiv.onclick = timeLine._preClickFunc;
         },
         _preClickFunc: function () {
+            var selectMode = timeLine.options.mode_list[timeLine.options.select_modeindex];
+            switch (selectMode) {
+                case "year":
+                {
+                    timeLine._minusOneYear();
+                    break;
+                }
+                case "month":
+                {
+                    timeLine._minusOneMonth();
+                    break;
+                }
+                case "day":
+                {
+                    timeLine._minusOneDay();
+                    break;
+                }
+                case "minute":
+                {
+                    //todo 传出事件
+
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+
+            }
 
         },
 
 
         //绘制开始div
         _init_next_div: function (controller_div) {
-            console.log('_init_next_div');
             var NextDiv = document.createElement("div");
             NextDiv.id = "next_div";
             NextDiv.setAttribute("class", "pre_div");
@@ -414,45 +393,89 @@ var timeLine = {
         },
 
         _nextClickFunc: function () {
+            var selectMode = timeLine.options.mode_list[timeLine.options.select_modeindex];
+            switch (selectMode) {
+                case "year":
+                {
+                    timeLine._addOneYear();
+                    break;
+                }
+                case "month":
+                {
+                    timeLine._addOneMonth();
+                    break;
+                }
+                case "day":
+                {
+                    timeLine._addOneDay();
+                    break;
+                }
+                case "minute":
+                {
+                    //todo 传出事件
 
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+
+            }
         },
 
         _init_Hide_div: function (controller_div) {
             var _timeLine = document.getElementById("timeLine");
-            console.log('_init_Hide_div');
+
             var hide_div = document.createElement("div");
-            hide_div.style.width = "25px";
-            hide_div.style.height = timeLine.options.controller_height + "px";
-            hide_div.style.float = "right";
-            hide_div.style.background = timeLine.options.default_bg_color;
-            hide_div.style.borderLeft = "1px solid white";
-            hide_div.style.borderRight = "1px solid white";
-            hide_div.style.padding = "-1px";
+            hide_div.style.width = '25px';
             hide_div.id = "hide_Div";
+            hide_div.setAttribute("class", "hide_div");
 
             _timeLine.appendChild(hide_div);
-            hide_div.addEventListener("mousedown", timeLine.setHideAndShow, false);
-        }
-        ,
+
+
+            var hideSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            hide_div.appendChild(hideSvg);
+
+            var x_location = "5";
+            var nextPath_1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            nextPath_1.setAttribute("x", x_location);
+            nextPath_1.setAttribute("y", "30");
+            nextPath_1.setAttribute("width", "15");
+            nextPath_1.setAttribute("height", "2");
+            var nextPath_2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            nextPath_2.setAttribute("x", x_location);
+            nextPath_2.setAttribute("y", "35");
+            nextPath_2.setAttribute("width", "15");
+            nextPath_2.setAttribute("height", "2");
+            var nextPath_3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            nextPath_3.setAttribute("x", x_location);
+            nextPath_3.setAttribute("y", "40");
+            nextPath_3.setAttribute("width", "15");
+            nextPath_3.setAttribute("height", "2");
+            hideSvg.appendChild(nextPath_1);
+            hideSvg.appendChild(nextPath_2);
+            hideSvg.appendChild(nextPath_3);
+
+            hide_div.addEventListener("mousedown", timeLine._setHideAndShow, false);
+        },
 
 //设置显示隐藏
-        setHideAndShow: function () {
-            console.log('setHideAndShow');
+        _setHideAndShow: function () {
             var _controller = document.getElementById('_controller');
             var _timeline = document.getElementById('_timeline');
-            if (timeLine.options.isHide === true) {
+            if (timeLine.options.isHide === false) {
                 _controller.style.display = "none";
                 _timeline.style.display = "none";
-                timeLine.options.isHide = false;
+                timeLine.options.isHide = true;
             }
             else {
                 _controller.style.display = "block";
                 _timeline.style.display = "block";
-                timeLine.options.isHide = true;
+                timeLine.options.isHide = false;
             }
-
-        }
-        ,
+        },
 
         _setDocUnSelectable: function (_el) {
             /*   -webkit-touch-callout: none; /!* iOS Safari *!/
@@ -511,15 +534,12 @@ var timeLine = {
 
 //对当前显示时间进行加减
         _addminusSelectMoment: function (addminus_num, timeUnit) {
-
             timeLine.options.moment_select.add(addminus_num, timeUnit);
-
             var _trans = timeLine._getTransByTime(addminus_num, timeUnit);
-            console.log("_trans:" + _trans);
             timeLine._resetInputShow();
-            timeLine._drag(_trans)
-        }
-        ,
+            timeLine._drag(_trans);
+            timeLine.DateTimeChange();
+        },
 
 //根据日期加减 获取 位移
         _getTransByTime: function (addminus_num, timeUnit) {
@@ -538,8 +558,7 @@ var timeLine = {
         /**
          * 初始化 时间轴 右侧 模式显示及伸缩部分
          */
-        init_timeMode: function () {
-
+        _init_timeMode: function () {
 
         }
         ,
@@ -548,7 +567,7 @@ var timeLine = {
         /**
          * 初始化时间轴
          */
-        init_timeline: function () {
+        _init_timeline: function () {
             var _canvas = document.createElement("canvas");
             _canvas.width = this.options.timeline_width;
             _canvas.height = this.options.timeline_height;
@@ -681,9 +700,7 @@ var timeLine = {
         ,
 // 结束位移
         endMove: function () {
-            // console.log('endMove');
             if (!timeLine.options.isMouseDownDoing) {
-                //  console.log('clear');
                 clearTimeout(timeLine.options.doMouseDownTimmer); //能进到这里来，不管三七二十一先把doMouseDownTimmer清除，不然200毫秒后doMouseDown方法还是会被调用的
                 // document.getElementById('div1').innerHTML += 'mouseUp<br/>';
             }
@@ -692,8 +709,6 @@ var timeLine = {
                 timeLine.options.is_drag = false;
                 timeLine.options.end_X = event.offsetX;
                 var drag_pix = timeLine.options.end_X - timeLine.options.begin_X;
-
-                //  console.log(drag_pix);
                 //根据阈值进行赋值
                 if (drag_pix > 5 || drag_pix < -5) {
                     timeLine._drag(drag_pix);
@@ -709,9 +724,8 @@ var timeLine = {
         ,
 
         onMouseClick: function () {
-            //  console.log('onMouseClick');
+            //鼠标点击事件
             timeLine.options.moment_select = timeLine.options.moment_mousein;
-            //  console.log(timeLine.options.moment_select.format("YYYY-MM-DD HH:mm:ss"));
             timeLine.DateTimeChange();
             timeLine._resetInputShow();
             timeLine._drag(0);
@@ -742,18 +756,16 @@ var timeLine = {
             //获取当前像素单位
             var time = moment.utc(time_begin_str, "YYYYMMDD HHmmss");
             time = time.add(add_unit, selectmodeunit);
-            //  console.log(time.format("YYYYMMDD HHmmss"));
 
             //设置鼠标当前位置
             timeLine.options.mouse_x = mouse_x;
             timeLine.options.moment_mousein = time;
-            //   console.log(timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm:ss"));
             //根据当前像素单位 姐鼠标位置获取时间
         }
         ,
 
 
-        init_beginTime: function () {
+        _init_beginTime: function () {
             var selectMode = this.options.select_modeindex;
             // var modeName = this.options.mode_list [selectMode];
             //在当前模式下，选择精确到的 单位
@@ -843,14 +855,10 @@ var timeLine = {
                 for (var i = 0; i < timeLine.datainfo.length; i++) {
                     var rect_y = i * rect_height;
                     var ProdItem = timeLine.datainfo[i];
-                    console.log('ProdItem:' + timeLine.datainfo.length);
 
                     if (ProdItem.datainfolist) {
                         var select_datainfo = ProdItem.datainfolist[timeLine.options.mode_unit[timeLine.options.select_modeindex]];
                         for (var t = 0; t < select_datainfo.length; t++) {
-
-                            /* }
-                             ProdItem.datainfolist.forEach(function (datainfo) {*/
                             var datainfo = select_datainfo[t];
                             timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix)
                         }
@@ -894,43 +902,37 @@ var timeLine = {
         }
         ,
         _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix) {
-            /* console.log('_getDataShowInfo');
-             console.log(datainfo);*/
+
             var is_Draw = true;
             if ((datainfo.begintime < begin_date_str && datainfo.endtime < begin_date_str)
                 || datainfo.begintime > end_date_str && datainfo.endtime > end_date_str) {
                 is_Draw = false;
             }
-            // console.log("未进入绘制");
+
             //如果确认绘制
             if (is_Draw) {
                 //高度 rect_height
                 //计算宽度  rect_width
                 //计算开始x rect_x
                 //计算开始y rect_y
-                /*  console.log("进入绘制");
-                 console.log(begin_date_str + ":" + end_date_str);
-                 console.log(datainfo.begintime + ":" + datainfo.endtime);*/
+
                 var rect_width = 0;
                 var rect_x = 0;
                 var begin_line_date = moment.utc(datainfo.begintime, "YYYYMMDDHHmmss");
                 var end_line_date = moment.utc(datainfo.endtime, "YYYYMMDDHHmmss");
 
-                /*  console.log(datainfo.begintime <= begin_date_str);
-                 console.log(end_date_str >= datainfo.endtime);*/
 
                 if (begin_date_str <= datainfo.begintime && datainfo.endtime <= end_date_str) {
                     //模式1 在中央
                     rect_width = end_line_date.diff(begin_line_date, unit_str, true) * unit_pix;
                     rect_x = begin_line_date.diff(begin_date, unit_str, true) * unit_pix;
-                    // console.log("模式1 在中央");
+
                 }
 
                 else if (datainfo.begintime <= begin_date_str
                     && end_date_str >= datainfo.endtime
                     && datainfo.endtime >= begin_date_str) {
                     //模式2 在前部
-                    //  console.log("模式2 在前部");
                     rect_width = end_line_date.diff(begin_date, unit_str, true) * unit_pix;
                     rect_x = 0;
                 }
@@ -938,7 +940,6 @@ var timeLine = {
                     && datainfo.begintime <= end_date_str
                     && datainfo.endtime >= end_date_str) {
                     //模式3 在后部
-                    //console.log("模式3 在后部");
                     rect_width = timeLine.options.timeline_width;
                     rect_x = begin_line_date.diff(begin_date, unit_str, true) * unit_pix;
                 }
@@ -946,13 +947,12 @@ var timeLine = {
                     //模式4  全部包含
                     rect_width = timeLine.options.timeline_width;
                     rect_x = 0;
-                    // console.log("模式4  全部包含");
                 }
                 else {
-                    //  console.log("其他模式")
+
                 }
 
-                //console.log(rect_x + ":" + rect_width);
+
                 var dataInfo = {
                     isDraw: is_Draw,
                     "rect_x": rect_x,
@@ -960,20 +960,16 @@ var timeLine = {
                     "rect_y": rect_y,
                     "rect_height": rect_height
                 };
-                // console.log(dataInfo);
                 timeLine._draw_dataline(dataInfo);
             }
         }
         ,
         _draw_dataline: function (dataInfo) {
-            /* if (begin_point_y > timeLine.options.timeline_width) {
-             console.log(begin_point_x + ":" + end_point_x);
-             }*/
+
             var _canvas = timeLine._el.timecanvas;
             if (_canvas) {
                 var context = _canvas.getContext('2d');
                 context.fillStyle = timeLine.options.dataline_color;
-                //    console.log(dataInfo.rect_x + ":" + dataInfo.rect_y + ":" + dataInfo.rect_width + ":" + dataInfo.rect_height);
                 context.fillRect(dataInfo.rect_x, dataInfo.rect_y + 5, dataInfo.rect_width, dataInfo.rect_height - 1);
             }
         }
@@ -1088,7 +1084,6 @@ var timeLine = {
                 case "month":
                 {
                     if (compareDate.date() % 10 === 0) {
-                        //  console.log
                         isBegin = true;
                     }
                     break;
@@ -1136,9 +1131,7 @@ var timeLine = {
         ,
 //canvas 画线
         _canvas_line: function (fillcolor, begin_point_x, begin_point_y, end_point_x, end_point_y) {
-            if (begin_point_y > timeLine.options.timeline_width) {
-                console.log(begin_point_x + ":" + end_point_x);
-            }
+
             var _canvas = timeLine._el.timecanvas;
             if (_canvas) {
                 var context = _canvas.getContext('2d');
@@ -1246,7 +1239,6 @@ var timeLine = {
 
 //对外接口 添加数据信息
         addDataInfo: function (datainfolist) {
-            //  console.log(datainfolist);
             if (datainfolist) {
                 var _length = datainfolist.length;
                 if (_length && _length > 0) {
@@ -1256,33 +1248,26 @@ var timeLine = {
                         for (var t = 0; t < timeLine.datainfo.length; t++) {
                             var _datainfo = timeLine.datainfo[t];
                             if (!isin) {
-                                console.log(_datainfo.name + ":" + addinfo.name);
                                 if (_datainfo.name === addinfo.name) {
-
                                     isin = true;
                                     var dataConvert = timeLine._dataConvert(addinfo);
                                     timeLine.datainfo[t] = dataConvert;
-
-                                    console.log("replace!");
-
                                 }
                             }
                         }
                         if (!isin) {
                             var dataConvert = timeLine._dataConvert(addinfo);
-
-                            console.log("push!");
                             timeLine.datainfo.push(dataConvert);
 
                         }
                     }
                 }
             }
-            console.log(timeLine.datainfo);
             timeLine._drag(0);
         }
         ,
 
+        //移除数据
         removeDataInfo: function (datainfoName) {
             if (datainfoName) {
                 var _length = timeLine.datainfo.length;
@@ -1291,7 +1276,7 @@ var timeLine = {
                         var _datainfo = timeLine.datainfo[t];
                         if (_datainfo.name === datainfoName) {
                             isin = true;
-                            timeLine.datainfo.split(t, 1);
+                            timeLine.datainfo.splice(t, 1);
                         }
                     }
                 }
@@ -1299,6 +1284,64 @@ var timeLine = {
             timeLine._drag(0);
         }
         ,
+
+        //设置数据显示
+        setDataInfoVislbility: function (datainfoName, isShow) {
+            if (datainfoName) {
+                var _length = timeLine.datainfo.length;
+                for (var i = 0; i < _length; i++) {
+                    for (var t = 0; t < timeLine.datainfo.length; t++) {
+                        var _datainfo = timeLine.datainfo[t];
+                        if (_datainfo.name === datainfoName) {
+                            isin = true;
+                            timeLine.datainfo.isShow = isShow;
+                        }
+                    }
+                }
+            }
+            timeLine._drag(0);
+        }
+        ,
+
+        //设置列表顺序
+        setDataInfoListOrder: function (newOrderList) {
+            if (newOrderList.length > 0) {
+                var newOrderList_length = newOrderList.length;
+                var _timeLinedatainfo = [];
+                for (var i = 0; i < newOrderList_length; i++) {
+                    var _name = newOrderList[i];
+                    var isFind = false;
+                    if (_name) {
+                        timeLine.datainfo.forEach(function (_dataitem) {
+                            if (!isFind) {
+                                if (_dataitem.name === _name) {
+                                    _timeLinedatainfo.push(_dataitem);
+                                    isFind = true;
+                                }
+                            }
+                        });
+
+                        //若没发现
+                        if (!isFind) {
+                            //使用空补位
+                            _timeLinedatainfo.push({
+                                name: _name,
+                                isShow: true,
+                                datainfolist: {
+                                    "month": [],
+                                    "day": [],
+                                    "hour": [],
+                                    "minute": []
+                                }
+                            });
+                        }
+
+                    }
+                }
+                timeLine.datainfo = _timeLinedatainfo;
+                timeLine._drag(0);
+            }
+        },
 
         _dataConvert: function (datainfo) {
             var DataInfoJson = {
@@ -1320,7 +1363,6 @@ var timeLine = {
                 var YearStr = beginTime.substr(0, 6);
                 var MonthStr = beginTime.substr(0, 8);
                 var DayStr = beginTime.substr(0, 10);
-                // console.log($.inArray(YearStr, YearModeList));
                 if ($.inArray(YearStr, YearModeList) === -1) {
                     YearModeList.push(YearStr);
                 }
@@ -1353,6 +1395,7 @@ var timeLine = {
                 DataInfoJson.hour.push({"begintime": BeginDay_MomentStr, "endtime": EndDay_MomentStr});
             });
             datainfo.datainfolist = DataInfoJson;
+            datainfo.isShow = true;
             return datainfo;
 
         }
