@@ -36,6 +36,7 @@ var timeLine = {
                 this._el.container = document.getElementById(elem);
             }
             elem.style.float = "left";
+            elem.style.marginLeft = '10px;';
             //设置宽高
             this.options = {
                 script_path: "",
@@ -50,7 +51,9 @@ var timeLine = {
                 //时间轴 距离 顶部的 高
                 timeline_height_top: 50,
                 //默认背景颜色
-                default_bg_color: "#313133",
+                //default_bg_color: "#313133",
+                default_bg_color: "rgba(49, 49, 51, 0.95)",
+
                 default_button_color: "#444444",
                 dataline_color: "#4682B4",
                 dataline_color_1: "#0B69CB",
@@ -167,7 +170,6 @@ var timeLine = {
             timeLine._setDocUnSelectable(addYear_input);
 
 
-            addYear_input.style.background = timeLine.options.default_bg_color;
             YearDiv.appendChild(addYear_input);
 
             var minusYearDiv = document.createElement("div");
@@ -215,7 +217,7 @@ var timeLine = {
 
             timeLine._setDocUnSelectable(addMonth_input);
             addMonth_input.setAttribute("class", "month_input");
-            addMonth_input.style.background = timeLine.options.default_bg_color;
+
             MonthDiv.appendChild(addMonth_input);
 
             var minusMonthDiv = document.createElement("div");
@@ -264,7 +266,6 @@ var timeLine = {
             addDay_input.innerHTML = timeLine.options.moment_select.format("DD");
             timeLine._setDocUnSelectable(addDay_input);
             addDay_input.setAttribute("class", "month_input");
-            addDay_input.style.background = timeLine.options.default_bg_color;
             DayDiv.appendChild(addDay_input);
 
             var minusDayDiv = document.createElement("div");
@@ -315,7 +316,6 @@ var timeLine = {
             addHour_input.innerHTML = timeLine.options.moment_select.format("HH");
             timeLine._setDocUnSelectable(addHour_input);
             addHour_input.setAttribute("class", "month_input");
-            addHour_input.style.background = timeLine.options.default_bg_color;
             HourDiv.appendChild(addHour_input);
 
 
@@ -442,7 +442,7 @@ var timeLine = {
             hide_div.style.width = '25px';
             hide_div.id = "hide_Div";
             hide_div.setAttribute("class", "hide_div");
-
+            hide_div.style.background = timeLine.options.default_bg_color;
             _timeLine.appendChild(hide_div);
 
 
@@ -574,6 +574,17 @@ var timeLine = {
         }
         ,
 
+        _clearTimeLine: function () {
+
+            var _canvas = this._el.timecanvas;
+            if (_canvas) {
+                var ctx = _canvas.getContext('2d');
+                ctx.clearRect(0, 0, this.options.timeline_width, this.options.timeline_height);
+            }
+            //   ctx.rect(0, 0, this.options.timeline_width, this.options.timeline_height);
+            //  ctx.fillStyle = this.options.default_bg_color;
+            // ctx.fill();
+        },
 
         /**
          * 初始化时间轴
@@ -814,7 +825,7 @@ var timeLine = {
 //根据当前时刻进行位移
         _drag: function (trans) {
             //根据当前trans 计算新的开始结束
-
+            timeLine._clearTimeLine();
             //基于当前位移 重新计算 开始时间 结束时间
             timeLine._getTimeSpace(trans);
             var moment_begin = timeLine.options.moment_begin;
@@ -1254,7 +1265,7 @@ var timeLine = {
         setSelectMoment: function (newDate) {
             console.log('setSelectMoment');
             var old_moment = moment.utc(timeLine.options.moment_select.format("YYYYMMDDHHmmss"), "YYYYMMDDHHmmss");
-console.log(typeof newDate);
+            console.log(typeof newDate);
             var isReset = false;
             if (typeof newDate === "moment") {
                 timeLine.options.moment_select = newDate;

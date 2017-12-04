@@ -1,6 +1,22 @@
 /*输入框*/
+
+.timeline {
+    -moz-border-radius-bottomleft: 10px; /* Gecko browsers */
+    -moz-border-radius-topleft: 10px; /* Gecko browsers */
+    -webkit-border-top-left-radius: 10px; /* Webkit browsers */
+    -webkit-border-bottom-left-radius: 10px; /* Webkit browsers */
+    border-top-left-radius: 10px; /* W3C syntax */
+    border-bottom-left-radius: 10px; /* W3C syntax */
+}
+
 .controller_div {
     border-right: 1px solid #777777;
+    -moz-border-radius-bottomleft: 10px; /* Gecko browsers */
+    -moz-border-radius-topleft: 10px; /* Gecko browsers */
+    -webkit-border-top-left-radius: 10px; /* Webkit browsers */
+    -webkit-border-bottom-left-radius: 10px; /* Webkit browsers */
+    border-top-left-radius: 10px; /* W3C syntax */
+    border-bottom-left-radius: 10px; /* W3C syntax */
 }
 
 .year_input {
@@ -10,9 +26,10 @@
     padding: 0;
     border: 0;
     float: left;
-    color: #fff;
+    color: rgb(255, 255, 255);
     font-size: 18px;
     text-align: center;
+    background-color: transparent;
 }
 
 .year_show_div {
@@ -96,6 +113,7 @@
     color: #fff;
     font-size: 18px;
     text-align: center;
+    background-color: transparent;
 }
 
 .month_show_div {
@@ -199,7 +217,6 @@
     width: 25px;
     height: 72px;
     float: right;
-    background: #313133;
     border-left: 1px solid #777777;
     border-right: 1px solid white;
 
@@ -212,7 +229,8 @@
 }
 
 .hide_div:hover {
-    background-color: #7f7f7f;
+    border-left: 2px solid #777777;
+    border-right: 2px solid white;
 }
 
 .hide_div > svg {
