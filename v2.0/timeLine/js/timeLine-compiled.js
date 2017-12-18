@@ -26,14 +26,15 @@ var timeLine = {
             menubar: {}
         };
 
-        //获取
+        //获取 当前坐标轴
         if (typeof elem === 'object') {
             this._el.container = elem;
         } else {
             this._el.container = document.getElementById(elem);
         }
-        elem.style.float = "left";
-        elem.style.marginLeft = '10px;';
+        //设置 类名称 与 css对应
+        elem.setAttribute("class", "timeline");
+
         //设置宽高
         this.options = {
             script_path: "",
@@ -49,7 +50,7 @@ var timeLine = {
             timeline_height_top: 50,
             //默认背景颜色
             //default_bg_color: "#313133",
-            default_bg_color: "rgba(49, 49, 51, 0.95)",
+            default_bg_color: "rgba(49, 49, 49, 0.95)",
 
             default_button_color: "#444444",
             dataline_color: "#4682B4",
@@ -124,6 +125,7 @@ var timeLine = {
 
         this._el.container.appendChild(controller_div);
         //设置 年部分
+        timeLine._init_sp_div(controller_div);
         timeLine._init_Year_div(controller_div);
         timeLine._init_Month_div(controller_div);
         timeLine._init_Day_div(controller_div);
@@ -324,6 +326,40 @@ var timeLine = {
         minusHourSvg.appendChild(minusHourPath);
     },
 
+    //绘制间隔
+    _init_sp_div: function (controller_div) {
+
+        var background_div = document.createElement("div");
+        background_div.id = "background_div";
+        background_div.setAttribute("class", "background_div");
+        background_div.style.background = timeLine.options.default_bg_color;
+        controller_div.appendChild(background_div);
+
+        var background_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        background_svg.setAttribute("class", "background_svg");
+        background_div.appendChild(background_svg);
+
+        var y_location = "37";
+        var nextPath_1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        nextPath_1.setAttribute("x", "70");
+        nextPath_1.setAttribute("y", y_location);
+        nextPath_1.setAttribute("width", "15");
+        nextPath_1.setAttribute("height", "2");
+        var nextPath_2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        nextPath_2.setAttribute("x", "110");
+        nextPath_2.setAttribute("y", y_location);
+        nextPath_2.setAttribute("width", "15");
+        nextPath_2.setAttribute("height", "2");
+        var nextPath_3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        nextPath_3.setAttribute("x", "140");
+        nextPath_3.setAttribute("y", y_location);
+        nextPath_3.setAttribute("width", "15");
+        nextPath_3.setAttribute("height", "2");
+        background_svg.appendChild(nextPath_1);
+        background_svg.appendChild(nextPath_2);
+        background_svg.appendChild(nextPath_3);
+    },
+
     //绘制开始div
     _init_pre_div: function (controller_div) {
         var PreDiv = document.createElement("div");
@@ -339,6 +375,7 @@ var timeLine = {
 
         PreDiv.onclick = timeLine._preClickFunc;
     },
+
     _preClickFunc: function () {
         var selectMode = timeLine.options.mode_list[timeLine.options.select_modeindex];
         switch (selectMode) {
@@ -421,7 +458,7 @@ var timeLine = {
     },
 
     _init_Hide_div: function (controller_div) {
-        var _timeLine = document.getElementById("timeLine");
+        var _timeLine = this._el.container;
 
         var hide_div = document.createElement("div");
         hide_div.style.width = '25px';
@@ -587,6 +624,7 @@ var timeLine = {
             //鼠标双击选择时间
             _canvas.addEventListener("dblclick", timeLine.onMouseClick, false);
             _canvas.addEventListener('mousewheel', timeLine.scrollFunc, false);
+            _canvas.addEventListener('DOMMouseScroll', timeLine.scrollFunc, false);
         } else {
             _canvas.attachEvent("mousedown", timeLine.startMove);
             _canvas.attachEvent("mousemove", timeLine.moving);
@@ -1216,8 +1254,8 @@ var timeLine = {
                         if (!isin) {
                             if (_datainfo.name === addinfo.name) {
                                 isin = true;
-                                var dataConvert = timeLine._dataConvert(addinfo);
-                                timeLine.datainfo[t] = dataConvert;
+                                var dataConvert_t = timeLine._dataConvert(addinfo);
+                                timeLine.datainfo[t] = dataConvert_t;
                             }
                         }
                     }
@@ -1239,7 +1277,7 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        isin = true;
+                        var isin = true;
                         timeLine.datainfo.splice(t, 1);
                     }
                 }
@@ -1256,7 +1294,7 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        isin = true;
+                        var isin = true;
                         timeLine.datainfo.isShow = isShow;
                     }
                 }
@@ -1362,4 +1400,4 @@ var timeLine = {
 
 };
 
-//# sourceMappingURL=timeLine_canvas-compiled.js.map
+//# sourceMappingURL=timeLine-compiled.js.map

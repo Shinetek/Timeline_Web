@@ -5,12 +5,12 @@
     <title>canvas 版本 时间轴</title>
     <script type="text/javascript" src="../lib/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="../lib/moment.min.js"></script>
-    <script type="text/javascript" src="../js/timeLine_canvas.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/timeLine.css"/>
+    <script type="text/javascript" src="../timeLine/js/timeLine.js"></script>
+    <link rel="stylesheet" type="text/css" href="../timeLine/css/timeLine.css"/>
 </head>
 <body>
 
-<div id="timeLine" class="timeLine" style="position:fixed; left:10px; bottom:10px;     z-index:9999;">
+<div id="timeLineUI">
 
 </div>
 <div>
@@ -19,7 +19,6 @@
     <button onclick="addDataC()"> 添加数据C</button>
     <button onclick="addDataD()"> 添加数据D</button>
     <button onclick="addDataE()"> 添加数据E</button>
-
 </div>
 
 <div>
@@ -28,13 +27,10 @@
     <button onclick="removeDataC()"> 移除数据C</button>
     <button onclick="removeDataD()"> 移除数据D</button>
     <button onclick="removeDataE()"> 移除数据E</button>
-
 </div>
 
 <div>
     <button onclick="resetOrder()"> 移除数据EDCBA</button>
-
-
 </div>
 
 <div>
@@ -145,7 +141,7 @@
         timeLine.setSelectMoment(_select_moment)
     }
     function _initTimeLine() {
-        var _timeline = document.getElementById('timeLine');
+        var _timeline = document.getElementById('timeLineUI');
         var _options = {};
         timeLine.initialize(_timeline, _options);
     }
@@ -155,11 +151,10 @@
 
 
     //测试点击事件
-    $("#timeLine").on("DateTimeChange", function (event, selectDate) {
+    $("#timeLineUI").on("DateTimeChange", function (event, selectDate) {
         alert("控件数值修改 ，触发事件！ 修改后的时间为：" + selectDate.format("YYYY-MM-DD HH:mm:ss"));
         //console.log(selectDate.format("YYYY-MM-DD HH:mm:ss"));
-
-        //    console.log(moment(selectDate).format("YYYY-MM-DD HH:mm:ss"));
+        //console.log(moment(selectDate).format("YYYY-MM-DD HH:mm:ss"));
     });
 
 </script>
