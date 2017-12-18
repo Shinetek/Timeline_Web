@@ -964,9 +964,9 @@ var timeLine = {
 
         //绘制 当前选择时间点
         if (begin_date.isBefore(select_date) && end_date.isAfter(select_date)) {
-            var selectTrans = (1 - begin_date.diff(select_date, unit_str, true)) * unit_pix;
+            var selectTrans = (1 - begin_date.diff(select_date, unit_str, true) - 1) * unit_pix;
             //timeLine._canvas_arc("red", selectTrans - 7, timeLine.options.timeline_height_top, 7);
-            timeLine._canvas_line("red", selectTrans - 1, 0, selectTrans + 1, 73);
+            timeLine._canvas_line("red", selectTrans, 0, selectTrans, 73);
         }
     },
 
@@ -1149,7 +1149,7 @@ var timeLine = {
                 }
             case "month":
                 {
-                    if (compareDate.date() % 10 === 0) {
+                    if (compareDate.date() % 10 === 1) {
                         isBegin = true;
                     }
                     break;
