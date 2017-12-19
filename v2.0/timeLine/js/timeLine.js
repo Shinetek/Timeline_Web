@@ -1044,6 +1044,7 @@ var timeLine = {
             if (dataInfo.isGrayShow === false) {
                 context.fillStyle = timeLine.options.dataline_color_gray;
             } else {
+                //若灰色选项为true 则使用两种颜色替换显示
                 if (dataInfo.dataindex % 2 === 0) {
                     context.fillStyle = timeLine.options.dataline_color;
                 } else {
@@ -1325,7 +1326,8 @@ var timeLine = {
         }
     },
 
-    //对外接口 添加数据信息
+    //对外接口 添加数据信息 
+    
     addDataInfo: function (datainfolist) {
         if (datainfolist) {
             var _length = datainfolist.length;
@@ -1345,7 +1347,7 @@ var timeLine = {
                     }
                     if (!isin) {
                         var dataConvert = timeLine._dataConvert(addinfo);
-                        timeLine.datainfo.push(dataConvert);
+                        timeLine.datainfo.unshift(dataConvert);
 
                     }
                 }
