@@ -58,6 +58,7 @@ var timeLine = {
             default_button_color: "#444444",
             dataline_color: "#4682B4",
             dataline_color_1: "#0B69CB",
+            dataline_color_gray: "#969696",
             //默认当前时间
             default_time: moment.utc(),
             //默认一格的毫秒数目
@@ -924,12 +925,12 @@ var timeLine = {
             for (var i = 0; i < timeLine.datainfo.length; i++) {
                 var rect_y = i * rect_height;
                 var ProdItem = timeLine.datainfo[i];
-
+                var isGrayShow = ProdItem.isShow;
                 if (ProdItem.datainfolist) {
                     var select_datainfo = ProdItem.datainfolist[timeLine.options.mode_unit[timeLine.options.select_modeindex]];
                     for (var t = 0; t < select_datainfo.length; t++) {
                         var datainfo = select_datainfo[t];
-                        timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, t)
+                        timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, t, isGrayShow)
                     }
                 }
             }
@@ -972,7 +973,8 @@ var timeLine = {
 
 
 
-    _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex) {
+
+    _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex, isGrayShow) {
 
         var is_Draw = true;
         if ((datainfo.begintime < begin_date_str && datainfo.endtime < begin_date_str) ||
@@ -1025,23 +1027,32 @@ var timeLine = {
                 "rect_width": rect_width,
                 "rect_y": rect_y,
                 "rect_height": rect_height,
-                "dataindex": dataindex
+                "dataindex": dataindex,
+                "isGrayShow": isGrayShow
             };
             timeLine._draw_dataline(dataInfo);
         }
     },
+
+    //根据数据信息绘制
     _draw_dataline: function (dataInfo) {
 
         var _canvas = timeLine._el.timecanvas;
         if (_canvas) {
             var context = _canvas.getContext('2d');
-            if (dataInfo.dataindex % 2 === 0) {
-                context.fillStyle = timeLine.options.dataline_color;
+            //是否为灰阶段 false 为灰色
+            if (dataInfo.isGrayShow === false) {
+                context.fillStyle = timeLine.options.dataline_color_gray;
             } else {
-                context.fillStyle = timeLine.options.dataline_color_1;
+                if (dataInfo.dataindex % 2 === 0) {
+                    context.fillStyle = timeLine.options.dataline_color;
+                } else {
+                    context.fillStyle = timeLine.options.dataline_color_1;
+                }
             }
             context.fillRect(dataInfo.rect_x, dataInfo.rect_y + 5, dataInfo.rect_width, dataInfo.rect_height - 1);
         }
+
     },
 
     //根据选择时间 获取当前绘制时次是否为选择的时次
@@ -1351,7 +1362,6 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        var isin = true;
                         timeLine.datainfo.splice(t, 1);
                     }
                 }
@@ -1368,8 +1378,7 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        var isin = true;
-                        timeLine.datainfo.isShow = isShow;
+                        timeLine.datainfo[t].isShow = isShow;
                     }
                 }
             }

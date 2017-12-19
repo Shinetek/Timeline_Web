@@ -1,59 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>canvas 版本 时间轴</title>
     <script type="text/javascript" src="../lib/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="../lib/moment.min.js"></script>
     <script type="text/javascript" src="../timeLine/js/timeLine.js"></script>
-    <link rel="stylesheet" type="text/css" href="../timeLine/css/timeLine.css"/>
+    <link rel="stylesheet" type="text/css" href="../timeLine/css/timeLine.css" />
 </head>
+
 <body>
 
-<div id="timeLineUI">
+    <div id="timeLineUI">
 
-</div>
-<div>
-    <button onclick="addDataA()"> 添加数据A</button>
-    <button onclick="addDataB()"> 添加数据B</button>
-    <button onclick="addDataC()"> 添加数据C</button>
-    <button onclick="addDataD()"> 添加数据D</button>
-    <button onclick="addDataE()"> 添加数据E</button>
-</div>
+    </div>
+    <div>
+        <button onclick="addDataA()"> 添加数据A</button>
+        <button onclick="addDataB()"> 添加数据B</button>
+        <button onclick="addDataC()"> 添加数据C</button>
+        <button onclick="addDataD()"> 添加数据D</button>
+        <button onclick="addDataE()"> 添加数据E</button>
+    </div>
 
-<div>
-    <button onclick="removeDataA()"> 移除数据A</button>
-    <button onclick="removeDataB()"> 移除数据B</button>
-    <button onclick="removeDataC()"> 移除数据C</button>
-    <button onclick="removeDataD()"> 移除数据D</button>
-    <button onclick="removeDataE()"> 移除数据E</button>
-</div>
+    <div>
+        <button onclick="removeDataA()"> 移除数据A</button>
+        <button onclick="removeDataB()"> 移除数据B</button>
+        <button onclick="removeDataC()"> 移除数据C</button>
+        <button onclick="removeDataD()"> 移除数据D</button>
+        <button onclick="removeDataE()"> 移除数据E</button>
+    </div>
 
-<div>
-    <button onclick="resetOrder()"> 移除数据EDCBA</button>
-</div>
+    <div>
+        <button onclick="resetOrder()"> 移除数据EDCBA</button>
+    </div>
 
-<div>
-    <button onclick="setOneMonthTimeAfter()"> 设置时间为一个月后</button>
+    <div>
+        <button onclick="setOneMonthTimeAfter()"> 设置时间为一个月后</button>
 
 
-</div>
+    </div>
 </body>
 <script type="application/javascript">
-
     function addDataA() {
         var DataA = {
             "name": "A",
             index: 3,
-            datainfolist: [
-                {
+            datainfolist: [{
                     "begintime": "20171122002000",
                     "endtime": "20171122003000"
                 },
                 {
                     "begintime": "20171122001000",
                     "endtime": "20171122002000"
-                }]
+                }
+            ]
         };
         timeLine.addDataInfo([DataA]);
     }
@@ -62,11 +63,10 @@
         var DataA = {
             "name": "B",
             index: 3,
-            datainfolist: [
-                {
-                    "begintime": "20161122002000",
-                    "endtime": "20161122003000"
-                }]
+            datainfolist: [{
+                "begintime": "20161122002000",
+                "endtime": "20161122003000"
+            }]
         };
         timeLine.addDataInfo([DataA]);
     }
@@ -75,11 +75,10 @@
         var DataA = {
             "name": "C",
             index: 3,
-            datainfolist: [
-                {
-                    "begintime": "20161222002000",
-                    "endtime": "20161222003000"
-                }]
+            datainfolist: [{
+                "begintime": "20161222002000",
+                "endtime": "20161222003000"
+            }]
         };
         timeLine.addDataInfo([DataA]);
     }
@@ -88,11 +87,10 @@
         var DataA = {
             "name": "D",
             index: 3,
-            datainfolist: [
-                {
-                    "begintime": "20170122002000",
-                    "endtime": "20170122003000"
-                }]
+            datainfolist: [{
+                "begintime": "20170122002000",
+                "endtime": "20170122003000"
+            }]
         };
         timeLine.addDataInfo([DataA]);
     }
@@ -101,31 +99,33 @@
         var DataA = {
             "name": "E",
             index: 3,
-            datainfolist: [
-                {
-                    "begintime": "20170322002000",
-                    "endtime": "20170322003000"
-                }]
+            datainfolist: [{
+                "begintime": "20170322002000",
+                "endtime": "20170322003000"
+            }]
         };
         timeLine.addDataInfo([DataA]);
     }
 
     function removeDataA() {
-
-        timeLine.removeDataInfo("A");
+        timeLine.setDataInfoVislbility("A", false);
+        //timeLine.removeDataInfo("A");
     }
 
     function removeDataB() {
 
         timeLine.removeDataInfo("B");
     }
+
     function removeDataC() {
 
         timeLine.removeDataInfo("C");
     }
+
     function removeDataD() {
         timeLine.removeDataInfo("D");
     }
+
     function removeDataE() {
         timeLine.removeDataInfo("E");
     }
@@ -140,6 +140,7 @@
         _select_moment.add(1.0, "month");
         timeLine.setSelectMoment(_select_moment)
     }
+
     function _initTimeLine() {
         var _timeline = document.getElementById('timeLineUI');
         var _options = {};
@@ -152,10 +153,10 @@
 
     //测试点击事件
     $("#timeLineUI").on("DateTimeChange", function (event, selectDate) {
-       // alert("控件数值修改 ，触发事件！ 修改后的时间为：" + selectDate.format("YYYY-MM-DD HH:mm:ss"));
+        // alert("控件数值修改 ，触发事件！ 修改后的时间为：" + selectDate.format("YYYY-MM-DD HH:mm:ss"));
         //console.log(selectDate.format("YYYY-MM-DD HH:mm:ss"));
         //console.log(moment(selectDate).format("YYYY-MM-DD HH:mm:ss"));
     });
-
 </script>
+
 </html>

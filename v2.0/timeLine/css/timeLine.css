@@ -6,6 +6,7 @@
   bottom: 10px;
   z-index: 9999;
   float: left;
+ 
 
   -moz-border-radius-bottomleft: 10px; /* Gecko browsers */
   -moz-border-radius-topleft: 10px; /* Gecko browsers */
