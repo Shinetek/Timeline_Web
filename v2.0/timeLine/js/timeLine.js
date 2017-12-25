@@ -1221,6 +1221,7 @@ var timeLine = {
         }
     },
 
+     
     _canvas_dashed_line: function (fillcolor, begin_point_x, begin_point_y, end_point_x, end_point_y) {
         var _canvas = timeLine._el.timecanvas;
         if (_canvas) {
@@ -1482,7 +1483,7 @@ var timeLine = {
         //日处理
         DayModeList.forEach(function (yearBegin) {
             var BeginDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").format("YYYYMMDDHHmmss");
-            var EndDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").add(1.0, 'hour').format("YYYYMMDDHHmmss");
+            var EndDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").add(1.0, 'day').format("YYYYMMDDHHmmss");
             DataInfoJson.hour.push({
                 "begintime": BeginDay_MomentStr,
                 "endtime": EndDay_MomentStr
