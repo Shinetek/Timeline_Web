@@ -137,12 +137,19 @@ var timeLine = {
         timeLine._init_Month_div(controller_div);
         timeLine._init_Day_div(controller_div);
         timeLine._init_Hour_div(controller_div);
+
         timeLine._init_Hide_div(controller_div);
 
         timeLine._init_sp_div(controller_div);
 
+        //前一个时次
         timeLine._init_pre_div(controller_div);
+        //后一个时次
         timeLine._init_next_div(controller_div);
+
+        //年月日控制
+        //   timeLine._init_controller_div(controller_div);
+
     },
     //绘制年
     _init_Year_div: function (controller_div) {
@@ -374,7 +381,7 @@ var timeLine = {
     },
 
 
-    //绘制开始div
+    //绘制qi前一个 div
     _init_pre_div: function (controller_div) {
         var PreDiv = document.createElement("div");
         PreDiv.setAttribute("class", "pre_div");
@@ -389,6 +396,7 @@ var timeLine = {
 
         PreDiv.onclick = timeLine._preClickFunc;
     },
+
 
     _preClickFunc: function () {
         var selectMode = timeLine.options.mode_list[timeLine.options.select_modeindex];
@@ -474,15 +482,73 @@ var timeLine = {
         }
     },
 
+    //初始化 显示隐藏按钮
     _init_Hide_div: function (controller_div) {
         var _timeLine = this._el.container;
 
+        var control_div = document.createElement("div");
+        control_div.style.width = '25px';
+        control_div.id = "control_div";
+        control_div.setAttribute("class", "control_div");
+        control_div.style.background = timeLine.options.default_bg_color;
+        _timeLine.appendChild(control_div);
+
+
+
+        //添加 模式选项
+        var mode_controller = document.createElement("div");
+        mode_controller.style.width = '0px';
+        mode_controller.id = "mode_Div";
+        mode_controller.setAttribute("class", "mode_div");
+        // mode_controller.style.background = timeLine.options.default_bg_color;
+
+        //control_div.appendChild(mode_controller);
+
+
+
+        var year_div = document.createElement("div");
+        //   year_div.style.height = '25px';
+        year_div.id = "yearMode_Controller";
+        year_div.setAttribute("class", "hide_mode_div");
+        year_div.innerHTML = "年";
+        //  hide_div.style.background = timeLine.options.default_bg_color;
+        mode_controller.appendChild(year_div);
+
+
+
+        var month_div = document.createElement("div");
+        //   year_div.style.height = '25px';
+        month_div.id = "yearMode_Controller";
+        month_div.setAttribute("class", "hide_mode_div");
+        month_div.innerHTML = "月";
+        //  hide_div.style.background = timeLine.options.default_bg_color;
+        mode_controller.appendChild(month_div);
+
+
+        var day_div = document.createElement("div");
+        //   year_div.style.height = '25px';
+        day_div.id = "yearMode_Controller";
+        day_div.setAttribute("class", "hide_mode_div");
+        day_div.innerHTML = "日";
+        //  hide_div.style.background = timeLine.options.default_bg_color;
+        mode_controller.appendChild(day_div);
+
+
+        var minute_div = document.createElement("div");
+        //   year_div.style.height = '25px';
+        minute_div.id = "yearMode_Controller";
+        minute_div.setAttribute("class", "hide_mode_div");
+        minute_div.innerHTML = "分";
+        //  hide_div.style.background = timeLine.options.default_bg_color;
+        mode_controller.appendChild(minute_div);
+
+        //添加显示隐藏 DIV
         var hide_div = document.createElement("div");
         hide_div.style.width = '25px';
         hide_div.id = "hide_Div";
         hide_div.setAttribute("class", "hide_div");
-        hide_div.style.background = timeLine.options.default_bg_color;
-        _timeLine.appendChild(hide_div);
+        //  hide_div.style.background = timeLine.options.default_bg_color;
+        control_div.appendChild(hide_div);
 
 
         var hideSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -509,22 +575,26 @@ var timeLine = {
         hideSvg.appendChild(nextPath_3);
 
         hide_div.addEventListener("mousedown", timeLine._setHideAndShow, false);
+
+
     },
+
 
     //设置显示隐藏
     _setHideAndShow: function () {
         var _controller = document.getElementById('_controller');
         var _timeline = document.getElementById('_timeline');
         if (timeLine.options.isHide === false) {
-            _controller.style.display = "none";
+            //_controller.style.display = "none";
             _timeline.style.display = "none";
             timeLine.options.isHide = true;
         } else {
-            _controller.style.display = "block";
+            //_controller.style.display = "block";
             _timeline.style.display = "block";
             timeLine.options.isHide = false;
         }
     },
+
 
     _setDocUnSelectable: function (_el) {
         /*   -webkit-touch-callout: none; /!* iOS Safari *!/
@@ -714,7 +784,6 @@ var timeLine = {
         timeLine.options.isMouseDownDoing = false;
         timeLine.options.is_drag = true;
         timeLine.options.begin_X = ev.offsetX;
-
     },
 
     //位移过程
@@ -749,6 +818,8 @@ var timeLine = {
                 //  timeLine.options.is_drag = false;
                 timeLine._drag(drag_pix);
                 timeLine.options.begin_X = timeLine.options.end_X;
+            } else {
+                timeLine.onMouseClick();
             }
         } else {
             //timeLine.onMouseClick();
@@ -970,8 +1041,6 @@ var timeLine = {
             timeLine._canvas_line("red", selectTrans, 0, selectTrans, 73);
         }
     },
-
-
 
 
     _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex, isGrayShow) {
@@ -1221,7 +1290,7 @@ var timeLine = {
         }
     },
 
-     
+
     _canvas_dashed_line: function (fillcolor, begin_point_x, begin_point_y, end_point_x, end_point_y) {
         var _canvas = timeLine._el.timecanvas;
         if (_canvas) {
@@ -1328,7 +1397,7 @@ var timeLine = {
     },
 
     //对外接口 添加数据信息 
-    
+
     addDataInfo: function (datainfolist) {
         if (datainfolist) {
             var _length = datainfolist.length;
@@ -1464,8 +1533,10 @@ var timeLine = {
 
         //年处理
         YearModeList.forEach(function (yearBegin) {
+            //最小单位为月
             var BeginYear_MomentStr = moment.utc(yearBegin, "YYYYMM").format("YYYYMMDDHHmmss");
             var EndYear_MomentStr = moment.utc(yearBegin, "YYYYMM").add(1.0, 'month').format("YYYYMMDDHHmmss");
+            var EndYear_Moment = moment.utc(yearBegin, "YYYYMM").add(1.0, 'month').format("YYYYMMDDHHmmss");
             DataInfoJson.month.push({
                 "begintime": BeginYear_MomentStr,
                 "endtime": EndYear_MomentStr

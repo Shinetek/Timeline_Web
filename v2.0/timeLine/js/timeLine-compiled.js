@@ -55,6 +55,7 @@ var timeLine = {
             default_button_color: "#444444",
             dataline_color: "#4682B4",
             dataline_color_1: "#0B69CB",
+            dataline_color_gray: "#969696",
             //默认当前时间
             default_time: moment.utc(),
             //默认一格的毫秒数目
@@ -125,12 +126,14 @@ var timeLine = {
 
         this._el.container.appendChild(controller_div);
         //设置 年部分
-        timeLine._init_sp_div(controller_div);
+
         timeLine._init_Year_div(controller_div);
         timeLine._init_Month_div(controller_div);
         timeLine._init_Day_div(controller_div);
         timeLine._init_Hour_div(controller_div);
         timeLine._init_Hide_div(controller_div);
+
+        timeLine._init_sp_div(controller_div);
 
         timeLine._init_pre_div(controller_div);
         timeLine._init_next_div(controller_div);
@@ -332,7 +335,8 @@ var timeLine = {
         var background_div = document.createElement("div");
         background_div.id = "background_div";
         background_div.setAttribute("class", "background_div");
-        background_div.style.background = timeLine.options.default_bg_color;
+        background_div.style.background = "transport";
+        background_div.style.zIndex = "0";
         controller_div.appendChild(background_div);
 
         var background_svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -343,24 +347,21 @@ var timeLine = {
         var nextPath_1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         nextPath_1.setAttribute("x", "70");
         nextPath_1.setAttribute("y", y_location);
-        nextPath_1.setAttribute("width", "15");
-        nextPath_1.setAttribute("height", "2");
+        nextPath_1.setAttribute("width", "10");
+        nextPath_1.setAttribute("height", "1.5");
+
         var nextPath_2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        nextPath_2.setAttribute("x", "110");
+        nextPath_2.setAttribute("x", "125");
         nextPath_2.setAttribute("y", y_location);
-        nextPath_2.setAttribute("width", "15");
-        nextPath_2.setAttribute("height", "2");
-        var nextPath_3 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        nextPath_3.setAttribute("x", "140");
-        nextPath_3.setAttribute("y", y_location);
-        nextPath_3.setAttribute("width", "15");
-        nextPath_3.setAttribute("height", "2");
+        nextPath_2.setAttribute("width", "10");
+        nextPath_2.setAttribute("height", "1.5");
+
         background_svg.appendChild(nextPath_1);
         background_svg.appendChild(nextPath_2);
-        background_svg.appendChild(nextPath_3);
+        //background_svg.appendChild(nextPath_3);
     },
 
-    //绘制开始div
+    //绘制qi前一个 div
     _init_pre_div: function (controller_div) {
         var PreDiv = document.createElement("div");
         PreDiv.setAttribute("class", "pre_div");
@@ -493,6 +494,8 @@ var timeLine = {
         hide_div.addEventListener("mousedown", timeLine._setHideAndShow, false);
     },
 
+    _init_modeController: function () {},
+
     //设置显示隐藏
     _setHideAndShow: function () {
         var _controller = document.getElementById('_controller');
@@ -528,7 +531,6 @@ var timeLine = {
     _addOneYear: function () {
         timeLine._addminusSelectMoment(1.0, 'years');
     },
-
     _minusOneYear: function () {
         timeLine._addminusSelectMoment(-1.0, 'years');
     },
@@ -536,7 +538,6 @@ var timeLine = {
     _addOneMonth: function () {
         timeLine._addminusSelectMoment(1.0, 'month');
     },
-
     _minusOneMonth: function () {
         timeLine._addminusSelectMoment(-1.0, 'month');
     },
@@ -544,7 +545,6 @@ var timeLine = {
     _addOneDay: function () {
         timeLine._addminusSelectMoment(1.0, 'day');
     },
-
     _minusOneDay: function () {
         timeLine._addminusSelectMoment(-1.0, 'day');
     },
@@ -552,7 +552,6 @@ var timeLine = {
     _addOneHour: function () {
         timeLine._addminusSelectMoment(1.0, 'hour');
     },
-
     _minusOneHour: function () {
         timeLine._addminusSelectMoment(-1.0, 'hour');
     },
@@ -691,23 +690,19 @@ var timeLine = {
 
     //开始移动
     startMove: function (event) {
-
-        function doMouseDown(event) {
-            event.preventDefault();
-            timeLine.options.is_drag = true;
-            timeLine.options.begin_X = event.offsetX;
-        }
-
+        var ev = event || window.event;
         timeLine.options.isMouseDownDoing = false;
-        timeLine.options.doMouseDownTimmer = setTimeout(doMouseDown, 200, event);
+        timeLine.options.is_drag = true;
+        timeLine.options.begin_X = ev.offsetX;
     },
 
     //位移过程
     moving: function (event) {
+        var ev = event || window.event;
         //如果正在位移 则对拖动进行处理
         if (timeLine.options.is_drag) {
             //是否正在拖动
-            timeLine.options.end_X = event.offsetX;
+            timeLine.options.end_X = ev.offsetX;
             var drag_pix = timeLine.options.end_X - timeLine.options.begin_X;
             //根据阈值进行赋值
             if (drag_pix > 20 || drag_pix < -20) {
@@ -719,25 +714,24 @@ var timeLine = {
             timeLine._getDateMouseIn(event.offsetX);
         }
     },
-
     // 结束位移
-    endMove: function () {
-        if (!timeLine.options.isMouseDownDoing) {
-            clearTimeout(timeLine.options.doMouseDownTimmer); //能进到这里来，不管三七二十一先把doMouseDownTimmer清除，不然200毫秒后doMouseDown方法还是会被调用的
-            // document.getElementById('div1').innerHTML += 'mouseUp<br/>';
-        }
+    endMove: function (event) {
+
+        var ev = event || window.event;
         if (timeLine.options.is_drag) {
             //是否正在拖动
             timeLine.options.is_drag = false;
-            timeLine.options.end_X = event.offsetX;
+            timeLine.options.end_X = ev.offsetX;
             var drag_pix = timeLine.options.end_X - timeLine.options.begin_X;
             //根据阈值进行赋值
             if (drag_pix > 5 || drag_pix < -5) {
+                //  timeLine.options.is_drag = false;
                 timeLine._drag(drag_pix);
                 timeLine.options.begin_X = timeLine.options.end_X;
             }
         } else {
             //timeLine.onMouseClick();
+            timeLine._getDateMouseIn(event.offsetX);
         }
     },
 
@@ -751,11 +745,48 @@ var timeLine = {
 
     //用于显示的date
     _formatDateShow: function () {
-        var timeline_canvas = this._el.timecanvas;
-        var ToolTip = "";
+
+        var selectUnit = timeLine.options.mode_unit[timeLine.options.select_modeindex];
+
+        var toolTip = "";
         if (timeLine.options.moment_mousein) {
-            switch (timeLine.options) {}
+            switch (selectUnit) {
+                case "month":
+                    {
+                        toolTip = timeLine.options.moment_mousein.format("YYYY-MM");
+
+                        break;
+                    }
+                case "day":
+                    {
+                        toolTip = timeLine.options.moment_mousein.format("YYYY-MM-DD");
+
+                        break;
+                    }
+                case "hour":
+                    {
+                        toolTip = timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm");
+
+                        break;
+                    }
+                case "minute":
+                    {
+                        toolTip = timeLine.options.moment_mousein.format("YYYY-MM-DD HH:mm:ss");
+
+                        break;
+                    }
+                default:
+                    {
+                        toolTip = "";
+
+                        break;
+                    }
+
+            }
         }
+        var _canvas = timeLine._el.timecanvas;
+        _canvas.title = toolTip;
+        return toolTip;
     },
 
     //获取鼠标所在位置的时间
@@ -775,6 +806,8 @@ var timeLine = {
         timeLine.options.mouse_x = mouse_x;
         timeLine.options.moment_mousein = time;
         //根据当前像素单位 姐鼠标位置获取时间
+        timeLine._formatDateShow();
+        return time.format("YYYYMMDD HHmmss");
     },
 
     _init_beginTime: function () {
@@ -810,7 +843,6 @@ var timeLine = {
         moment_begin.add(-trans / selectmodetimespan, selectmodeunit);
         moment_end.add(-trans / selectmodetimespan, selectmodeunit);
     },
-
     //根据当前时刻进行位移
     _drag: function (trans) {
         //根据当前trans 计算新的开始结束
@@ -827,7 +859,6 @@ var timeLine = {
         var selectmode_pix = timeLine.options.mode_timespan[selectMode];
         timeLine._draw_timeline(moment_begin, moment_end, this.options.moment_select, selectmodeunit, selectmode_pix);
     },
-
     //绘制 时间轴背景
     _draw_bg: function () {
         var _canvas = this._el.timecanvas;
@@ -864,12 +895,12 @@ var timeLine = {
             for (var i = 0; i < timeLine.datainfo.length; i++) {
                 var rect_y = i * rect_height;
                 var ProdItem = timeLine.datainfo[i];
-
+                var isGrayShow = ProdItem.isShow;
                 if (ProdItem.datainfolist) {
                     var select_datainfo = ProdItem.datainfolist[timeLine.options.mode_unit[timeLine.options.select_modeindex]];
                     for (var t = 0; t < select_datainfo.length; t++) {
                         var datainfo = select_datainfo[t];
-                        timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, t);
+                        timeLine._getDataShowInfo(rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, t, isGrayShow);
                     }
                 }
             }
@@ -902,12 +933,13 @@ var timeLine = {
 
         //绘制 当前选择时间点
         if (begin_date.isBefore(select_date) && end_date.isAfter(select_date)) {
-            var selectTrans = (1 - begin_date.diff(select_date, unit_str, true)) * unit_pix;
-            timeLine._canvas_arc("red", selectTrans - 7, timeLine.options.timeline_height_top, 7);
+            var selectTrans = (1 - begin_date.diff(select_date, unit_str, true) - 1) * unit_pix;
+            //timeLine._canvas_arc("red", selectTrans - 7, timeLine.options.timeline_height_top, 7);
+            timeLine._canvas_line("red", selectTrans, 0, selectTrans, 73);
         }
     },
 
-    _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex) {
+    _getDataShowInfo: function (rect_height, rect_y, datainfo, begin_date_str, end_date_str, begin_date, end_date, unit_str, unit_pix, dataindex, isGrayShow) {
 
         var is_Draw = true;
         if (datainfo.begintime < begin_date_str && datainfo.endtime < begin_date_str || datainfo.begintime > end_date_str && datainfo.endtime > end_date_str) {
@@ -950,21 +982,29 @@ var timeLine = {
                 "rect_width": rect_width,
                 "rect_y": rect_y,
                 "rect_height": rect_height,
-                "dataindex": dataindex
+                "dataindex": dataindex,
+                "isGrayShow": isGrayShow
             };
             timeLine._draw_dataline(dataInfo);
         }
     },
 
+    //根据数据信息绘制
     _draw_dataline: function (dataInfo) {
 
         var _canvas = timeLine._el.timecanvas;
         if (_canvas) {
             var context = _canvas.getContext('2d');
-            if (dataInfo.dataindex % 2 === 0) {
-                context.fillStyle = timeLine.options.dataline_color;
+            //是否为灰阶段 false 为灰色
+            if (dataInfo.isGrayShow === false) {
+                context.fillStyle = timeLine.options.dataline_color_gray;
             } else {
-                context.fillStyle = timeLine.options.dataline_color_1;
+                //若灰色选项为true 则使用两种颜色替换显示
+                if (dataInfo.dataindex % 2 === 0) {
+                    context.fillStyle = timeLine.options.dataline_color;
+                } else {
+                    context.fillStyle = timeLine.options.dataline_color_1;
+                }
             }
             context.fillRect(dataInfo.rect_x, dataInfo.rect_y + 5, dataInfo.rect_width, dataInfo.rect_height - 1);
         }
@@ -1042,7 +1082,7 @@ var timeLine = {
                 }
             case "hour":
                 {
-                    moment_Str = moment.format("YYYY-MM-DD HH");
+                    moment_Str = moment.format("YYYY-MM-DD HH:00");
                     break;
                 }
             case "minute":
@@ -1072,7 +1112,7 @@ var timeLine = {
                 }
             case "month":
                 {
-                    if (compareDate.date() % 10 === 0) {
+                    if (compareDate.date() % 10 === 1) {
                         isBegin = true;
                     }
                     break;
@@ -1116,7 +1156,6 @@ var timeLine = {
             //  context.stroke();
         }
     },
-
     //canvas 画线
     _canvas_line: function (fillcolor, begin_point_x, begin_point_y, end_point_x, end_point_y) {
 
@@ -1147,7 +1186,6 @@ var timeLine = {
             context.stroke();
         }
     },
-
     //canvas 画矩形
     _canvas_rect: function (fillcolor, begin_point_x, begin_point_y, rect_width, rect_heigth) {
         var _canvas = timeLine._el.timecanvas;
@@ -1174,7 +1212,6 @@ var timeLine = {
             context.fillText(txtStr, begin_x, begin_y);
         }
     },
-
     _resizeScreen: function () {
         timeLine.options.default_width = document.body.offsetWidth;
         timeLine.options.timeline_width = timeLine.options.default_width - timeLine.options.controller_width_sp;
@@ -1182,7 +1219,6 @@ var timeLine = {
         timeLine._switchMode();
         //timeLine._drag(0);
     },
-
     _fit_timeline: function () {
         var _canvas = timeLine._el.timecanvas;
         if (_canvas) {
@@ -1216,15 +1252,13 @@ var timeLine = {
     },
 
     setSelectMoment: function (newDate) {
-        console.log('setSelectMoment');
         var old_moment = moment.utc(timeLine.options.moment_select.format("YYYYMMDDHHmmss"), "YYYYMMDDHHmmss");
-        console.log(typeof newDate);
         var isReset = false;
-        if (typeof newDate === "moment") {
+        if (newDate instanceof moment) {
             timeLine.options.moment_select = newDate;
             isReset = true;
         } else {
-            if (typeof newDate === "Date") {
+            if (newDate instanceof Date) {
                 timeLine.options.moment_select = moment(newDate);
                 isReset = true;
             } else {
@@ -1232,16 +1266,16 @@ var timeLine = {
             }
         }
         if (isReset) {
-            console.log('isReset');
             var selectUnit = timeLine.options.mode_unit[timeLine.options.select_modeindex];
             var selectUnit_pix = timeLine.options.mode_timespan[timeLine.options.select_modeindex];
-            var _trans = -old_moment.diff(timeLine.options.moment_select, selectUnit, true) * selectUnit_pix;
+            var _trans = old_moment.diff(timeLine.options.moment_select, selectUnit, true) * selectUnit_pix;
             timeLine._resetInputShow();
             timeLine._drag(_trans);
         }
     },
 
-    //对外接口 添加数据信息
+    //对外接口 添加数据信息 
+
     addDataInfo: function (datainfolist) {
         if (datainfolist) {
             var _length = datainfolist.length;
@@ -1261,7 +1295,7 @@ var timeLine = {
                     }
                     if (!isin) {
                         var dataConvert = timeLine._dataConvert(addinfo);
-                        timeLine.datainfo.push(dataConvert);
+                        timeLine.datainfo.unshift(dataConvert);
                     }
                 }
             }
@@ -1277,7 +1311,6 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        var isin = true;
                         timeLine.datainfo.splice(t, 1);
                     }
                 }
@@ -1294,8 +1327,7 @@ var timeLine = {
                 for (var t = 0; t < timeLine.datainfo.length; t++) {
                     var _datainfo = timeLine.datainfo[t];
                     if (_datainfo.name === datainfoName) {
-                        var isin = true;
-                        timeLine.datainfo.isShow = isShow;
+                        timeLine.datainfo[t].isShow = isShow;
                     }
                 }
             }
@@ -1379,19 +1411,28 @@ var timeLine = {
         YearModeList.forEach(function (yearBegin) {
             var BeginYear_MomentStr = moment.utc(yearBegin, "YYYYMM").format("YYYYMMDDHHmmss");
             var EndYear_MomentStr = moment.utc(yearBegin, "YYYYMM").add(1.0, 'month').format("YYYYMMDDHHmmss");
-            DataInfoJson.month.push({ "begintime": BeginYear_MomentStr, "endtime": EndYear_MomentStr });
+            DataInfoJson.month.push({
+                "begintime": BeginYear_MomentStr,
+                "endtime": EndYear_MomentStr
+            });
         });
         //月处理
         MonthModeList.forEach(function (yearBegin) {
             var BeginMonth_MomentStr = moment.utc(yearBegin, "YYYYMMDD").format("YYYYMMDDHHmmss");
             var EndMonth_MomentStr = moment.utc(yearBegin, "YYYYMMDD").add(1.0, 'day').format("YYYYMMDDHHmmss");
-            DataInfoJson.day.push({ "begintime": BeginMonth_MomentStr, "endtime": EndMonth_MomentStr });
+            DataInfoJson.day.push({
+                "begintime": BeginMonth_MomentStr,
+                "endtime": EndMonth_MomentStr
+            });
         });
         //日处理
         DayModeList.forEach(function (yearBegin) {
             var BeginDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").format("YYYYMMDDHHmmss");
-            var EndDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").add(1.0, 'hour').format("YYYYMMDDHHmmss");
-            DataInfoJson.hour.push({ "begintime": BeginDay_MomentStr, "endtime": EndDay_MomentStr });
+            var EndDay_MomentStr = moment.utc(yearBegin, "YYYYMMDDHH").add(1.0, 'day').format("YYYYMMDDHHmmss");
+            DataInfoJson.hour.push({
+                "begintime": BeginDay_MomentStr,
+                "endtime": EndDay_MomentStr
+            });
         });
         datainfo.datainfolist = DataInfoJson;
         datainfo.isShow = true;
